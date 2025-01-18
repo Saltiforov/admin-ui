@@ -1,7 +1,3 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
   <div>
     <a href="https://vite.dev" target="_blank">
@@ -13,6 +9,30 @@ import HelloWorld from './components/HelloWorld.vue'
   </div>
   <HelloWorld msg="Vite + Vue" />
 </template>
+
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import HelloWorld from './components/HelloWorld.vue'
+import { getUserList } from "@/services/api/user-service.api.js";
+
+const users = ref([])
+const error = ref(null)
+// example for using api routes
+// const fetchUsers = async () => {
+//   try {
+//     const response = await getUserList();
+//     users.value = response?.data || []; // Сохраняем данные из ответа
+//   } catch (err) {
+//     error.value = 'Ошибка загрузки пользователей';
+//   }
+// };
+//
+// onMounted(() => {
+//   fetchUsers();
+// });
+</script>
+
 
 <style scoped>
 .logo {
