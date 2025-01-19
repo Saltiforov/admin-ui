@@ -1,111 +1,111 @@
 <template>
-  <div class="card">
-    <Accordion :value="['0']" multiple>
-      <AccordionPanel value="0">
-        <AccordionHeader>Header I</AccordionHeader>
-
-
-
-        <AccordionContent>
-            <p>1</p>
-          <AccordionPanel value="3">
-            <AccordionHeader>CHILD 1</AccordionHeader>
-            <AccordionContent>
-              <p>SUB SUB CHILD</p>
-              <AccordionPanel value="13">
-                <AccordionHeader>CHILD 13</AccordionHeader>
-                <AccordionContent>
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </p>
-                </AccordionContent>
-              </AccordionPanel>
-              <AccordionPanel value="14">
-                <AccordionHeader>CHILD 14</AccordionHeader>
-                <AccordionContent>
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </p>
-                </AccordionContent>
-              </AccordionPanel>
-              <AccordionPanel value="15">
-                <AccordionHeader>CHILD 15</AccordionHeader>
-                <AccordionContent>
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </p>
-                </AccordionContent>
-              </AccordionPanel>
-            </AccordionContent>
-          </AccordionPanel>
-          <AccordionPanel value="6">
-            <AccordionHeader>CHILD 2</AccordionHeader>
-            <AccordionContent>
-              <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-            </AccordionContent>
-          </AccordionPanel>
-          <AccordionPanel value="7">
-            <AccordionHeader>CHILD 3</AccordionHeader>
-            <AccordionContent>
-              <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-            </AccordionContent>
-          </AccordionPanel>
-        </AccordionContent>
-      </AccordionPanel>
-
-
-
-      <AccordionPanel value="1">
-        <AccordionHeader>Header II</AccordionHeader>
-        <AccordionContent>
-          <p class="m-0">
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-            ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-          </p>
-        </AccordionContent>
-      </AccordionPanel>
-      <AccordionPanel value="2">
-        <AccordionHeader>Header III</AccordionHeader>
-        <AccordionContent>
-          <p class="m-0">
-            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa
-            qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-          </p>
-        </AccordionContent>
-      </AccordionPanel>
-    </Accordion>
-  </div>
+  <AccordionComponent :filters="filters"></AccordionComponent>
+  <PopupFormComponent></PopupFormComponent>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import HelloWorld from './components/HelloWorld.vue'
-import { getUserList } from "@/services/api/user-service.api.js";
+import TestForm from "@/components/TestForm.vue";
+import AccordionComponent from "@/components/AccordionComponent.vue";
+import PopupFormComponent from "@/components/PopupFormComponent.vue";
+import { getFiltersList } from "@/services/api/filters-service.api.js";
 
-const users = ref([])
+const filters = ref([
+  {
+    "name": {
+      "ru": "asdasd",
+      "uk": "asd"
+    },
+    "_id": "678d047795e0b56fae151ea4",
+    "code": "as",
+    "parentId": null,
+    "children": [],
+    "createdAt": "2025-01-19T13:56:07.303Z",
+    "updatedAt": "2025-01-19T13:56:07.303Z",
+    "__v": 0
+  },
+  {
+    "name": {
+      "ru": "asdasdasd",
+      "uk": "asdakldjalksd"
+    },
+    "_id": "678d059995e0b56fae151ea9",
+    "code": "sdadsasdasdasdasdsa",
+    "parentId": null,
+    "children": [
+      {
+        "name": {
+          "ru": "child1",
+          "uk": "child2"
+        },
+        "_id": "678d059995e0b56fae151ea9",
+        "code": "child1",
+        "parentId": null,
+        "children": [
+          {
+            "name": {
+              "ru": "sub-child",
+              "uk": "sub-child2"
+            },
+            "_id": "678d059995e0b56fae151ea9",
+            "code": "sub-child",
+            "parentId": null,
+            "children": [],
+            "createdAt": "2025-01-19T14:00:57.293Z",
+            "updatedAt": "2025-01-19T14:00:57.293Z",
+            "__v": 0
+          },
+        ],
+        "createdAt": "2025-01-19T14:00:57.293Z",
+        "updatedAt": "2025-01-19T14:00:57.293Z",
+        "__v": 0
+      },
+    ],
+    "createdAt": "2025-01-19T14:00:57.293Z",
+    "updatedAt": "2025-01-19T14:00:57.293Z",
+    "__v": 0
+  },
+  {
+    "name": {
+      "ru": "asdasdasd",
+      "uk": "asdakldjalksd"
+    },
+    "_id": "678d05a395e0b56fae151eab",
+    "code": "asbnzxxcbznxcbjskdfsjkfhjskdfsdf",
+    "parentId": null,
+    "children": [],
+    "createdAt": "2025-01-19T14:01:07.095Z",
+    "updatedAt": "2025-01-19T14:01:07.095Z",
+    "__v": 0
+  },
+  {
+    "name": {
+      "ru": "2",
+      "uk": "1"
+    },
+    "_id": "678d05a895e0b56fae151ead",
+    "code": "ierutoieurtioteuoiert",
+    "parentId": null,
+    "children": [],
+    "createdAt": "2025-01-19T14:01:12.808Z",
+    "updatedAt": "2025-01-19T14:01:12.808Z",
+    "__v": 0
+  }
+])
 const error = ref(null)
 // example for using api routes
-// const fetchUsers = async () => {
-//   try {
-//     const response = await getUserList();
-//     users.value = response?.data || []; // Сохраняем данные из ответа
-//   } catch (err) {
-//     error.value = 'Ошибка загрузки пользователей';
-//   }
-// };
-//
-// onMounted(() => {
-//   fetchUsers();
-// });
+const fetchFiltersList = async () => {
+  try {
+    // const response = await getFiltersList();
+    filters.value = response?.data || []; // Сохраняем данные из ответа
+  } catch (err) {
+    error.value = 'Ошибка загрузки пользователей';
+  }
+};
+
+onMounted(() => {
+  fetchFiltersList();
+});
 </script>
 
 

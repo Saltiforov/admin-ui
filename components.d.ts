@@ -8,9 +8,20 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Accordion: typeof import('primevue/accordion')['default']
+    AccordionComponent: typeof import('./src/components/AccordionComponent.vue')['default']
     AccordionContent: typeof import('primevue/accordioncontent')['default']
     AccordionHeader: typeof import('primevue/accordionheader')['default']
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
+    Button: typeof import('primevue/button')['default']
+    Dialog: typeof import('primevue/dialog')['default']
+    Form: typeof import('@primevue/forms/form')['default']
+    FormField: typeof import('@primevue/forms/formfield')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    InputText: typeof import('primevue/inputtext')['default']
+    Message: typeof import('primevue/message')['default']
+    Password: typeof import('primevue/password')['default']
+    PopupFormComponent: typeof import('./src/components/PopupFormComponent.vue')['default']
+    TestForm: typeof import('./src/components/TestForm.vue')['default']
+    Textarea: typeof import('primevue/textarea')['default']
   }
 }
