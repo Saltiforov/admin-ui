@@ -45,7 +45,6 @@ const errors = reactive({});
 
 // Слушаем событие шины
 eventBus.on('show-popup', (config) => {
-  console.log('eventBus show-popup', config);
   isVisible.value = true;
   Object.assign(popupConfig, config);
 
@@ -54,14 +53,11 @@ eventBus.on('show-popup', (config) => {
     formValues[field.code] = field.defaultValue || '';
     errors[field.code] = null;
   });
-
-  console.log('popupConfig', popupConfig);
 });
 
 // Сабмит формы
 const onFormSubmit = () => {
   let isValid = true;
-  console.log("onFormSubmit")
   popupConfig.fields.forEach((field) => {
     errors[field.code] = null;
 
@@ -76,6 +72,7 @@ const onFormSubmit = () => {
       }
     }
   });
+  console.log("onFormSubmit", isValid);
 
   if (isValid) {
     eventBus.emit('add-filter', { newFilter: formValues, parent: popupConfig.parentFilter });
