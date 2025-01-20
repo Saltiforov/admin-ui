@@ -1,5 +1,8 @@
 <template>
   <AccordionComponent :filters="filters"></AccordionComponent>
+  <div class="card flex justify-center">
+
+  </div>
   <PopupFormComponent></PopupFormComponent>
 </template>
 
@@ -9,6 +12,10 @@ import TestForm from "@/components/TestForm.vue";
 import AccordionComponent from "@/components/AccordionComponent.vue";
 import PopupFormComponent from "@/components/PopupFormComponent.vue";
 import { getFiltersList } from "@/services/api/filters-service.api.js";
+import Button from "primevue/button";
+import Menu from "primevue/menu";
+
+
 
 const filters = ref([
   {
