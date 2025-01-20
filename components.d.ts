@@ -23,6 +23,8 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     Password: typeof import('primevue/password')['default']
     PopupFormComponent: typeof import('./src/components/PopupFormComponent.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
     TestForm: typeof import('./src/components/TestForm.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
   }

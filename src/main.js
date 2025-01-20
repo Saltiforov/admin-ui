@@ -6,11 +6,11 @@ import PrimeVue from "primevue/config";
 import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
 const app = createApp(App);
-
+import router from "./router";
 app.use(fetchPlugin);
 
 app.component('InputText', InputText);
-
+app.use(router);
 app.use(PrimeVue, {
     theme: {
         preset: Noir,
