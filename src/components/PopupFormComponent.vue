@@ -61,7 +61,7 @@ eventBus.on('show-popup', (config) => {
 // Сабмит формы
 const onFormSubmit = () => {
   let isValid = true;
-
+  console.log("onFormSubmit")
   popupConfig.fields.forEach((field) => {
     errors[field.code] = null;
 
@@ -78,7 +78,7 @@ const onFormSubmit = () => {
   });
 
   if (isValid) {
-    eventBus.emit('add-filter', { newFilter: formValues, parent: popupConfig.parent });
+    eventBus.emit('add-filter', { newFilter: formValues, parent: popupConfig.parentFilter });
     closePopup();
   }
 };
