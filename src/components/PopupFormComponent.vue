@@ -75,6 +75,8 @@ const onFormSubmit = () => {
   console.log("onFormSubmit", isValid);
 
   if (isValid) {
+    console.log('Valid data newFilter:', formValues);
+    console.log('Valid data parent:', popupConfig.parentFilter);
     eventBus.emit('add-filter', { newFilter: formValues, parent: popupConfig.parentFilter });
     closePopup();
   }

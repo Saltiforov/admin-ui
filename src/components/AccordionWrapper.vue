@@ -49,6 +49,9 @@ const handlePopover = (event, filter) => {
 }
 
 const handleOpenPopup = (filter, eventType = "add") => {
+  console.log(
+    "handleOpenPopup",
+    filter,)
   eventBus.emit("show-popup", {
     title: "Add Filter",
     parentFilter: filter,

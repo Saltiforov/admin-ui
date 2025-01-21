@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // Импорты компонентов для маршрутов
 import Products from "@/views/Products.vue";
 import Filters from "@/views/Filters.vue";
+import Three from "@/views/Three.vue";
 
 // Определение маршрутов
 const routes = [
@@ -20,6 +21,12 @@ const routes = [
         name: "Filters",
         component: Filters,
     },
+    {
+        path: "/three",
+        name: "Three",
+        component: Three,
+    },
+
 ];
 
 // Создание экземпляра маршрутизатора
