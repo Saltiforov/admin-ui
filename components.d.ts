@@ -12,9 +12,13 @@ declare module 'vue' {
     AccordionContent: typeof import('primevue/accordioncontent')['default']
     AccordionHeader: typeof import('primevue/accordionheader')['default']
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
+    AccordionThree: typeof import('./src/components/AccordionThree.vue')['default']
     AccordionWrapper: typeof import('./src/components/AccordionWrapper.vue')['default']
     Button: typeof import('primevue/button')['default']
+    Column: typeof import('primevue/column')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    FilterConfiguratorTable: typeof import('./src/components/FilterConfigurator/FilterConfiguratorTable.vue')['default']
+    FilterConfiguratorWrapper: typeof import('./src/components/FilterConfigurator/FilterConfiguratorWrapper.vue')['default']
     Form: typeof import('@primevue/forms/form')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
@@ -27,5 +31,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TestForm: typeof import('./src/components/TestForm.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
+    TreeTable: typeof import('primevue/treetable')['default']
   }
 }

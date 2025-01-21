@@ -12,9 +12,9 @@ export function deepClone(obj) {
 
     return obj;
 }
-export function deepSearchByCode(array, code) {
+export function deepSearchByCode(array, code, source = 'key') {
     for (const item of array) {
-        if (item.code === code) {
+        if (item[source] === code) {
             return item;
         }
 
