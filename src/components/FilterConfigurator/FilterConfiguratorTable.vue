@@ -1,21 +1,29 @@
 <template>
   <div>
     <h1>Three</h1>
-    <TreeTable :value="nodes" @node-expand="onNodeExpand"  tableStyle="min-width: 50rem">
-      <Column field="name" header="Name"  :expander="true" style="width: 34%"></Column>
-      <Column field="size" header="Size" style="width: 33%"></Column>
+    <Button label="Add" icon="pi pi-check" @click="addNewFilter" />
+    <TreeTable :value="nodes" @node-expand="onNodeExpand" >
+      <Column header="Name" :expander="true" style="width: 34%">
+        <template #body="{ node }">
+          <div>{{  node.data.name['uk']  }}</div> / <div>{{ node.data.name['ru'] }}</div> <!-- Здесь вы можете кастомизировать отображение значения из поля "name" -->
+        </template>
+      </Column>
+      <Column field="code" header="Code" style="width: 33%"></Column>
+      <Column field="icon" header="Icon" style="width: 33%"></Column>
+      <Column field="description" header="Description" style="width: 33%"></Column>
       <Column
           header="Type (Custom)"
           style="width: 33%"
       >
         <template #body="{ node }">
           <div>
-            <Button type="button" icon="pi pi-ellipsis-v" @click="(event) => toggle(event,node)" aria-haspopup="true" aria-controls="overlay_menu" />
+            <Button type="button" icon="pi pi-ellipsis-v" @click="(event) => toggle(event,node)" aria-haspopup="true"
+                    aria-controls="overlay_menu"/>
           </div>
         </template>
       </Column>
     </TreeTable>
-    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
   </div>
 </template>
 
@@ -28,20 +36,6 @@ const onNodeExpand = (event) => {
   console.log("onNodeExpand", event)
 }
 // todo (name(uk,ru), code, icon, description)
-
-const node = {
-  children: [],
-  code: "as",
-  createdAt: "2025-01-19T13:56:07.303Z",
-  name: {
-    ru: "asdasd",
-    uk: "asd"
-  },
-  parentId: null,
-  updatedAt: "2025-01-19T13:56:07.303Z",
-  __v: 0,
-  _id: "678d047795e0b56fae151ea4"
-};
 
 const menu = ref();
 const items = ref([
@@ -62,7 +56,6 @@ const items = ref([
 ]);
 
 
-
 const handleOpenPopup = (filter, eventType = "add") => {
   eventBus.emit("show-popup", {
     title: "Add Filter",
@@ -72,19 +65,19 @@ const handleOpenPopup = (filter, eventType = "add") => {
       {
         code: "name.ua",
         component: "InputText",
-        props: { type: "text", placeholder: "Name (UA)" },
+        props: {type: "text", placeholder: "Name (UA)"},
         validators: [(value) => (value ? true : "Name (UA) is required")],
       },
       {
         code: "name.ru",
         component: "InputText",
-        props: { type: "text", placeholder: "Name (RU)" },
+        props: {type: "text", placeholder: "Name (RU)"},
         validators: [(value) => (value ? true : "Name (RU) is required")],
       },
       {
         code: "code",
         component: "InputText",
-        props: { type: "text", placeholder: "Unique Code" },
+        props: {type: "text", placeholder: "Unique Code"},
         validators: [
           (value) => (value ? true : "Code is required"),
           (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
@@ -94,12 +87,89 @@ const handleOpenPopup = (filter, eventType = "add") => {
   });
 };
 
+// const pathGenerator = (parent) => `${parent.key}-${parent.children.length - 1}`
+const pathGenerator = (parent) => {
+  const children = parent.children || [];
+
+  if (children.length === 0) {
+    const newIndex = 0;
+    return `${parent.key}-${newIndex}`;
+  }
+
+  const lastChild = children[children.length - 1];
+
+  const lastKeyParts = lastChild.key.split('-');
+  const lastIndex = parseInt(lastKeyParts.pop(), 10);
+
+  return `${parent.key}-${lastIndex + 1}`;
+};
+
+const addNewFilter = () => {
+  console.log("addNewFilter")
+  eventBus.emit('show-popup', {
+    title: "Add new Filter",
+    eventType: "addNewNode",
+    fields: [
+      {
+        code: "name.ua",
+        component: "InputText",
+        props: {type: "text", placeholder: "Name (UA)"},
+        validators: [(value) => (value ? true : "Name (UA) is required")],
+      },
+      {
+        code: "name.ru",
+        component: "InputText",
+        props: {type: "text", placeholder: "Name (RU)"},
+        validators: [(value) => (value ? true : "Name (RU) is required")],
+      },
+      {
+        code: "code",
+        component: "InputText",
+        props: {type: "text", placeholder: "Unique Code"},
+        validators: [
+          (value) => (value ? true : "Code is required"),
+          (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
+        ],
+      },
+    ],
+  })
+}
+
 const onAddFilter = (options) => {
-  const { parent, newFilter } = options;
-  const activeFilter = deepSearchByCode(nodes.value, parent.code);
-  console.log("onAddFilter parent", parent)
-  console.log("onAddFilter newFilter", newFilter)
-  console.log("onAddFilter activeFilter", activeFilter)
+  const {parent, newFilter, eventType} = options;
+  if (eventType === "addNewNode") {
+    nodes.value.push({
+      key: (nodes.value.length).toString(),
+      data: {
+        name: {
+          uk: newFilter['name.ua'],
+          ru: newFilter['name.ru']
+        },
+        code: newFilter.code,
+        description: 'MOK Description',
+        icon: '25kb',
+      },
+      children: []
+    })
+    console.log("onAddFilter", nodes.value)
+    return
+  }
+
+  const activeFilter = deepSearchByCode(nodes.value, parent.key,);
+  activeFilter.children.push({
+    key: pathGenerator(parent),
+    data: {
+      name: {
+        ru: newFilter['name.ru'],
+        uk: newFilter['name.ua']
+      },
+      code: newFilter.code,
+      icon: '25kb',
+      description: 'Папка с проектом на Vue.js'
+    },
+    children: [],
+  })
+  console.log("onAddFilter", activeFilter)
 };
 
 onMounted(() => {
@@ -123,26 +193,37 @@ const nodes = ref([
   {
     key: '0',
     data: {
+      name: {
+        uk: 'авіаів',
+        ru: 'рапава'
+      },
       code: 'root',
-      name: 'Applications',
-      size: '100kb',
-      type: 'Folder'
+      icon: '100kb',
+      description: 'Основная папка с данными и настройками системы.'
     },
     children: [
       {
         key: '0-0',
         data: {
-          name: 'Vue',
-          size: '25kb',
-          type: 'Folder'
+          name: {
+            uk: 'Vue',
+            ru: 'Vue'
+          },
+          code: 'folder',
+          icon: '25kb',
+          description: 'Папка с проектом на Vue.js'
         },
         children: [
           {
             key: '0-0-0',
             data: {
-              name: 'package.json',
-              size: '10kb',
-              type: 'Text'
+              name: {
+                uk: 'package.json',
+                ru: 'package.json'
+              },
+              code: 'file',
+              icon: '10kb',
+              description: 'Файл конфигурации для проекта на Vue.js'
             }
           },
         ]
@@ -152,25 +233,37 @@ const nodes = ref([
   {
     key: '1',
     data: {
-      name: 'Cloud',
-      size: '20kb',
-      type: 'Folder'
+      name: {
+        uk: 'Хмара',
+        ru: 'Облако'
+      },
+      code: 'folder',
+      icon: '20kb',
+      description: 'Папка для хранения резервных копий.'
     },
     children: [
       {
         key: '1-0',
         data: {
-          name: 'backup-1.zip',
-          size: '10kb',
-          type: 'Zip'
+          name: {
+            uk: 'backup-1.zip',
+            ru: 'backup-1.zip'
+          },
+          code: 'zip',
+          icon: '10kb',
+          description: 'Резервная копия данных №1.'
         }
       },
       {
         key: '1-1',
         data: {
-          name: 'backup-2.zip',
-          size: '10kb',
-          type: 'Zip'
+          name: {
+            uk: 'backup-2.zip',
+            ru: 'backup-2.zip'
+          },
+          code: 'zip',
+          icon: '10kb',
+          description: 'Резервная копия данных №2.'
         }
       }
     ]
@@ -178,25 +271,37 @@ const nodes = ref([
   {
     key: '2',
     data: {
-      name: 'Desktop',
-      size: '150kb',
-      type: 'Folder'
+      name: {
+        uk: 'Робочий стіл',
+        ru: 'Рабочий стол'
+      },
+      code: 'folder',
+      icon: '150kb',
+      description: 'Папка с важными текстовыми файлами.'
     },
     children: [
       {
         key: '2-0',
         data: {
-          name: 'note-meeting.txt',
-          size: '50kb',
-          type: 'Text'
+          name: {
+            uk: 'note-meeting.txt',
+            ru: 'note-meeting.txt'
+          },
+          code: 'text',
+          icon: '50kb',
+          description: 'Заметки с собрания.'
         }
       },
       {
         key: '2-1',
         data: {
-          name: 'note-todo.txt',
-          size: '100kb',
-          type: 'Text'
+          name: {
+            uk: 'note-todo.txt',
+            ru: 'note-todo.txt'
+          },
+          code: 'text',
+          icon: '100kb',
+          description: 'Список задач для выполнения.'
         }
       }
     ]
@@ -204,33 +309,49 @@ const nodes = ref([
   {
     key: '3',
     data: {
-      name: 'Documents',
-      size: '75kb',
-      type: 'Folder'
+      name: {
+        uk: 'Документи',
+        ru: 'Документы'
+      },
+      code: 'folder',
+      icon: '75kb',
+      description: 'Папка с рабочими и личными документами.'
     },
     children: [
       {
         key: '3-0',
         data: {
-          name: 'Work',
-          size: '55kb',
-          type: 'Folder'
+          name: {
+            uk: 'Робота',
+            ru: 'Работа'
+          },
+          code: 'folder',
+          icon: '55kb',
+          description: 'Документы, связанные с работой.'
         },
         children: [
           {
             key: '3-0-0',
             data: {
-              name: 'Expenses.doc',
-              size: '30kb',
-              type: 'Document'
+              name: {
+                uk: 'Expenses.doc',
+                ru: 'Expenses.doc'
+              },
+              code: 'document',
+              icon: '30kb',
+              description: 'Документ с расходами.'
             }
           },
           {
             key: '3-0-1',
             data: {
-              name: 'Resume.doc',
-              size: '25kb',
-              type: 'Resume'
+              name: {
+                uk: 'Resume.doc',
+                ru: 'Resume.doc'
+              },
+              code: 'resume',
+              icon: '25kb',
+              description: 'Резюме для поиска работы.'
             }
           }
         ]
@@ -238,17 +359,25 @@ const nodes = ref([
       {
         key: '3-1',
         data: {
-          name: 'Home',
-          size: '20kb',
-          type: 'Folder'
+          name: {
+            uk: 'Дім',
+            ru: 'Дом'
+          },
+          code: 'folder',
+          icon: '20kb',
+          description: 'Папка с личными файлами.'
         },
         children: [
           {
             key: '3-1-0',
             data: {
-              name: 'Invoices',
-              size: '20kb',
-              type: 'Text'
+              name: {
+                uk: 'Invoices',
+                ru: 'Invoices'
+              },
+              code: 'text',
+              icon: '20kb',
+              description: 'Счета для оплаты.'
             }
           }
         ]
@@ -256,6 +385,8 @@ const nodes = ref([
     ]
   },
 ]);
+
+
 </script>
 
 
