@@ -1,35 +1,38 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-// Импорты компонентов для маршрутов
+import DefaultLayout from "@/layouts/DefaultLayout.vue"; // Подключаем лейаут
 import Products from "@/views/Products.vue";
 import Filters from "@/views/Filters.vue";
 import Three from "@/views/Three.vue";
 
-// Определение маршрутов
 const routes = [
     {
         path: "/",
-        redirect: "/filters", // Перенаправление с корневого пути на /filters
+        component: DefaultLayout,
+        children: [
+            {
+                path: "",
+                redirect: "/filters",
+            },
+            {
+                path: "products",
+                name: "Products",
+                component: Products,
+            },
+            {
+                path: "filters",
+                name: "Filters",
+                component: Filters,
+            },
+            {
+                path: "three",
+                name: "Three",
+                component: Three,
+            },
+        ],
     },
-    {
-        path: "/products",
-        name: "Products",
-        component: Products,
-    },
-    {
-        path: "/filters",
-        name: "Filters",
-        component: Filters,
-    },
-    {
-        path: "/three",
-        name: "Three",
-        component: Three,
-    },
-
 ];
 
-// Создание экземпляра маршрутизатора
 const router = createRouter({
     history: createWebHistory(),
     routes,
