@@ -1,15 +1,23 @@
 <template>
   <div>
     <h1>Three</h1>
-    <Button label="Add" icon="pi pi-check" @click="addNewFilter" />
-    <TreeTable :value="nodes" @node-expand="onNodeExpand" >
+    <Button label="Add" icon="pi pi-check" @click="addNewFilter"/>
+    <TreeTable
+        :value="nodes"
+        :paginator="true"
+        :rows="5"
+        :expanded-keys="expandedKeys"
+        @update:expandedKeys="(keys) => (expandedKeys.value = keys)"
+    >
       <Column header="Name" :expander="true" style="width: 34%">
         <template #body="{ node }">
-          <div>{{  node.data.name['uk']  }}</div> / <div>{{ node.data.name['ru'] }}</div> <!-- Здесь вы можете кастомизировать отображение значения из поля "name" -->
+          <div>{{ node.data.name['uk'] }}</div>
+          /
+          <div>{{ node.data.name['ru'] }}</div>
         </template>
       </Column>
-      <Column field="code" header="Code" style="width: 33%"></Column>
-      <Column field="icon" header="Icon" style="width: 33%"></Column>
+      <Column field="code" header="Code" style="width: 15%"></Column>
+      <Column field="icon" header="Icon" style="width: 15%"></Column>
       <Column field="description" header="Description" style="width: 33%"></Column>
       <Column
           header="Type (Custom)"
@@ -32,9 +40,6 @@ import {onMounted, onUnmounted, ref} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {deepSearchByCode} from "@/utils/index.js";
 
-const onNodeExpand = (event) => {
-  console.log("onNodeExpand", event)
-}
 // todo (name(uk,ru), code, icon, description)
 
 const menu = ref();
@@ -57,8 +62,10 @@ const items = ref([
 
 
 const handleOpenPopup = (filter, eventType = "add") => {
+  const isEditMode = eventType === "edit";
+
   eventBus.emit("show-popup", {
-    title: "Add Filter",
+    title: isEditMode ? "Edit Filter" : "Add Filter",
     parentFilter: filter,
     eventType,
     fields: [
@@ -66,18 +73,21 @@ const handleOpenPopup = (filter, eventType = "add") => {
         code: "name.ua",
         component: "InputText",
         props: {type: "text", placeholder: "Name (UA)"},
+        defaultValue: isEditMode ? filter.data.name.uk : "",
         validators: [(value) => (value ? true : "Name (UA) is required")],
       },
       {
         code: "name.ru",
         component: "InputText",
         props: {type: "text", placeholder: "Name (RU)"},
+        defaultValue: isEditMode ? filter.data.name.ru : "",
         validators: [(value) => (value ? true : "Name (RU) is required")],
       },
       {
         code: "code",
         component: "InputText",
         props: {type: "text", placeholder: "Unique Code"},
+        defaultValue: isEditMode ? filter.data.code : "",
         validators: [
           (value) => (value ? true : "Code is required"),
           (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
@@ -87,22 +97,6 @@ const handleOpenPopup = (filter, eventType = "add") => {
   });
 };
 
-// const pathGenerator = (parent) => `${parent.key}-${parent.children.length - 1}`
-const pathGenerator = (parent) => {
-  const children = parent.children || [];
-
-  if (children.length === 0) {
-    const newIndex = 0;
-    return `${parent.key}-${newIndex}`;
-  }
-
-  const lastChild = children[children.length - 1];
-
-  const lastKeyParts = lastChild.key.split('-');
-  const lastIndex = parseInt(lastKeyParts.pop(), 10);
-
-  return `${parent.key}-${lastIndex + 1}`;
-};
 
 const addNewFilter = () => {
   console.log("addNewFilter")
@@ -135,9 +129,47 @@ const addNewFilter = () => {
   })
 }
 
+const expandedKeys = ref({});
+
+const updateFilter = (filter, newFilter) => {
+  filter.data.name.uk = newFilter['name.ua']; // Обновляем name (uk)
+  filter.data.name.ru = newFilter['name.ru']; // Обновляем name (ru)
+  filter.data.code = newFilter.code; // Обновляем code
+  filter.data.description = newFilter.description || filter.data.description; // Обновляем description
+  console.log("Updated filter", filter);
+};
+
+const createFilterNode = (key, newFilter, description = 'MOK Description', icon = '25kb') => ({
+  key,
+  data: {
+    name: {
+      uk: newFilter['name.ua'],
+      ru: newFilter['name.ru']
+    },
+    code: newFilter.code,
+    description,
+    icon,
+  },
+  children: [],
+});
+
 const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
-  if (eventType === "addNewNode") {
+  console.log("onAddFilter", options)
+  // если event === edit то ищу цей элемент и дату заполняю так как ниже но не пушу а спросить у чата як реактивно обновить дату
+  if (eventType === "edit") {
+    const activeFilter = deepSearchByCode(nodes.value, parent.key,);
+    if (activeFilter) {
+      activeFilter.data.name.uk = newFilter['name.ua']; // Обновляем name (uk)
+      activeFilter.data.name.ru = newFilter['name.ru']; // Обновляем name (ru)
+      activeFilter.data.code = newFilter.code; // Обновляем code
+      activeFilter.data.description = newFilter.description || activeFilter.data.description; // Обновляем description
+      console.log("Updated activeFilter", activeFilter);
+      return;
+    }
+  }
+
+  if (!parent) {
     nodes.value.push({
       key: (nodes.value.length).toString(),
       data: {
@@ -151,7 +183,6 @@ const onAddFilter = (options) => {
       },
       children: []
     })
-    console.log("onAddFilter", nodes.value)
     return
   }
 
@@ -169,6 +200,7 @@ const onAddFilter = (options) => {
     },
     children: [],
   })
+  expandedKeys.value[parent.key] = true;
   console.log("onAddFilter", activeFilter)
 };
 
@@ -183,12 +215,9 @@ onUnmounted(() => {
 const activeFilter = ref({});
 
 const toggle = (event, node) => {
-  console.log("toggle", node)
   activeFilter.value = node;
   menu.value.toggle(event);
 };
-//todo [children.length - 1] - итерация начинаеться с 0 елемента
-// pathGenerator() `${key}-[children.length - 1]`
 const nodes = ref([
   {
     key: '0',
@@ -385,6 +414,22 @@ const nodes = ref([
     ]
   },
 ]);
+
+const pathGenerator = (parent) => {
+  const children = parent.children || [];
+
+  if (children.length === 0) {
+    const newIndex = 0;
+    return `${parent.key}-${newIndex}`;
+  }
+
+  const lastChild = children[children.length - 1];
+
+  const lastKeyParts = lastChild.key.split('-');
+  const lastIndex = parseInt(lastKeyParts.pop(), 10);
+
+  return `${parent.key}-${lastIndex + 1}`;
+};
 
 
 </script>

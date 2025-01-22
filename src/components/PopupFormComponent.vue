@@ -37,6 +37,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import eventBus from '../../eventBus';
+import {deepSearchByCode} from "@/utils/index.js";
 
 const isVisible = ref(false);
 const popupConfig = reactive({});
@@ -76,7 +77,12 @@ const onFormSubmit = () => {
   console.log("onFormSubmit", isValid);
 
   if (isValid) {
-    eventBus.emit('add-filter', { newFilter: formValues, parent: popupConfig.parentFilter, eventType: popupConfig.eventType  });
+    console.log('Valid data popupConfig:', popupConfig);
+    eventBus.emit("add-filter", {
+      newFilter: formValues,
+      parent: popupConfig.parentFilter,
+      eventType: popupConfig.eventType,
+    });
     closePopup();
   }
 };
