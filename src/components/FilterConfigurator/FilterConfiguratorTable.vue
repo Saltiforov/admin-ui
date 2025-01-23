@@ -72,21 +72,21 @@ const handleOpenPopup = (filter, eventType = "add") => {
       {
         code: "name.ua",
         component: "InputText",
-        props: {type: "text", placeholder: "Name (UA)"},
+        props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px"},
         defaultValue: isEditMode ? filter.data.name.uk : "",
         validators: [(value) => (value ? true : "Name (UA) is required")],
       },
       {
         code: "name.ru",
         component: "InputText",
-        props: {type: "text", placeholder: "Name (RU)"},
+        props: {type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px"},
         defaultValue: isEditMode ? filter.data.name.ru : "",
         validators: [(value) => (value ? true : "Name (RU) is required")],
       },
       {
         code: "code",
         component: "InputText",
-        props: {type: "text", placeholder: "Unique Code"},
+        props: {type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px"},
         defaultValue: isEditMode ? filter.data.code : "",
         validators: [
           (value) => (value ? true : "Code is required"),
@@ -101,25 +101,26 @@ const handleOpenPopup = (filter, eventType = "add") => {
 const addNewFilter = () => {
   console.log("addNewFilter")
   eventBus.emit('show-popup', {
-    title: "Add new Filter",
+    title: "Add new Filter Node",
+    parentFilter: null,
     eventType: "addNewNode",
     fields: [
       {
         code: "name.ua",
         component: "InputText",
-        props: {type: "text", placeholder: "Name (UA)"},
+        props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px" },
         validators: [(value) => (value ? true : "Name (UA) is required")],
       },
       {
         code: "name.ru",
         component: "InputText",
-        props: {type: "text", placeholder: "Name (RU)"},
+        props: {type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px"},
         validators: [(value) => (value ? true : "Name (RU) is required")],
       },
       {
         code: "code",
         component: "InputText",
-        props: {type: "text", placeholder: "Unique Code"},
+        props: {type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px"},
         validators: [
           (value) => (value ? true : "Code is required"),
           (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
@@ -130,28 +131,6 @@ const addNewFilter = () => {
 }
 
 const expandedKeys = ref({});
-
-const updateFilter = (filter, newFilter) => {
-  filter.data.name.uk = newFilter['name.ua']; // Обновляем name (uk)
-  filter.data.name.ru = newFilter['name.ru']; // Обновляем name (ru)
-  filter.data.code = newFilter.code; // Обновляем code
-  filter.data.description = newFilter.description || filter.data.description; // Обновляем description
-  console.log("Updated filter", filter);
-};
-
-const createFilterNode = (key, newFilter, description = 'MOK Description', icon = '25kb') => ({
-  key,
-  data: {
-    name: {
-      uk: newFilter['name.ua'],
-      ru: newFilter['name.ru']
-    },
-    code: newFilter.code,
-    description,
-    icon,
-  },
-  children: [],
-});
 
 const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
@@ -218,6 +197,7 @@ const toggle = (event, node) => {
   activeFilter.value = node;
   menu.value.toggle(event);
 };
+
 const nodes = ref([
   {
     key: '0',

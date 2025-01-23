@@ -4,9 +4,10 @@
       :header="popupConfig?.title || 'Form'"
       :modal="true"
       :closable="true"
+      :style="{ width: '40rem' }"
       class="p-fluid"
   >
-    <form @submit.prevent="onFormSubmit" class="flex flex-col gap-4 w-full">
+    <form @submit.prevent="onFormSubmit" class="flex items-center flex-col gap-4 w-full">
       <div
           v-for="field in popupConfig?.fields"
           :key="field.code"
@@ -26,7 +27,7 @@
           {{ errors[field.code] }}
         </Message>
       </div>
-      <div class="flex justify-end gap-2">
+      <div class="form-buttons">
         <Button label="Cancel" icon="pi pi-times" @click="closePopup" />
         <Button label="Submit" icon="pi pi-check" type="submit" />
       </div>
@@ -58,6 +59,7 @@ eventBus.on('show-popup', (config) => {
 
 // Сабмит формы
 const onFormSubmit = () => {
+  console.log('Valid data popupConfig: STARt', popupConfig);
   let isValid = true;
   console.log("onFormSubmit", popupConfig);
   popupConfig.fields.forEach((field) => {
@@ -77,7 +79,6 @@ const onFormSubmit = () => {
   console.log("onFormSubmit", isValid);
 
   if (isValid) {
-    console.log('Valid data popupConfig:', popupConfig);
     eventBus.emit("add-filter", {
       newFilter: formValues,
       parent: popupConfig.parentFilter,
@@ -85,6 +86,8 @@ const onFormSubmit = () => {
     });
     closePopup();
   }
+  console.log('Valid data popupConfig: END', popupConfig);
+
 };
 
 // Закрытие попапа
@@ -97,5 +100,9 @@ const closePopup = () => {
 .p-dialog .p-fluid {
   width: 100%;
   max-width: 400px;
+}
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
