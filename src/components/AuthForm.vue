@@ -1,7 +1,6 @@
 <template>
   <div class="card flex justify-center">
     <form class="flex flex-col gap-4 w-full sm:w-64" @submit.prevent="onFormSubmit">
-      <!-- FloatLabel для Email -->
       <div class="field">
         <FloatLabel>
           <InputText
@@ -15,7 +14,6 @@
         </FloatLabel>
       </div>
 
-      <!-- FloatLabel для Password -->
       <div class="field">
         <FloatLabel>
           <Password
@@ -30,7 +28,6 @@
         </FloatLabel>
       </div>
 
-      <!-- FloatLabel для Confirm Password (только для регистрации) -->
       <div class="field" v-if="isRegister">
         <FloatLabel>
           <Password
@@ -45,7 +42,6 @@
         </FloatLabel>
       </div>
 
-      <!-- Кнопка отправки -->
       <div class="submit-button">
         <Button
             type="submit"
