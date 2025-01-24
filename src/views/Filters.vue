@@ -6,8 +6,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { getFiltersList } from "@/services/api/filters-service.api.js";
+import { ref } from 'vue';
 
 const filters = ref([
   {
@@ -91,18 +90,6 @@ const filters = ref([
     "__v": 0
   }
 ])
-const error = ref(null)
-// example for using api routes
-const fetchFiltersList = async () => {
-  try {
-    // const response = await getFiltersList();
-    filters.value = response?.data || []; // Сохраняем данные из ответа
-  } catch (err) {
-    error.value = 'Ошибка загрузки пользователей';
-  }
-};
 
-onMounted(() => {
-  fetchFiltersList();
-});
+
 </script>

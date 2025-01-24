@@ -1,7 +1,8 @@
 <template>
   <div>
     <h1>Three</h1>
-    <Button label="Add" icon="pi pi-check" @click="addNewFilter"/>
+    <Button label="Add" class="add__filter-button" icon="pi pi-check" @click="addNewFilter"/>
+    <Button label="Submit" icon="pi pi-check" @click="saveFilters"/>
     <TreeTable
         :value="nodes"
         :paginator="true"
@@ -39,6 +40,7 @@
 import {onMounted, onUnmounted, ref} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {deepSearchByCode} from "@/utils/index.js";
+import {createFilters} from "@/services/api/filters-service.api.js";
 
 const menu = ref();
 const items = ref([
@@ -63,21 +65,21 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
     {
       code: "name.ua",
       component: "InputText",
-      props: { type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px" },
+      props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px"},
       defaultValue: isEditMode && filter ? filter.data.name.uk : "",
       validators: [(value) => (value ? true : "Name (UA) is required")],
     },
     {
       code: "name.ru",
       component: "InputText",
-      props: { type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px" },
+      props: {type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px"},
       defaultValue: isEditMode && filter ? filter.data.name.ru : "",
       validators: [(value) => (value ? true : "Name (RU) is required")],
     },
     {
       code: "code",
       component: "InputText",
-      props: { type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px" },
+      props: {type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px"},
       defaultValue: isEditMode && filter ? filter.data.code : "",
       validators: [
         (value) => (value ? true : "Code is required"),
@@ -114,8 +116,8 @@ const updateExpandedKeys = (keys) => {
 };
 
 
-const onAddFilter  = (options) => {
-  const { parent, newFilter, eventType } = options;
+const onAddFilter = (options) => {
+  const {parent, newFilter, eventType} = options;
 
   if (isInvalidParent(parent)) {
     console.error("Parent key is invalid:", parent);
@@ -183,7 +185,7 @@ const handleAddChildNode = (parent, newFilter) => {
   const childNode = createChildNode(parent, newFilter);
   activeFilter.children.push(childNode);
 
-  expandedKeys.value = { ...expandedKeys.value, [parent.key]: true };
+  expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
 
 };
 
@@ -217,6 +219,46 @@ const toggle = (event, node) => {
   activeFilter.value = node;
   menu.value.toggle(event);
 };
+
+const newNodeFilter = {
+  filters: [{
+    name: {
+      uk: 'авіаів',
+      ru: 'рапава'
+    },
+    code: 'root',
+    icon: '100kb',
+    description: 'Основная папка с данными и настройками системы.',
+    children: [
+      {
+        name: {
+          uk: 'Vue',
+          ru: 'Vue'
+        },
+        code: 'folder',
+        icon: '25kb',
+        description: 'Папка с проектом на Vue.js',
+        children: [
+          {
+            name: {
+              uk: 'package.json',
+              ru: 'package.json'
+            },
+            code: 'file',
+            icon: '10kb',
+            description: 'Файл конфигурации для проекта на Vue.js',
+            children: []
+          },
+        ]
+      },
+    ]
+  }]
+}
+
+
+const saveFilters = async () => {
+  await createFilters(newNodeFilter);
+}
 
 const nodes = ref([
   {
@@ -593,5 +635,7 @@ const pathGenerator = (parent) => {
 
 
 <style scoped>
-
+.add__filter-button {
+  margin: 0 10px;
+}
 </style>
