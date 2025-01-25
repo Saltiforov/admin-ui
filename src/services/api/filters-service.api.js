@@ -3,15 +3,66 @@ import app from '@/main';
 const routes = {
     filters: '/api/filters'
 }
+export async function uploadIconForFilter(iconFile, filterCode) {
+    const api = app.config.globalProperties.$api;
+
+    try {
+        const formData = new FormData();
+        formData.append('icon', iconFile);
+
+        const response = await api.post(
+            `${routes.filters}/${filterCode}/upload-icon`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error in uploadIconForFilter:', error);
+        throw error;
+    }
+}
 
 export async function createFilters(payload) {
     const api = app.config.globalProperties.$api;
-    api.post(routes.filters, payload).then(res => {
-        return res.data;
-    }).catch(error => {
+
+    try {
+        const formData = new FormData();
+
+        const processFilters = (filters, parentKey = 'filters') => {
+            filters.forEach((filter, index) => {
+                const filterKey = `${parentKey}[${index}]`;
+
+                for (const [key, value] of Object.entries(filter)) {
+                    if (key === 'icon' && value && value instanceof File) {
+                        // Если это иконка (файл), добавляем её напрямую
+                        formData.append(`${filterKey}[${key}]`, value);
+                    } else if (key === 'children' && Array.isArray(value)) {
+                        // Если это дочерние элементы, обрабатываем их рекурсивно
+                        processFilters(value, `${filterKey}[children]`);
+                    } else {
+                        // Если это обычное поле, добавляем его
+                        formData.append(`${filterKey}[${key}]`, JSON.stringify(value));
+                    }
+                }
+            });
+        };
+
+        // Обрабатываем корневой объект filters
+        processFilters(payload.filters);
+
+        // Отправляем запрос
+        const response = await api.post(routes.filters, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        return response.data;
+    } catch (error) {
         console.error('Error in createFilters:', error);
         throw error;
-    })
+    }
 }
 
 export async function getFiltersList() {

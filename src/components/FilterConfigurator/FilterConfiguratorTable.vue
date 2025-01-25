@@ -18,7 +18,15 @@
         </template>
       </Column>
       <Column field="code" header="Code" style="width: 15%"></Column>
-      <Column field="icon" header="Icon" style="width: 15%"></Column>
+      <Column field="icon" header="Icon" style="width: 15%">
+        <template #body="{ node }">
+            <FileUpload name="demo[]" url="/api/upload" @select="onAdvancedUpload($event)" accept=".svg" :maxFileSize="1000000">
+              <template #empty>
+                <span>Drag and drop files to here to upload.</span>
+              </template>
+            </FileUpload>
+          </template>
+      </Column>
       <Column field="description" header="Description" style="width: 33%"></Column>
       <Column
           header="Type (Custom)"
@@ -89,6 +97,19 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
   ];
 }
 
+const onAdvancedUpload = (event) => {
+  console.log('event.target', event)
+  const file = event.files[0];
+  if (file) {
+    console.log("File selected: newNodeFilter", newNodeFilter);
+    newNodeFilter.filters[0].icon = file; // Сохраняем файл во временную переменную
+    newNodeFilter.filters[0].children[0].icon = file; // Сохраняем файл во временную переменную
+    console.log("File selected:", file);
+  }
+
+  console.log('newNodeFilter', newNodeFilter);
+}
+
 const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
   const title = isEditMode ? "Edit Filter" : "Add Filter";
@@ -102,8 +123,6 @@ const handleOpenPopup = (filter = null, eventType = "add") => {
 }
 
 const addNewFilter = () => {
-  console.log("addNewFilter");
-
   handleOpenPopup(null, "addNewNode");
 };
 
@@ -221,13 +240,14 @@ const toggle = (event, node) => {
 };
 
 const newNodeFilter = {
-  filters: [{
+  filters: [
+      {
     name: {
       uk: 'авіаів',
       ru: 'рапава'
     },
     code: 'root',
-    icon: '100kb',
+    icon: '',
     description: 'Основная папка с данными и настройками системы.',
     children: [
       {
@@ -236,7 +256,7 @@ const newNodeFilter = {
           ru: 'Vue'
         },
         code: 'folder',
-        icon: '25kb',
+        icon: '',
         description: 'Папка с проектом на Vue.js',
         children: [
           {
@@ -245,14 +265,25 @@ const newNodeFilter = {
               ru: 'package.json'
             },
             code: 'file',
-            icon: '10kb',
+            icon: '',
             description: 'Файл конфигурации для проекта на Vue.js',
             children: []
           },
         ]
       },
     ]
-  }]
+  },
+      {
+        name: {
+          uk: 'авіаів',
+          ru: 'рапава'
+        },
+        code: 'root1',
+        icon: '',
+        description: 'Основная папка с данными и настройками системы.',
+        children: []
+      },
+  ]
 }
 
 
