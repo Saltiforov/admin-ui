@@ -3,26 +3,6 @@ import app from '@/main';
 const routes = {
     filters: '/api/filters'
 }
-export async function uploadIconForFilter(iconFile, filterCode) {
-    const api = app.config.globalProperties.$api;
-
-    try {
-        const formData = new FormData();
-        formData.append('icon', iconFile);
-
-        const response = await api.post(
-            `${routes.filters}/${filterCode}/upload-icon`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
-
-        return response.data;
-    } catch (error) {
-        console.error('Error in uploadIconForFilter:', error);
-        throw error;
-    }
-}
-
 export async function createFilters(payload) {
     const api = app.config.globalProperties.$api;
 
@@ -35,6 +15,7 @@ export async function createFilters(payload) {
 
                 for (const [key, value] of Object.entries(filter)) {
                     if (key === 'icon' && value && value instanceof File) {
+                        console.log('VALUE', value);
                         // Если это иконка (файл), добавляем её напрямую
                         formData.append(`${filterKey}[${key}]`, value);
                     } else if (key === 'children' && Array.isArray(value)) {
@@ -48,15 +29,20 @@ export async function createFilters(payload) {
             });
         };
 
-        // Обрабатываем корневой объект filters
+        const logFormData = (formData) => {
+            for (let pair of formData.entries()) {
+                console.log(`${pair[0]}:`, pair[1]);
+            }
+        };
+
         processFilters(payload.filters);
 
-        // Отправляем запрос
+        logFormData(formData);
+
         const response = await api.post(routes.filters, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-            },
-        });
+            }});
 
         return response.data;
     } catch (error) {

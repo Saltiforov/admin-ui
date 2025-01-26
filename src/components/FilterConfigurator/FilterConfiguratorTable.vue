@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Three</h1>
+    <img src="http://54.226.82.0:3000/uploads/icons/9bf12ee705a963d0015c7a6805851d4c38fa596e0e3a609f00d2bf00748aa8ee-toolbar-subheader-library-details-full-width.svg" alt="Icon">
     <Button label="Add" class="add__filter-button" icon="pi pi-check" @click="addNewFilter"/>
     <Button label="Submit" icon="pi pi-check" @click="saveFilters"/>
     <TreeTable
