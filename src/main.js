@@ -7,11 +7,14 @@ import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
 import FileUpload from "primevue/fileupload";
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
+
 const app = createApp(App);
 import router from "./router";
 
 app.use(fetchPlugin);
 app.use(ToastService);
+app.use(ConfirmationService);
 
 app.component('InputText', InputText);
 app.component('FileUpload', FileUpload);
