@@ -3,6 +3,26 @@ import app from '@/main';
 const routes = {
     filters: '/api/filters'
 }
+export async function uploadIconForFilter(iconFile, filterCode) {
+    const api = app.config.globalProperties.$api;
+
+    try {
+        const formData = new FormData();
+        formData.append('icon', iconFile);
+
+        const response = await api.post(
+            `${routes.filters}/${filterCode}/upload-icon`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error in uploadIconForFilter:', error);
+        throw error;
+    }
+}
+
 export async function createFilters(payload) {
     const api = app.config.globalProperties.$api;
 
@@ -53,10 +73,11 @@ export async function createFilters(payload) {
 
 export async function getFiltersList() {
     const api = app.config.globalProperties.$api;
-    api.get(routes.filters).then(res => {
-        return res.data;
-    }).catch(error => {
-        console.error('Error in createFilters:', error);
-        throw error;
-    })
+    try {
+        const res = await api.get(routes.filters); // Дожидаемся ответа от API
+        return res.data; // Возвращаем данные
+    } catch (error) {
+        console.error('Error in getFiltersList:', error);
+        throw error; // Пробрасываем ошибку дальше
+    }
 }

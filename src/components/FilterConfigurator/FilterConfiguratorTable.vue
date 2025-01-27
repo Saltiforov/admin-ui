@@ -1,10 +1,11 @@
 <template>
   <div>
     <h1>Three</h1>
-    <img src="http://54.226.82.0:3000/uploads/icons/9bf12ee705a963d0015c7a6805851d4c38fa596e0e3a609f00d2bf00748aa8ee-toolbar-subheader-library-details-full-width.svg" alt="Icon">
     <Button label="Add" class="add__filter-button" icon="pi pi-check" @click="addNewFilter"/>
     <Button label="Submit" icon="pi pi-check" @click="saveFilters"/>
+    <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
+        v-else
         :value="nodes"
         :paginator="true"
         :rows="5"
@@ -21,16 +22,18 @@
       <Column field="code" header="Code" style="width: 15%"></Column>
       <Column field="icon" header="Icon" style="width: 15%">
         <template #body="{ node }">
-            <FileUpload name="demo[]" url="/api/upload" @select="onAdvancedUpload($event)" accept=".svg" :maxFileSize="1000000">
-              <template #empty>
-                <span>Drag and drop files to here to upload.</span>
-              </template>
-            </FileUpload>
-          </template>
+          <!-- Проверяем, есть ли ссылка на SVG, и выводим её -->
+          <img
+              v-if="node.data.icon"
+              :src="node.data.icon"
+              alt="icon"
+              style="width: 30px; height: 30px; object-fit: contain;"
+          />
+          <span v-else>No icon</span>
+        </template>
       </Column>
       <Column field="description" header="Description" style="width: 33%"></Column>
       <Column
-          header="Type (Custom)"
           style="width: 33%"
       >
         <template #body="{ node }">
@@ -41,6 +44,7 @@
         </template>
       </Column>
     </TreeTable>
+    <Toast />
     <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
   </div>
 </template>
@@ -48,8 +52,55 @@
 <script setup>
 import {onMounted, onUnmounted, ref} from 'vue';
 import eventBus from "../../../eventBus.js";
-import {deepSearchByCode} from "@/utils/index.js";
+import {deepClone, deepSearchByCode} from "@/utils/index.js";
 import {createFilters} from "@/services/api/filters-service.api.js";
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
+
+const show = (message) => {
+  toast.add({ severity: 'info', summary: 'Info', detail: message, life: 3000 });
+};
+const props = defineProps({
+  filters: {
+    type: Array,
+    required: true,
+  }
+})
+
+function mapFilters(inputArray) {
+  const mapNode = (item, idx, parentKey = "") => {
+    // Формируем уникальный ключ для каждого элемента
+    const key = parentKey ? `${parentKey}-${item._id}` : item._id;
+    return {
+      key: idx.toString(),
+      id: item._id,
+      data: {
+        name: {
+          uk: item.name.uk,
+          ru: item.name.ru,
+        },
+        code: item.code || "unknown",  // Используем "unknown", если поле не заполнено
+        icon: item.icon || "default-icon",  // Если нет иконки, ставим значение по умолчанию
+        description: item.description || "Нет описания",  // Если нет описания, ставим значение по умолчанию
+      },
+      children: item.children && item.children.length
+          ? item.children.map((child) => mapNode(child, key))  // Рекурсивно обрабатываем дочерние элементы
+          : [],
+    };
+  };
+
+  return inputArray.map((item, idx) => mapNode(item, idx));
+}
+
+const nodes = ref([])
+
+onMounted(() => {
+  const nodesCopy = ref(deepClone(props.filters));
+
+  nodes.value = mapFilters(nodesCopy.value);
+})
+
 
 const menu = ref();
 const items = ref([
@@ -95,8 +146,38 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
         (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
       ],
     },
+    {
+      code: "description",
+      component: "InputText",
+      props: {type: "text", placeholder: "Description", style: "width: 100%; margin-bottom: 15px"},
+      defaultValue: isEditMode && filter ? filter.data.description : "",
+      validators: [
+        (value) => (value ? true : "Description is required"),
+      ],
+    },
+    {
+      code: "icon",
+      component: "FileUpload", // Указываем компонент FileUpload
+      props: {
+        accept: "image/svg+xml", // Разрешаем только SVG
+        placeholder: "Upload SVG File",
+        style: "width: 100%; margin-bottom: 15px",
+        mode: "basic"
+      },
+      defaultValue: null, // Значение по умолчанию
+      validators: [
+        (value) => (value ? true : "SVG file is required"),
+        (value) =>
+            value && value.type === "image/svg+xml"
+                ? true
+                : "Only SVG files are allowed",
+      ],
+    },
   ];
-}
+};
+
+// Todo написать константу которая будет разрешать добавления на уровень вложености в ребенка
+// Todo когда открытый узел сделать так чтобы его было лучше видно
 
 const onAdvancedUpload = (event) => {
   console.log('event.target', event)
@@ -139,6 +220,9 @@ const updateExpandedKeys = (keys) => {
 const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
 
+  console.log("onAddFilter", options);
+  console.log("onAddFilter", parent);
+
   if (isInvalidParent(parent)) {
     console.error("Parent key is invalid:", parent);
     return;
@@ -151,11 +235,12 @@ const onAddFilter = (options) => {
 
   if (!parent) {
     handleAddRootNode(newFilter);
+    show(`${newFilter['name.ua']} / ${newFilter['name.ru']} added as a new node `)
     return;
   }
 
   handleAddChildNode(parent, newFilter);
-
+  show(`${newFilter['name.ua']} / ${newFilter['name.ru']} added to ${parent.data.name['uk']} / ${parent.data.name['ru']} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
@@ -175,8 +260,7 @@ const handleEditFilter = (parent, newFilter) => {
 
 const handleAddRootNode = (newFilter) => {
   const newKey = nodes.value.length.toString();
-
-  nodes.value.push({
+  const nodeData = {
     key: newKey,
     data: {
       name: {
@@ -184,11 +268,13 @@ const handleAddRootNode = (newFilter) => {
         ru: newFilter['name.ru'],
       },
       code: newFilter.code,
-      description: "MOK Description",
+      description: newFilter.description,
       icon: "25kb",
     },
     children: [],
-  });
+  }
+
+  nodes.value.push(nodeData);
 
   console.log("Added new root node", nodes.value);
 };
@@ -240,411 +326,32 @@ const toggle = (event, node) => {
   menu.value.toggle(event);
 };
 
-const newNodeFilter = {
-  filters: [
-      {
-    name: {
-      uk: 'авіаів',
-      ru: 'рапава'
-    },
-    code: 'root',
-    icon: '',
-    description: 'Основная папка с данными и настройками системы.',
-    children: [
-      {
-        name: {
-          uk: 'Vue',
-          ru: 'Vue'
-        },
-        code: 'folder',
-        icon: '',
-        description: 'Папка с проектом на Vue.js',
-        children: [
-          {
-            name: {
-              uk: 'package.json',
-              ru: 'package.json'
-            },
-            code: 'file',
-            icon: '',
-            description: 'Файл конфигурации для проекта на Vue.js',
-            children: []
-          },
-        ]
-      },
-    ]
-  },
-      {
-        name: {
-          uk: 'авіаів',
-          ru: 'рапава'
-        },
-        code: 'root1',
-        icon: '',
-        description: 'Основная папка с данными и настройками системы.',
-        children: []
-      },
-  ]
-}
+const mapFiltersForSubmit = (data) => {
+  const mapChildren = (children) => {
+    return children.map(child => ({
+      name: child.data.name,
+      code: child.data.code,
+      icon: child.data.icon || '',
+      description: child.data.description,
+      children: mapChildren(child.children) // рекурсивно обрабатываем детей
+    }));
+  };
+
+  return {
+    filters: data.map(item => ({
+      name: item.data.name,
+      code: item.data.code,
+      icon: item.data.icon || '', // по умолчанию пустая строка
+      description: item.data.description,
+      children: mapChildren(item.children) // обрабатываем детей рекурсивно
+    }))
+  };
+};
 
 
 const saveFilters = async () => {
-  await createFilters(newNodeFilter);
+  await createFilters(mapFiltersForSubmit(nodes.value));
 }
-
-const nodes = ref([
-  {
-    key: '0',
-    data: {
-      name: {
-        uk: 'авіаів',
-        ru: 'рапава'
-      },
-      code: 'root',
-      icon: '100kb',
-      description: 'Основная папка с данными и настройками системы.'
-    },
-    children: [
-      {
-        key: '0-0',
-        data: {
-          name: {
-            uk: 'Vue',
-            ru: 'Vue'
-          },
-          code: 'folder',
-          icon: '25kb',
-          description: 'Папка с проектом на Vue.js'
-        },
-        children: [
-          {
-            key: '0-0-0',
-            data: {
-              name: {
-                uk: 'package.json',
-                ru: 'package.json'
-              },
-              code: 'file',
-              icon: '10kb',
-              description: 'Файл конфигурации для проекта на Vue.js'
-            },
-            children: []
-          },
-        ]
-      },
-    ]
-  },
-  // {
-  //   key: '1',
-  //   data: {
-  //     name: {
-  //       uk: 'Хмара',
-  //       ru: 'Облако'
-  //     },
-  //     code: 'folder',
-  //     icon: '20kb',
-  //     description: 'Папка для хранения резервных копий.'
-  //   },
-  //   children: [
-  //     {
-  //       key: '1-0',
-  //       data: {
-  //         name: {
-  //           uk: 'backup-1.zip',
-  //           ru: 'backup-1.zip'
-  //         },
-  //         code: 'zip',
-  //         icon: '10kb',
-  //         description: 'Резервная копия данных №1.'
-  //       }
-  //     },
-  //     {
-  //       key: '1-1',
-  //       data: {
-  //         name: {
-  //           uk: 'backup-2.zip',
-  //           ru: 'backup-2.zip'
-  //         },
-  //         code: 'zip',
-  //         icon: '10kb',
-  //         description: 'Резервная копия данных №2.'
-  //       }
-  //     }
-  //   ]
-  // },
-  // {
-  //   key: '2',
-  //   data: {
-  //     name: {
-  //       uk: 'Робочий стіл',
-  //       ru: 'Рабочий стол'
-  //     },
-  //     code: 'folder',
-  //     icon: '150kb',
-  //     description: 'Папка с важными текстовыми файлами.'
-  //   },
-  //   children: [
-  //     {
-  //       key: '2-0',
-  //       data: {
-  //         name: {
-  //           uk: 'note-meeting.txt',
-  //           ru: 'note-meeting.txt'
-  //         },
-  //         code: 'text',
-  //         icon: '50kb',
-  //         description: 'Заметки с собрания.'
-  //       }
-  //     },
-  //     {
-  //       key: '2-1',
-  //       data: {
-  //         name: {
-  //           uk: 'note-todo.txt',
-  //           ru: 'note-todo.txt'
-  //         },
-  //         code: 'text',
-  //         icon: '100kb',
-  //         description: 'Список задач для выполнения.'
-  //       }
-  //     }
-  //   ]
-  // },
-  // {
-  //   key: '3',
-  //   data: {
-  //     name: {
-  //       uk: 'Документи',
-  //       ru: 'Документы'
-  //     },
-  //     code: 'folder',
-  //     icon: '75kb',
-  //     description: 'Папка с рабочими и личными документами.'
-  //   },
-  //   children: [
-  //     {
-  //       key: '3-0',
-  //       data: {
-  //         name: {
-  //           uk: 'Робота',
-  //           ru: 'Работа'
-  //         },
-  //         code: 'folder',
-  //         icon: '55kb',
-  //         description: 'Документы, связанные с работой.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-0-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Expenses.doc',
-  //               ru: 'Expenses.doc'
-  //             },
-  //             code: 'document',
-  //             icon: '30kb',
-  //             description: 'Документ с расходами.'
-  //           }
-  //         },
-  //         {
-  //           key: '3-0-1',
-  //           data: {
-  //             name: {
-  //               uk: 'Resume.doc',
-  //               ru: 'Resume.doc'
-  //             },
-  //             code: 'resume',
-  //             icon: '25kb',
-  //             description: 'Резюме для поиска работы.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       key: '3-1',
-  //       data: {
-  //         name: {
-  //           uk: 'Дім',
-  //           ru: 'Дом'
-  //         },
-  //         code: 'folder',
-  //         icon: '20kb',
-  //         description: 'Папка с личными файлами.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-1-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Invoices',
-  //               ru: 'Invoices'
-  //             },
-  //             code: 'text',
-  //             icon: '20kb',
-  //             description: 'Счета для оплаты.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //   ]
-  // },
-  // {
-  //   key: '4',
-  //   data: {
-  //     name: {
-  //       uk: 'Документи',
-  //       ru: 'Документы'
-  //     },
-  //     code: 'folder',
-  //     icon: '75kb',
-  //     description: 'Папка с рабочими и личными документами.'
-  //   },
-  //   children: [
-  //     {
-  //       key: '3-0',
-  //       data: {
-  //         name: {
-  //           uk: 'Робота',
-  //           ru: 'Работа'
-  //         },
-  //         code: 'folder',
-  //         icon: '55kb',
-  //         description: 'Документы, связанные с работой.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-0-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Expenses.doc',
-  //               ru: 'Expenses.doc'
-  //             },
-  //             code: 'document',
-  //             icon: '30kb',
-  //             description: 'Документ с расходами.'
-  //           }
-  //         },
-  //         {
-  //           key: '3-0-1',
-  //           data: {
-  //             name: {
-  //               uk: 'Resume.doc',
-  //               ru: 'Resume.doc'
-  //             },
-  //             code: 'resume',
-  //             icon: '25kb',
-  //             description: 'Резюме для поиска работы.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       key: '3-1',
-  //       data: {
-  //         name: {
-  //           uk: 'Дім',
-  //           ru: 'Дом'
-  //         },
-  //         code: 'folder',
-  //         icon: '20kb',
-  //         description: 'Папка с личными файлами.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-1-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Invoices',
-  //               ru: 'Invoices'
-  //             },
-  //             code: 'text',
-  //             icon: '20kb',
-  //             description: 'Счета для оплаты.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //   ]
-  // },
-  // {
-  //   key: '5',
-  //   data: {
-  //     name: {
-  //       uk: 'Документи',
-  //       ru: 'Документы'
-  //     },
-  //     code: 'folder',
-  //     icon: '75kb',
-  //     description: 'Папка с рабочими и личными документами.'
-  //   },
-  //   children: [
-  //     {
-  //       key: '3-0',
-  //       data: {
-  //         name: {
-  //           uk: 'Робота',
-  //           ru: 'Работа'
-  //         },
-  //         code: 'folder',
-  //         icon: '55kb',
-  //         description: 'Документы, связанные с работой.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-0-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Expenses.doc',
-  //               ru: 'Expenses.doc'
-  //             },
-  //             code: 'document',
-  //             icon: '30kb',
-  //             description: 'Документ с расходами.'
-  //           }
-  //         },
-  //         {
-  //           key: '3-0-1',
-  //           data: {
-  //             name: {
-  //               uk: 'Resume.doc',
-  //               ru: 'Resume.doc'
-  //             },
-  //             code: 'resume',
-  //             icon: '25kb',
-  //             description: 'Резюме для поиска работы.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       key: '3-1',
-  //       data: {
-  //         name: {
-  //           uk: 'Дім',
-  //           ru: 'Дом'
-  //         },
-  //         code: 'folder',
-  //         icon: '20kb',
-  //         description: 'Папка с личными файлами.'
-  //       },
-  //       children: [
-  //         {
-  //           key: '3-1-0',
-  //           data: {
-  //             name: {
-  //               uk: 'Invoices',
-  //               ru: 'Invoices'
-  //             },
-  //             code: 'text',
-  //             icon: '20kb',
-  //             description: 'Счета для оплаты.'
-  //           }
-  //         }
-  //       ]
-  //     },
-  //   ]
-  // },
-]);
 
 const pathGenerator = (parent) => {
   const children = parent.children || [];
@@ -669,5 +376,9 @@ const pathGenerator = (parent) => {
 <style scoped>
 .add__filter-button {
   margin: 0 10px;
+}
+
+.filters-empty {
+  text-align: center;
 }
 </style>

@@ -17,28 +17,33 @@
             :is="field.component"
             v-model="formValues[field.code]"
             v-bind="field.props"
+            @input="handleFileUpload(field, $event)"
         />
         <Message
             v-if="errors[field.code]"
             severity="error"
             size="small"
             variant="simple"
+            class="message-error"
         >
           {{ errors[field.code] }}
         </Message>
       </div>
+      <div class="image-wrapper">
+        <img v-if="formValues.icon" :src="formValues.icon" alt="Image" class="uploaded-image"
+             style="filter: grayscale(100%)"/>
+      </div>
       <div class="form-buttons">
-        <Button label="Cancel" icon="pi pi-times" @click="closePopup" />
-        <Button label="Submit" icon="pi pi-check" type="submit" />
+        <Button label="Cancel" icon="pi pi-times" @click="closePopup"/>
+        <Button label="Submit" icon="pi pi-check" type="submit"/>
       </div>
     </form>
   </Dialog>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import {reactive, ref} from 'vue';
 import eventBus from '../../eventBus';
-import {deepSearchByCode} from "@/utils/index.js";
 
 const isVisible = ref(false);
 const popupConfig = reactive({});
@@ -56,6 +61,23 @@ eventBus.on('show-popup', (config) => {
     errors[field.code] = null;
   });
 });
+
+const handleFileUpload = (field, event) => {
+  if (field.code === "icon" && event?.target?.files?.length) {
+    const file = event.target.files[0];
+
+    // Проверяем формат файла
+    if (file.type === "image/svg+xml") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        formValues[field.code] = reader.result; // Сохраняем base64
+      };
+      reader.readAsDataURL(file);
+    } else {
+      errors[field.code] = "Only SVG files are allowed.";
+    }
+  }
+};
 
 // Сабмит формы
 const onFormSubmit = () => {
@@ -77,6 +99,8 @@ const onFormSubmit = () => {
     }
   });
   console.log("onFormSubmit", isValid);
+
+  console.log("formValues", formValues)
 
   if (isValid) {
     eventBus.emit("add-filter", {
@@ -101,8 +125,18 @@ const closePopup = () => {
   width: 100%;
   max-width: 400px;
 }
+.image-wrapper {
+  display: flex;
+  justify-content: center;
+}
 .form-buttons {
   display: flex;
   justify-content: space-between;
+}
+.uploaded-image {
+  width: 16rem;
+}
+.message-error {
+  margin-bottom: 10px;
 }
 </style>
