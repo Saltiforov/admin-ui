@@ -17,6 +17,7 @@ declare module 'vue' {
     AuthForm: typeof import('./src/components/AuthForm.vue')['default']
     Button: typeof import('primevue/button')['default']
     Column: typeof import('primevue/column')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     CustomDataTable: typeof import('./src/components/DataTable/CustomDataTable.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
@@ -36,6 +37,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TestForm: typeof import('./src/components/TestForm.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
+    Toast: typeof import('primevue/toast')['default']
     TreeTable: typeof import('primevue/treetable')['default']
   }
 }

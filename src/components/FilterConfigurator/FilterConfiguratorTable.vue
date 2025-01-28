@@ -12,14 +12,15 @@
     <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
         v-else
+        autoLayout
         :value="nodes"
         :paginator="true"
         :rows="5"
         :expanded-keys="expandedKeys"
         @update:expandedKeys="updateExpandedKeys"
     >
-      <Column header="Name" :expander="true" style="width: 34%">
-        <template #body="{ node }">
+      <Column header="Name" expander style="width: 34%">
+        <template #body="{ node }" >
           <div>{{ node.data.name['uk'] }}</div>
           /
           <div>{{ node.data.name['ru'] }}</div>
@@ -31,7 +32,7 @@
           <!-- Проверяем, есть ли ссылка на SVG, и выводим её -->
           <img
               v-if="node.data.icon"
-              :src="node.data.icon"
+              src="@/assets/icons/sport-icon.svg"
               alt="icon"
               style="width: 30px; height: 30px; object-fit: contain;"
           />
@@ -251,6 +252,10 @@ const onAdvancedUpload = (event) => {
   }
 
   console.log('newNodeFilter', newNodeFilter);
+}
+
+const getRowClass = (node) => {
+  return !!node.children?.length;
 }
 
 const handleOpenPopup = (filter = null, eventType = "add") => {
@@ -485,7 +490,28 @@ const onSearch = () => {
 
 </script>
 
+<style>
+.p-treetable-node-toggle-icon {
+  display: inline-block !important;
+  visibility: visible !important;
+}
 
+.p-treetable-node-toggle-button:focus,
+.p-treetable-node-toggle-button:focus-visible,
+.p-treetable-node-toggle-button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[style*="visibility: hidden"] svg{
+  overflow: hidden !important;
+}
+
+.no-expander .p-treetable-toggler {
+  visibility: hidden !important; /* Скрыть кнопку раскрытия */
+}
+</style>
 <style scoped>
 .add__filter-button {
   margin: 0 10px;

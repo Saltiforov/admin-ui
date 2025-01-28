@@ -1,4 +1,7 @@
 @import 'primeicons/primeicons.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -60,6 +63,10 @@ button:focus-visible {
   padding: 2em;
 }
 
+svg {
+  overflow: visible;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -72,3 +79,4 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
