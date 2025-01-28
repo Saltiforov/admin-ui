@@ -1,35 +1,42 @@
 <template>
   <div>
-    <h1>Three</h1>
+    <h1>Filters</h1>
     <div class="buttons-wrapper">
-      <Button label="Add" class="add__filter-button" icon="pi pi-check" @click="addNewFilter"/>
-      <Button label="Submit" icon="pi pi-check" @click="saveFilters"/>
-      <IconField>
-        <InputIcon class="pi pi-search" />
-        <InputText v-model="inputCodeValue" @input="onSearch" placeholder="Enter the code, please." />
+      <Button label="Add" class="filter-button" icon="pi pi-check" @click="addNewFilter"/>
+      <Button label="Submit" class="filter-button" icon="pi pi-check" @click="saveFilters"/>
+      <IconField class="filter-button">
+        <InputIcon class="pi pi-search"/>
+        <InputText v-model="inputCodeValue" @input="onSearch" placeholder="Enter the code, please."/>
       </IconField>
+      <div v-if="noResultsMessage" class="no-results-message">
+        {{ noResultsMessage }}
+      </div>
     </div>
     <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
         v-else
+        v-model:contextMenuSelection="selectedNode"
         autoLayout
         :value="nodes"
+        :loading="loading"
         :paginator="true"
         :rows="5"
+        :rowsPerPageOptions="[5, 10, 25]"
         :expanded-keys="expandedKeys"
+        contextMenu
+        @row-contextmenu="onRowContextMenu"
         @update:expandedKeys="updateExpandedKeys"
     >
-      <Column header="Name" expander style="width: 34%">
-        <template #body="{ node }" >
-          <div>{{ node.data.name['uk'] }}</div>
+      <Column header="Name" :expander="true" style="width: 34%">
+        <template #body="{ node }">
+          <div>{{ capitalizeFirstLetter(node.data.name['uk']) }}</div>
           /
-          <div>{{ node.data.name['ru'] }}</div>
+          <div>{{ capitalizeFirstLetter(node.data.name['ru']) }}</div>
         </template>
       </Column>
       <Column field="code" header="Code" style="width: 15%"></Column>
       <Column field="icon" header="Icon" style="width: 15%">
         <template #body="{ node }">
-          <!-- Проверяем, есть ли ссылка на SVG, и выводим её -->
           <img
               v-if="node.data.icon"
               src="@/assets/icons/sport-icon.svg"
@@ -55,49 +62,67 @@
           </div>
         </template>
       </Column>
-      <Column field="remove" class="remove-button">
-        <template #body="{ node }">
-          <Button @click="confirmDelete(node)" icon="pi pi-times" severity="danger" outlined></Button>
-        </template>
-      </Column>
     </TreeTable>
-    <ConfirmDialog />
+    <ContextMenu ref="cm" :model="menuModel" @hide="selectedNode = null"/>
+    <ConfirmDialog/>
     <Toast/>
     <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
   </div>
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref} from 'vue';
+import {onMounted, onUnmounted, ref, onBeforeMount, watch} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {deepClone, deepSearchByCode} from "@/utils/index.js";
-import {createFilters} from "@/services/api/filters-service.api.js";
+import {createFilters, deleteFilter} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
+import {useConfirm} from "primevue/useconfirm";
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 
 const toast = useToast();
 const confirm = useConfirm();
+const emit = defineEmits(['filters-updated'])
+
+const noResultsMessage = ref('');
+const selectedNode = ref();
+const cm = ref();
+const loading = ref(false);
+const menuModel = ref(
+    [
+      {
+        label: 'Delete', icon: 'pi pi-fw pi-times', command: () => {
+          confirmDelete(activeNode.value)
+        }
+      }
+    ]
+);
 
 const nodes = ref([])
 const maxMenuDepth = ref(3);
+const originalNodes = ref(null); // Копия исходного массива nodes
 
 const shouldShowButton = (key, maxDepth = 3) => {
   const levels = key.split('-').length;
   return levels <= maxDepth;
 };
 
+const activeNode = ref(null);
+const onRowContextMenu = (event) => {
+  activeNode.value = event.node;
+  cm.value.show(event.originalEvent);
+};
+
 const show = (message) => {
   toast.add({severity: 'info', summary: 'Info', detail: message, life: 3000});
 };
+
 const props = defineProps({
   filters: {
     type: Array,
     required: true,
   }
 })
-
 
 
 function mapFilters(inputArray) {
@@ -125,12 +150,16 @@ function mapFilters(inputArray) {
   return inputArray.map((item, idx) => mapNode(item, idx));
 }
 
-const deleteNode = (node) => {
-  // node.id або code
-  nodes.value = nodes.value.filter((item) => item.id !== node.id);
-  console.log(nodes.value);
-  console.log(node);
+const deleteNode = async (node) => {
+  if (nodes.value.length === 1) {
+    await deleteFilter(node.id);
+    emit('filters-updated');
+  }
+
+  // nodes.value = nodes.value.filter((item) => item.id !== node.id && item?.code !== node.code);
+  nodes.value = nodes.value.filter((item) => item.id !== node.id || node.code);
 };
+
 
 const confirmDelete = (node) => {
   confirm.require({
@@ -148,20 +177,41 @@ const confirmDelete = (node) => {
     },
     accept: () => {
       deleteNode(node)
-      toast.add({ severity: 'info', summary: 'Deleted', detail: `The "${node?.data?.name?.uk || 'this item'}" has been deleted`, life: 3000 });
+      toast.add({
+        severity: 'info',
+        summary: 'Deleted',
+        detail: `The "${node?.data?.name?.uk || 'this item'}" has been deleted`,
+        life: 3000
+      });
     },
     reject: () => {
-      toast.add({ severity: 'error', summary: 'Cancelled', detail: 'Deletion was cancelled', life: 3000 });
+      toast.add({severity: 'error', summary: 'Cancelled', detail: 'Deletion was cancelled', life: 3000});
     },
   });
 };
 
 onMounted(() => {
-  const nodesCopy = ref(deepClone(props.filters));
+  if (props.filters && props.filters.length) {
+    const nodesCopy = ref(deepClone(props.filters));
+    nodes.value = mapFilters(nodesCopy.value);
+    originalNodes.value = [...nodes.value];
+    loading.value = false;
+  }
+});
 
-  nodes.value = mapFilters(nodesCopy.value);
-  console.log("NODES VALUE", nodes.value)
-})
+watch(
+    () => props.filters,
+    (newFilters) => {
+      if (newFilters && newFilters.length) {
+        loading.value = true; // Устанавливаем состояние загрузки
+        const nodesCopy = ref(deepClone(newFilters));
+        nodes.value = mapFilters(nodesCopy.value);
+        originalNodes.value = [...nodes.value];
+        loading.value = false; // Завершаем загрузку
+      }
+    },
+    { immediate: true } // Запускаем при первой загрузке
+);
 
 
 const menu = ref();
@@ -301,12 +351,12 @@ const onAddFilter = (options) => {
 
   if (!parent) {
     handleAddRootNode(newFilter);
-    show(`${newFilter['name.ua']} / ${newFilter['name.ru']} added as a new node `)
+    show(`${capitalizeFirstLetter(newFilter['name.ua'])} / ${capitalizeFirstLetter(newFilter['name.ru'])} added as a new node `)
     return;
   }
 
   handleAddChildNode(parent, newFilter);
-  show(`${newFilter['name.ua']} / ${newFilter['name.ru']} added to ${parent.data.name['uk']} / ${parent.data.name['ru']} `)
+  show(`${capitalizeFirstLetter(newFilter['name.ua'])} / ${capitalizeFirstLetter(newFilter['name.ru'])} added to ${capitalizeFirstLetter(parent.data.name['uk'])} / ${capitalizeFirstLetter(parent.data.name['ru'])} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
@@ -358,7 +408,6 @@ const handleAddChildNode = (parent, newFilter) => {
   activeFilter.children.push(childNode);
 
   expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
-
 };
 
 const createChildNode = (parent, newFilter) => {
@@ -415,9 +464,15 @@ const mapFiltersForSubmit = (data) => {
   };
 };
 
+const capitalizeFirstLetter = (value) => {
+  if (!value) return '';
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
 
 const saveFilters = async () => {
   await createFilters(mapFiltersForSubmit(nodes.value));
+  emit('filters-updated');
 }
 
 const pathGenerator = (parent) => {
@@ -437,56 +492,39 @@ const pathGenerator = (parent) => {
 };
 
 const inputCodeValue = ref('')
-const searchResults = ref([]);
 
-const searchByCode = (inputArray, searchCode, expandedKeys = {}) => {
-  const result = [];
 
-  const searchNode = (node, parentNode = null) => {
-    // Проверяем, совпадает ли код элемента с поисковым
-    if (node.data.code.toLowerCase().includes(searchCode.toLowerCase())) {
-      // Формируем объект с родителем и найденным элементом, без детей
-      const parentWithChild = {
-        ...parentNode,
-        children: [node] // Добавляем только сам найденный элемент, без его детей
-      };
+const searchByCodeTopLevel = (searchCode) => {
+  if (searchCode.trim().length >= 3) {
+    console.log("originalNodes", originalNodes.value);
 
-      if (parentNode) {
-        // Убедимся, что родитель будет открыт
-        expandedKeys[parentNode.key] = true;
-        result.push(parentWithChild); // Добавляем родителя с найденным элементом
-      } else {
-        result.push({ element: node }); // Если родителя нет, добавляем только элемент
-      }
+    nodes.value = originalNodes.value.filter((node) =>
+        node.data.code.toLowerCase().includes(searchCode.toLowerCase())
+    );
+
+    if (nodes.value.length === 0) {
+      noResultsMessage.value = "No codes found. Try another query.";
+      nodes.value = [...originalNodes.value];
+    } else {
+      noResultsMessage.value = '';
+      const keysObject = nodes.value.reduce((acc, node) => {
+        acc[node.key] = true;
+        return acc;
+      }, {});
+
     }
 
-    // Рекурсивный вызов для дочерних элементов
-    if (node.children && node.children.length > 0) {
-      node.children.forEach((child) => {
-        searchNode(child, node); // Передаем родителя для дочерних элементов
-      });
-    }
-  };
-
-  // Запуск поиска по всем элементам
-  inputArray.forEach((item) => {
-    searchNode(item);
-  });
-
-  return { result, expandedKeys };
-};
-
-const onSearch = () => {
-  if (inputCodeValue.value.length >= 3) {
-    const { result, expandedKeys } = searchByCode(nodes.value, inputCodeValue.value);
-
-    nodes.value = result
-    console.log("onSearch", result)
-    updateExpandedKeys(expandedKeys)
-  } else {
-    searchResults.value = [];
+  } else if (searchCode.trim() === "") {
+    nodes.value = [...originalNodes.value];
+    noResultsMessage.value = '';
   }
 };
+
+const onSearch = (event) => {
+  const searchCode = event.target.value;
+  searchByCodeTopLevel(searchCode);
+};
+
 
 </script>
 
@@ -504,7 +542,15 @@ const onSearch = () => {
   border: none !important;
 }
 
-button[style*="visibility: hidden"] svg{
+.no-results-message {
+  color: #d9534f;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: center;
+}
+
+button[style*="visibility: hidden"] svg {
   overflow: hidden !important;
 }
 
@@ -513,7 +559,7 @@ button[style*="visibility: hidden"] svg{
 }
 </style>
 <style scoped>
-.add__filter-button {
+.filter-button {
   margin: 0 10px;
 }
 

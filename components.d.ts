@@ -8,12 +8,10 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Accordion: typeof import('primevue/accordion')['default']
-    AccordionComponent: typeof import('./src/components/AccordionComponent.vue')['default']
     AccordionContent: typeof import('primevue/accordioncontent')['default']
     AccordionHeader: typeof import('primevue/accordionheader')['default']
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
     AccordionThree: typeof import('./src/components/AccordionThree.vue')['default']
-    AccordionWrapper: typeof import('./src/components/AccordionWrapper.vue')['default']
     AuthForm: typeof import('./src/components/AuthForm.vue')['default']
     Button: typeof import('primevue/button')['default']
     Column: typeof import('primevue/column')['default']

@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Products from "@/views/Products.vue";
 import Filters from "@/views/Filters.vue";
-import Three from "@/views/Three.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
 import Register from "@/views/Auth/Register.vue";
@@ -31,11 +30,6 @@ const routes = [
                 path: "filters",
                 name: "Filters",
                 component: Filters,
-            },
-            {
-                path: "three",
-                name: "Three",
-                component: Three,
             },
         ],
     },
@@ -65,7 +59,7 @@ router.beforeEach((to, from, next) => {
     const isAuth = isAuthenticated();
 
     if (isAuth && to.path.startsWith("/auth")) {
-        next({ path: "/three" });
+        next({ path: "/filters" });
     } else if (!isAuth && to.matched.some((record) => record.meta.requiresAuth)) {
         next({ path: "/auth/login" });
     } else {

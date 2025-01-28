@@ -1,95 +1,54 @@
 <template>
-  <div>
-    <h1>Filters Page</h1>
-    <AccordionWrapper :filters="filters"></AccordionWrapper>
-  </div>
+  <FilterConfiguratorWrapper @filters-updated="filtersUpdated" :filters="filters"></FilterConfiguratorWrapper>
+  <button @click="resetCache">reset</button>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { getFiltersList } from "@/services/api/filters-service.api.js";
+import {onMounted, ref} from "vue";
 
-const filters = ref([
-  {
-    "name": {
-      "ru": "asdasd",
-      "uk": "asd"
-    },
-    "_id": "678d047795e0b56fae151ea4",
-    "code": "as",
-    "parentId": null,
-    "children": [],
-    "createdAt": "2025-01-19T13:56:07.303Z",
-    "updatedAt": "2025-01-19T13:56:07.303Z",
-    "__v": 0
-  },
-  {
-    "name": {
-      "ru": "asdasdasd",
-      "uk": "asdakldjalksd"
-    },
-    "_id": "678d059995e0b56fae151ea9",
-    "code": "sdadsasdasdasdasdsa",
-    "parentId": null,
-    "children": [
-      {
-        "name": {
-          "ru": "child1",
-          "uk": "child2"
-        },
-        "_id": "678d059995e0b56fae151ea9",
-        "code": "child1",
-        "parentId": null,
-        "children": [
-          {
-            "name": {
-              "ru": "sub-child",
-              "uk": "sub-child2"
-            },
-            "_id": "678d059995e0b56fae151ea9",
-            "code": "sub-child",
-            "parentId": null,
-            "children": [],
-            "createdAt": "2025-01-19T14:00:57.293Z",
-            "updatedAt": "2025-01-19T14:00:57.293Z",
-            "__v": 0
-          },
-        ],
-        "createdAt": "2025-01-19T14:00:57.293Z",
-        "updatedAt": "2025-01-19T14:00:57.293Z",
-        "__v": 0
-      },
-    ],
-    "createdAt": "2025-01-19T14:00:57.293Z",
-    "updatedAt": "2025-01-19T14:00:57.293Z",
-    "__v": 0
-  },
-  {
-    "name": {
-      "ru": "asdasdasd",
-      "uk": "asdakldjalksd"
-    },
-    "_id": "678d05a395e0b56fae151eab",
-    "code": "asbnzxxcbznxcbjskdfsjkfhjskdfsdf",
-    "parentId": null,
-    "children": [],
-    "createdAt": "2025-01-19T14:01:07.095Z",
-    "updatedAt": "2025-01-19T14:01:07.095Z",
-    "__v": 0
-  },
-  {
-    "name": {
-      "ru": "2",
-      "uk": "1"
-    },
-    "_id": "678d05a895e0b56fae151ead",
-    "code": "ierutoieurtioteuoiert",
-    "parentId": null,
-    "children": [],
-    "createdAt": "2025-01-19T14:01:12.808Z",
-    "updatedAt": "2025-01-19T14:01:12.808Z",
-    "__v": 0
+
+const error = ref(null)
+const filters = ref([])
+
+const cacheDuration = 5 * 60 * 1000;
+const cacheKey = "filtersCache";
+const cacheTimestampKey = "filtersCacheTimestamp";
+
+const fetchFiltersList = async () => {
+
+  const cachedData = localStorage.getItem(cacheKey);
+  const cachedTimestamp = localStorage.getItem(cacheTimestampKey);
+
+  if (cachedData && cachedTimestamp && Date.now() - cachedTimestamp < cacheDuration) {
+    console.log("Используем кешированные данные");
+    filters.value = JSON.parse(cachedData);
+  } else {
+    console.log("Запрашиваем новые данные");
+    try {
+      const response = await getFiltersList();
+      filters.value = response || [];
+
+      localStorage.setItem(cacheKey, JSON.stringify(filters.value));
+      localStorage.setItem(cacheTimestampKey, Date.now().toString());
+
+      console.log("fetchFiltersList", filters.value);
+    } catch (err) {
+      error.value = 'Ошибка загрузки пользователей';
+    }
   }
-])
+};
 
+const resetCache = () => {
+  localStorage.removeItem(cacheKey);
+  localStorage.removeItem(cacheTimestampKey);
+  fetchFiltersList();
+};
+
+const filtersUpdated = () => resetCache()
+
+onMounted(() => {
+  fetchFiltersList();
+});
 
 </script>

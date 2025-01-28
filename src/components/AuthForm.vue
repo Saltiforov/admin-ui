@@ -76,7 +76,7 @@ const onFormSubmit = async () => {
   console.log('Form submitted:', formData.value);
   await login(formData.value).then(res => {
     if (res.token) {
-      router.push('/three');
+      router.push('/filters');
     }
   })
 };

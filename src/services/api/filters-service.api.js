@@ -23,6 +23,19 @@ export async function uploadIconForFilter(iconFile, filterCode) {
     }
 }
 
+export async function deleteFilter(id) {
+    try {
+        const api = app.config.globalProperties.$api;
+        const response = await api.delete(`/api/filters/${id}`);
+
+        if (response.status === 200) {
+            console.log(`Фильтр с id ${id} успешно удалён`);
+        }
+    } catch (error) {
+        console.error(`Ошибка при удалении фильтра с id ${id}:`, error);
+    }
+}
+
 export async function createFilters(payload) {
     const api = app.config.globalProperties.$api;
 

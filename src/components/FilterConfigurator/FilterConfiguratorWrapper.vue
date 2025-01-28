@@ -1,6 +1,6 @@
 <template>
   <div class="additional__actions"></div>
-  <FilterConfiguratorTable v-if="filters.length" :filters="filters"></FilterConfiguratorTable>
+  <FilterConfiguratorTable @filters-updated="emit('filters-updated')" :filters="filters"></FilterConfiguratorTable>
   <div class="footer__blocks"></div>
 </template>
 
@@ -12,6 +12,8 @@ defineProps({
     required: true,
   }
 })
+const emit = defineEmits(['filters-updated'])
+
 
 </script>
 
