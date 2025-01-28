@@ -9,14 +9,14 @@ import Login from "@/views/Auth/Login.vue";
 import Register from "@/views/Auth/Register.vue";
 
 function isAuthenticated() {
-    return !!localStorage.getItem("token");
+    return !!localStorage.getItem("authToken");
 }
 
 const routes = [
     {
         path: "/",
         component: DefaultLayout,
-        meta: { requiresAuth: true }, // Добавляем защиту для всех дочерних маршрутов
+        meta: { requiresAuth: true },
         children: [
             {
                 path: "",
@@ -47,12 +47,10 @@ const routes = [
                 path: "login",
                 name: "Login",
                 component: Login,
-                meta: { requiresAuth: true },
             },
             {
                 path: "register",
                 name: "Register",
-                component: Register,
             },
         ],
     },
@@ -63,14 +61,16 @@ const router = createRouter({
     routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//     // Проверяем, нужно ли защищать маршрут
-//     if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated()) {
-//         // Если маршрут (или его родитель) требует авторизации, но пользователь не авторизован
-//         next({ name: "Register" }); // Перенаправляем на страницу логина
-//     } else {
-//         next(); // Если всё нормально, продолжаем
-//     }
-// });
+router.beforeEach((to, from, next) => {
+    const isAuth = isAuthenticated();
+
+    if (isAuth && to.path.startsWith("/auth")) {
+        next({ path: "/three" });
+    } else if (!isAuth && to.matched.some((record) => record.meta.requiresAuth)) {
+        next({ path: "/auth/login" });
+    } else {
+        next();
+    }
+});
 
 export default router;

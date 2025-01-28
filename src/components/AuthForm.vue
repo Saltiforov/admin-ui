@@ -4,24 +4,18 @@
       <div class="field">
         <FloatLabel>
           <InputText
-              id="email"
-              v-model="formData.email"
-              type="email"
-              placeholder=" "
+              v-model="formData.username"
               class="w-full"
           />
-          <label for="email">Email</label>
+          <label for="email">Username</label>
         </FloatLabel>
       </div>
 
       <div class="field">
         <FloatLabel>
           <Password
-              id="password"
+              :feedback="false"
               v-model="formData.password"
-              placeholder=" "
-              toggleMask
-              feedback="false"
               class="w-full"
           />
           <label for="password">Password</label>
@@ -60,11 +54,14 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import FloatLabel from 'primevue/floatlabel';
+import {login} from "@/services/api/auth-serivce.api.js";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const formData = ref({
-  email: '',
+  username: '',
   password: '',
-  confirmPassword: ''
 });
 
 defineProps({
@@ -75,8 +72,13 @@ defineProps({
 })
 
 
-const onFormSubmit = () => {
+const onFormSubmit = async () => {
   console.log('Form submitted:', formData.value);
+  await login(formData.value).then(res => {
+    if (res.token) {
+      router.push('/three');
+    }
+  })
 };
 </script>
 
