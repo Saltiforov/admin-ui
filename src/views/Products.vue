@@ -6,18 +6,35 @@
         :data="products"
         :columns="columns"
     ></CustomDataTable>
+
+    <DataTableComponent
+        title="Products"
+        :data="products"
+        :columns="columns">
+    </DataTableComponent>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { ProductService } from '@/services/api/product-service.api.js';
+import DataTableComponent from "@/components/DataTable/DataTableComponent.vue";
 
 onMounted(() => {
-  ProductService.getProductsMini().then((data) => (products.value = data));
+  ProductService.getProductsMini()
+      .then((data) => (products.value = data))
+      // .then((data) => (products.value = data.map(product => {
+      //   return {
+      //     ...product,
+      //     image: `https://primefaces.org/cdn/primevue/images/product/${product.image}`
+      //   }
+      // })))
+
 });
 
 const products = ref();
+console.log(products.value);
 const formatCurrency = (value) => {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 };
@@ -38,29 +55,40 @@ const getSeverity = (product) => {
   }
 };
 
-const columns = [
+// Компонент для отображения изображения
+const ImageComponent = {
+  props: ['data'],
+  template: `
+    <div v-html="'<img src=https://primefaces.org/cdn/primevue/images/product/' + data.image + ' alt=' + data.image + ' class=w-24 rounded />'"></div>
+  `,
+};
+
+// Компонент для отображения рейтинга
+const RatingComponent = {
+  props: ['data'],
+  template: '<Rating :modelValue="data.rating" readonly />',
+};
+
+const columns = ref([
   { field: 'name', header: 'Name' },
-  {
-    header: 'Image',
-    body: {
-      template: {
-        name: 'ImageCell',
-        render: (props) => {
-          return `<img src="https://primefaces.org/cdn/primevue/images/product/${props.data.image}" alt="${props.data.image}" class="w-24 rounded" />`;
-        },
-      },
-    },
-  },
   {
     field: 'price',
     header: 'Price',
-    body: ({ data }) => {
-      return data.price;
-    },
+    body: ({ data }) => `$${data.price}`,
   },
   {
-    field: 'reviews',
-    header: 'Rating',
+    header: 'Image',
+    body: ImageComponent, // Передаем компонент для отображения изображения
   },
-];
+  {
+    field: 'rating',
+    header: 'Reviews',
+    body: RatingComponent, // Передаем компонент для отображения рейтинга
+  },
+]);
+
+
+
+
+
 </script>

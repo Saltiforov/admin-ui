@@ -6,6 +6,8 @@ import PrimeVue from "primevue/config";
 import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
 import FileUpload from "primevue/fileupload";
+import Rating from 'primevue/rating';
+
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 
@@ -18,6 +20,7 @@ app.use(ConfirmationService);
 
 app.component('InputText', InputText);
 app.component('FileUpload', FileUpload);
+app.component('Rating', Rating);
 app.use(router);
 app.use(PrimeVue, {
     theme: {

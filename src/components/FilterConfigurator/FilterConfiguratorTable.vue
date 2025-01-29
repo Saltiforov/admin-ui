@@ -74,7 +74,7 @@
 import {onMounted, onUnmounted, ref, onBeforeMount, watch} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {deepClone, deepSearchByCode} from "@/utils/index.js";
-import {createFilters, deleteFilter} from "@/services/api/filters-service.api.js";
+import {createFilters, deleteFilter, deleteFilters} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import IconField from 'primevue/iconfield';
@@ -127,22 +127,22 @@ const props = defineProps({
 
 function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
-    // Формируем уникальный ключ для каждого элемента
-    const key = parentKey ? `${parentKey}-${item._id}` : item._id;
+    const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
+
     return {
-      key: idx.toString(),
+      key: key, // Теперь ключ создается правильно
       id: item._id,
       data: {
         name: {
           uk: item.name.uk,
           ru: item.name.ru,
         },
-        code: item.code || "unknown",  // Используем "unknown", если поле не заполнено
-        icon: item.icon || "default-icon",  // Если нет иконки, ставим значение по умолчанию
-        description: item.description || "Нет описания",  // Если нет описания, ставим значение по умолчанию
+        code: item.code || "unknown",
+        icon: item.icon || "default-icon",
+        description: item.description || "Нет описания",
       },
       children: item.children && item.children.length
-          ? item.children.map((child) => mapNode(child, key))  // Рекурсивно обрабатываем дочерние элементы
+          ? item.children.map((child, childIdx) => mapNode(child, childIdx, key)) // Передаем текущий key как parentKey
           : [],
     };
   };
@@ -150,14 +150,34 @@ function mapFilters(inputArray) {
   return inputArray.map((item, idx) => mapNode(item, idx));
 }
 
-const deleteNode = async (node) => {
-  if (nodes.value.length === 1) {
-    await deleteFilter(node.id);
-    emit('filters-updated');
-  }
 
-  // nodes.value = nodes.value.filter((item) => item.id !== node.id && item?.code !== node.code);
-  nodes.value = nodes.value.filter((item) => item.id !== node.id || node.code);
+const deleteItems = ref([]);
+
+const deleteNodeRecursive = (nodesArray, nodeId, nodeCode) => {
+  return nodesArray
+      .filter((node) => {
+        if (node.id && node.id === nodeId) {
+          collectDeletedIds(node); // Рекурсивно собираем ID всех вложенных элементов
+          return false; // Удаляем текущий узел
+        }
+        return node.data.code !== nodeCode; // Удаляем по code без записи в deleteItems
+      })
+      .map((node) => ({
+        ...node,
+        children: deleteNodeRecursive(node.children || [], nodeId, nodeCode),
+      }));
+};
+
+// Функция для сбора всех ID удаляемых элементов
+const collectDeletedIds = (node) => {
+  deleteItems.value.push(node.id); // Записываем текущий ID
+  if (node.children && node.children.length > 0) {
+    node.children.forEach((child) => collectDeletedIds(child)); // Рекурсивно записываем ID всех потомков
+  }
+};
+
+const deleteNode = async (node) => {
+  nodes.value = deleteNodeRecursive(nodes.value, node.id, node.data.code);
 };
 
 
@@ -190,6 +210,7 @@ const confirmDelete = (node) => {
   });
 };
 
+
 onMounted(() => {
   if (props.filters && props.filters.length) {
     const nodesCopy = ref(deepClone(props.filters));
@@ -210,7 +231,7 @@ watch(
         loading.value = false; // Завершаем загрузку
       }
     },
-    { immediate: true } // Запускаем при первой загрузке
+    {immediate: true} // Запускаем при первой загрузке
 );
 
 
@@ -471,8 +492,14 @@ const capitalizeFirstLetter = (value) => {
 
 
 const saveFilters = async () => {
-  await createFilters(mapFiltersForSubmit(nodes.value));
-  emit('filters-updated');
+  if (deleteItems.value.length > 0) {
+    await deleteFilters(deleteItems.value);
+    return;
+  }
+  if (nodes.value.length > 0) {
+    await createFilters(mapFiltersForSubmit(nodes.value));
+    emit('filters-updated');
+  }
 }
 
 const pathGenerator = (parent) => {

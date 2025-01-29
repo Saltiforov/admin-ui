@@ -13,6 +13,16 @@
           <component :is="column.body" :data="slotProps.data" />
         </template>
       </Column>
+      <Column header="Image" >
+        <template #body="slotProps">
+          <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" @click="goToDetails(slotProps.data)" :alt="slotProps.data.image" class="w-24 rounded" />
+        </template>
+      </Column>
+      <Column field="rating" header="Reviews">
+        <template #body="slotProps">
+          <Rating :modelValue="slotProps.data.rating" readonly />
+        </template>
+      </Column>
 
       <template #footer>
         {{ footerText ? footerText : `In total there are ${data.length} items.` }}
@@ -22,6 +32,8 @@
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+
 const props = defineProps({
   title: {
     type: String,
@@ -51,6 +63,14 @@ const props = defineProps({
     default: null,
   },
 });
+
+
+const router = useRouter();
+
+const goToDetails = (data) => {
+  console.log("goToDetails", data)
+  router.push({ name: 'ProductDetails', params: data });
+}
 
 const onRefresh = () => {
   if (props.refreshHandler) {

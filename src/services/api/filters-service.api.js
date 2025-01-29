@@ -26,6 +26,7 @@ export async function uploadIconForFilter(iconFile, filterCode) {
 export async function deleteFilter(id) {
     try {
         const api = app.config.globalProperties.$api;
+        //filters
         const response = await api.delete(`/api/filters/${id}`);
 
         if (response.status === 200) {
@@ -33,6 +34,20 @@ export async function deleteFilter(id) {
         }
     } catch (error) {
         console.error(`Ошибка при удалении фильтра с id ${id}:`, error);
+    }
+}
+export async function deleteFilters(ids) {
+    try {
+        const api = app.config.globalProperties.$api;
+        const response = await api.delete(`/api/filters`, {
+            data: { ids: ids }
+        });
+
+        if (response.status === 200) {
+            console.log(`Фильтр с id ${ids} успешно удалён`);
+        }
+    } catch (error) {
+        console.error(`Ошибка при удалении фильтра с id ${ids}:`, error);
     }
 }
 
