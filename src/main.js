@@ -10,10 +10,11 @@ import Rating from 'primevue/rating';
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import AppState from './plugins/appState.js';
 
 const app = createApp(App);
 import router from "./router";
-
+app.use(AppState);
 app.use(fetchPlugin);
 app.use(ToastService);
 app.use(ConfirmationService);
