@@ -1216,6 +1216,11 @@ export const ProductService = {
 
     getProductsWithOrders() {
         return Promise.resolve(this.getProductsWithOrdersData());
+    },
+
+    getProductById(id) {
+        const products = this.getProductsData();
+        return products.find(product => product.id === id);
     }
 };
 

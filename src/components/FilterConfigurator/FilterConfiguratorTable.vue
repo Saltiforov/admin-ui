@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Filters</h1>
     <div class="buttons-wrapper">
       <Button label="Add" class="filter-button" icon="pi pi-check" @click="addNewFilter"/>
       <Button label="Submit" class="filter-button" icon="pi pi-check" @click="saveFilters"/>
@@ -87,7 +86,7 @@ const emit = defineEmits(['filters-updated'])
 const noResultsMessage = ref('');
 const selectedNode = ref();
 const cm = ref();
-const loading = ref(false);
+const loading = ref(true);
 const menuModel = ref(
     [
       {
@@ -178,6 +177,7 @@ const collectDeletedIds = (node) => {
 
 const deleteNode = async (node) => {
   nodes.value = deleteNodeRecursive(nodes.value, node.id, node.data.code);
+  console.log("deleteItems", deleteItems.value)
 };
 
 
@@ -441,7 +441,7 @@ const createChildNode = (parent, newFilter) => {
       },
       code: newFilter.code,
       icon: "25kb",
-      description: "Папка с проектом на Vue.js",
+      description: newFilter.description,
     },
     children: [],
   };

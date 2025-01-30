@@ -28,9 +28,9 @@ const fetchFiltersList = async () => {
     try {
       const response = await getFiltersList();
       filters.value = response || [];
-
-      localStorage.setItem(cacheKey, JSON.stringify(filters.value));
-      localStorage.setItem(cacheTimestampKey, Date.now().toString());
+      //
+      // localStorage.setItem(cacheKey, JSON.stringify(filters.value));
+      // localStorage.setItem(cacheTimestampKey, Date.now().toString());
 
       console.log("fetchFiltersList", filters.value);
     } catch (err) {
