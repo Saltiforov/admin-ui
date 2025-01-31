@@ -71,10 +71,10 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref, onBeforeMount, watch} from 'vue';
+import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
-import {createFilters, deleteFilter, deleteFilters} from "@/services/api/filters-service.api.js";
+import {createFilters, deleteFilters} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import IconField from 'primevue/iconfield';
@@ -87,7 +87,8 @@ const emit = defineEmits(['filters-updated'])
 const noResultsMessage = ref('');
 const selectedNode = ref();
 const cm = ref();
-const loading = ref(true);
+const loading = ref(false);
+
 const menuModel = ref(
     [
       {
@@ -217,7 +218,6 @@ onMounted(() => {
     const nodesCopy = ref(deepClone(props.filters));
     nodes.value = mapFilters(nodesCopy.value);
     originalNodes.value = [...nodes.value];
-    loading.value = false;
   }
 });
 
@@ -225,11 +225,9 @@ watch(
     () => props.filters,
     (newFilters) => {
       if (newFilters && newFilters.length) {
-        loading.value = true; // Устанавливаем состояние загрузки
         const nodesCopy = ref(deepClone(newFilters));
         nodes.value = mapFilters(nodesCopy.value);
         originalNodes.value = [...nodes.value];
-        loading.value = false; // Завершаем загрузку
       }
     },
     {immediate: true} // Запускаем при первой загрузке
@@ -369,6 +367,8 @@ const handleEditFilter = (parent, newFilter) => {
   console.log("Updated activeFilter", activeFilter);
 };
 
+const addedNodes = ref(0)
+
 const handleAddRootNode = (newFilter) => {
   const newKey = nodes.value.length.toString();
   const nodeData = {
@@ -385,9 +385,11 @@ const handleAddRootNode = (newFilter) => {
     children: [],
   }
 
+  addedNodes.value++
   nodes.value.push(nodeData);
 
-  console.log("Added new root node", nodes.value);
+  console.log("handleAddRootNode", newFilter)
+  console.log("Added new root node",addedNodes.value);
 };
 
 
@@ -466,13 +468,14 @@ const capitalizeFirstLetter = (value) => {
 
 
 const saveFilters = async () => {
-  if (deleteItems.value.length > 0) {
+  if (deleteItems.value.length > 0 && addedNodes.value === 0) {
     await deleteFilters(deleteItems.value);
     return;
   }
 
   if (nodes.value.length > 0) {
     await createFilters(mapFiltersForSubmit(nodes.value));
+    addedNodes.value = 0;
     emit('filters-updated');
   }
 }
@@ -581,10 +584,19 @@ button[style*="visibility: hidden"] svg {
 }
 
 .configurator-table {
+  background: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
 }
 
+:deep(.p-treetable .p-component .configurator-table) {
+  border-radius: 15px !important;
+}
+
+
 .filters-empty {
-  text-align: center;
+  font-size: 40px;
+  display: flex;
+  justify-content: center;
+  margin: 100px auto;
 }
 </style>

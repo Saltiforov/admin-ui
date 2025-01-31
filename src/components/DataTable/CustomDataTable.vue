@@ -1,7 +1,14 @@
 <template>
   <ThemeSwitcher/>
   <div class="card">
-    <DataTable :value="products" tableStyle="min-width: 10rem" class="custom-table">
+    <DataTable
+        :value="products"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+        tableStyle="min-width: 10rem"
+        class="custom-table"
+    >
       <Column field="name" header="Name"></Column>
       <Column header="Image">
         <template #body="slotProps">
@@ -81,7 +88,6 @@ const getSeverity = (product) => {
 
 .custom-table :deep(table) {
   border-collapse: collapse;
-  border-radius: 20px;
 }
 
 .custom-table :deep(th),
@@ -90,13 +96,20 @@ const getSeverity = (product) => {
 }
 
 .card {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
+  background: white;
+  border-radius: 30px !important;
 }
 
 .custom-table__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 12px;
+}
+
+
+:deep(.p-datatable-table-container) {
+  border-radius: 15px !important;
+}
+:deep(p-treetable p-component) {
+  border-radius: 15px !important;
 }
 
 .custom-table__header-title {

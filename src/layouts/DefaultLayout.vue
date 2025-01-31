@@ -3,7 +3,7 @@
     <!-- Боковое меню -->
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <img src="" alt="">
+        <img class="sidebrar-logo__img" src="../assets/icons/svg-11.svg" alt="">
       </div>
       <ul class="menu">
         <li
@@ -68,7 +68,7 @@ const menuItems = [
 // Определяем активный маршрут
 const isActiveRoute = (command) => {
   const routePath = command.toString().match(/\/[a-z]+/i)?.[0]; // Получаем маршрут из функции
-  return route.path === routePath;
+  return route.path.startsWith(routePath); // Проверяем, начинается ли текущий путь с routePath
 };
 
 const activeTab = computed(() => {
@@ -113,8 +113,13 @@ const activeTab = computed(() => {
 }
 
 .sidebar-logo {
-  padding: 20px;
-  margin: 20px 0px;
+  padding: 10px 10px 30px 10px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebrar-logo__img {
 }
 
 /* Контент */

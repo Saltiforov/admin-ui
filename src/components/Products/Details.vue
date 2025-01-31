@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="container">
-      <h1 class="product__page-title">Products</h1>
       <div  v-if="product" >
         <div class="product-content form-grid">
           <!-- Левая колонка -->
@@ -163,8 +162,8 @@ onMounted(async () => {
 .product__title {
   font-weight: bold;
   font-size: 16px;
-  color: #333;
-  margin-bottom: 5px;
+  color: #575669;
+  margin-bottom: 10px;
 }
 
 /* Инпуты */
