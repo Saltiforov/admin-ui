@@ -89,6 +89,7 @@ const isActiveRoute = (command) => {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  z-index: 1;
 }
 
 /* Основной контейнер для топбара и контента */
@@ -180,7 +181,7 @@ const isActiveRoute = (command) => {
   top: 0;
   width: 4px; /* Ширина полоски */
   height: 100%;
-  background-color: #007bff; /* Цвет полоски */
+  background-color: #1A2795; /* Цвет полоски */
   border-radius: 2px; /* Закругление краёв */
 }
 
@@ -194,7 +195,7 @@ const isActiveRoute = (command) => {
 
 .content {
   flex: 1;
-  padding: 1rem;
+  padding: 3rem;
   overflow-y: auto;
 }
 

@@ -13,6 +13,7 @@
     </div>
     <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
+        class="configurator-table"
         v-else
         v-model:contextMenuSelection="selectedNode"
         autoLayout
@@ -602,6 +603,10 @@ button[style*="visibility: hidden"] svg {
   margin-bottom: 15px;
   border-radius: 5px;
   display: flex;
+}
+
+.configurator-table {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
 }
 
 .filters-empty {

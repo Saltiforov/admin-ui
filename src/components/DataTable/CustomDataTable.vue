@@ -85,6 +85,9 @@ const getSeverity = (product) => {
 .table-image {
   width: 150px;
 }
+.card {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
+}
 .custom-table__header {
   display: flex;
   align-items: center;
