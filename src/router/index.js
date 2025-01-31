@@ -6,6 +6,7 @@ import Filters from "@/views/Filters.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
 import ProductDetails from "@/components/Products/ProductDetails.vue";
+import Details from "@/components/Products/Details.vue";
 import Register from "@/views/Auth/Register.vue";
 
 function isAuthenticated() {
@@ -27,11 +28,17 @@ const routes = [
                 name: "Products",
                 component: Products,
             },
+            // {
+            //     path: "products/:id", // Динамический путь для деталей продукта
+            //     name: "ProductDetails", // Название маршрута для страницы продукта
+            //     component: ProductDetails, // Компонент для страницы продукта
+            // },
             {
                 path: "products/:id", // Динамический путь для деталей продукта
-                name: "ProductDetails", // Название маршрута для страницы продукта
-                component: ProductDetails, // Компонент для страницы продукта
+                name: "Details", // Название маршрута для страницы продукта
+                component: Details, // Компонент для страницы продукта
             },
+
             {
                 path: "filters",
                 name: "Filters",
