@@ -148,7 +148,7 @@ onMounted(async () => {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px 30px;
+  gap: 24px 32px;
   align-items: start;
   max-width: 1200px;
 }

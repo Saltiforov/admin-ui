@@ -13,9 +13,14 @@ export function deepClone(obj) {
     return obj;
 }
 
-export function pathBuilder(path) {
-    return `http://localhost:3000${path}`;
+export function pathBuilder(item) {
+    if (item?.objectURL) {
+        return URL.createObjectURL(item);
+    }
+
+    return `http://localhost:3000${item}`;
 }
+
 export function deepSearchByCode(array, code, source = 'key') {
     for (const item of array) {
         if (item[source] === code) {

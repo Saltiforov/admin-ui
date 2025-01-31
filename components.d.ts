@@ -21,6 +21,7 @@ declare module 'vue' {
     CustomDataTable: typeof import('./src/components/DataTable/CustomDataTable.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DataTableComponent: typeof import('./src/components/DataTable/DataTableComponent.vue')['default']
+    Details: typeof import('./src/components/Products/Details.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     FilterConfiguratorTable: typeof import('./src/components/FilterConfigurator/FilterConfiguratorTable.vue')['default']
