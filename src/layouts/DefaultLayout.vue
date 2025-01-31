@@ -21,14 +21,8 @@
     <div class="main-container">
       <!-- Верхний бар -->
       <header class="topbar">
-        <h2>Overview</h2>
+        <h2 class="title-text">{{ activeTab }}</h2>
         <div class="topbar__actions">
-          <div class="action__item">
-            <IconField>
-              <InputIcon class="pi pi-search"/>
-              <InputText class="topbar--input"  placeholder="Enter the code, please."/>
-            </IconField>
-          </div>
           <div class="action__item">
             <Button icon="pi pi-cog" class="settings-btn"/>
           </div>
@@ -56,6 +50,7 @@
 import {useRouter, useRoute} from "vue-router";
 import InputIcon from "primevue/inputicon";
 import IconField from "primevue/iconfield";
+import {computed} from "vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -75,6 +70,12 @@ const isActiveRoute = (command) => {
   const routePath = command.toString().match(/\/[a-z]+/i)?.[0]; // Получаем маршрут из функции
   return route.path === routePath;
 };
+
+const activeTab = computed(() => {
+  const activeItem = menuItems[0].items.find(item => isActiveRoute(item.command));
+  return activeItem ? activeItem.label : "";
+});
+
 </script>
 
 

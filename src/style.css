@@ -60,6 +60,12 @@ svg {
   overflow: visible;
 }
 
+.title-text {
+  font-size: 28px;
+  color: #575669;
+  font-weight: 700;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

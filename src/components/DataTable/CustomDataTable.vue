@@ -2,12 +2,6 @@
   <ThemeSwitcher/>
   <div class="card">
     <DataTable :value="products" tableStyle="min-width: 10rem" class="custom-table">
-      <template #header>
-        <div class="custom-table__header">
-          <span class="custom-table__header-title">Products</span>
-          <Button icon="pi pi-refresh" rounded raised/>
-        </div>
-      </template>
       <Column field="name" header="Name"></Column>
       <Column header="Image">
         <template #body="slotProps">
@@ -36,8 +30,6 @@
           <Button @click="showDetails(slotProps.data.id)">Show details</Button>
         </template>
       </Column>
-
-      <template #footer> In total there are {{ products ? products.length : 0 }} products.</template>
     </DataTable>
   </div>
 </template>
@@ -89,11 +81,12 @@ const getSeverity = (product) => {
 
 .custom-table :deep(table) {
   border-collapse: collapse;
+  border-radius: 20px;
 }
 
 .custom-table :deep(th),
 .custom-table :deep(td) {
-  padding: 30px; /* Внутренний отступ */
+  padding: 36px; /* Внутренний отступ */
 }
 
 .card {
