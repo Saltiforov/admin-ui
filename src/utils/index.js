@@ -14,11 +14,12 @@ export function deepClone(obj) {
 }
 
 export function pathBuilder(item) {
+    console.log('pathBuilder', item);
     if (item?.objectURL) {
         return URL.createObjectURL(item);
     }
 
-    return `http://localhost:3000${item}`;
+    return item ? `http://localhost:3000${item}`: 'No icon';
 }
 
 export function deepSearchByCode(array, code, source = 'key') {

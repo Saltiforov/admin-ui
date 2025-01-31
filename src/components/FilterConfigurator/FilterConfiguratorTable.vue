@@ -43,7 +43,7 @@
               alt="icon"
               style="width: 30px; height: 30px; object-fit: contain;"
           />
-          <span v-else>No icon</span>
+          <span v-else>---</span>
         </template>
       </Column>
       <Column field="description" header="Description" style="width: 33%"></Column>
@@ -138,7 +138,7 @@ function mapFilters(inputArray) {
           ru: item.name.ru,
         },
         code: item.code || "unknown",
-        icon: item.icon || "default-icon",
+        icon: item.icon,
         description: item.description || "Нет описания",
       },
       children: item.children && item.children.length
