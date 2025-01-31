@@ -1,6 +1,5 @@
 <template>
   <FilterConfiguratorWrapper @filters-updated="filtersUpdated" :filters="filters"></FilterConfiguratorWrapper>
-  <button @click="resetCache">reset</button>
 </template>
 
 <script setup>

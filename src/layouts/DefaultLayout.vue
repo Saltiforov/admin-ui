@@ -2,6 +2,9 @@
   <div class="layout">
     <!-- Боковое меню -->
     <aside class="sidebar">
+      <div class="sidebar-logo">
+        <img src="" alt="">
+      </div>
       <ul class="menu">
         <li
             v-for="item in menuItems[0].items"
@@ -82,10 +85,8 @@ const isActiveRoute = (command) => {
   grid-template-rows: 100vh; /* Высота на весь экран */
 }
 
-/* Боковое меню */
+/*   box-shadow: 0px 0 15px rgba(0, 0, 0, 0.1); border-right: 1px solid #ddd; */
 .sidebar {
-  border-right: 1px solid #ddd;
-  box-shadow: 0px 0 15px rgba(0, 0, 0, 0.1);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -99,17 +100,21 @@ const isActiveRoute = (command) => {
   width: 100%;
 }
 
-/* Верхний бар */
+/* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); */
 .topbar {
   color: #ADABC4;
   background: white;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
+  padding: 20px 20px;
+  border-bottom-left-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.sidebar-logo {
+  padding: 20px;
+  margin: 20px 0px;
+}
 
 /* Контент */
 .content {
@@ -186,7 +191,7 @@ const isActiveRoute = (command) => {
 }
 
 .menu-item {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .menu-icon {
@@ -197,6 +202,8 @@ const isActiveRoute = (command) => {
   flex: 1;
   padding: 3rem;
   overflow-y: auto;
+  background: #F5F7FA;
+  border-top-left-radius: 15px;
 }
 
 </style>
