@@ -39,7 +39,7 @@
         <template #body="{ node }">
           <img
               v-if="node.data.icon"
-              src="@/assets/icons/sport-icon.svg"
+              :src="pathBuilder(node.data.icon)"
               alt="icon"
               style="width: 30px; height: 30px; object-fit: contain;"
           />
@@ -73,7 +73,7 @@
 <script setup>
 import {onMounted, onUnmounted, ref, onBeforeMount, watch} from 'vue';
 import eventBus from "../../../eventBus.js";
-import {deepClone, deepSearchByCode} from "@/utils/index.js";
+import {deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
 import {createFilters, deleteFilter, deleteFilters} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
@@ -289,46 +289,19 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
         (value) => (value ? true : "Description is required"),
       ],
     },
-    // {
-    //   code: "icon",
-    //   component: "FileUpload", // Указываем компонент FileUpload
-    //   props: {
-    //     accept: "image/svg+xml", // Разрешаем только SVG
-    //     placeholder: "Upload SVG File",
-    //     style: "width: 100%; margin-bottom: 15px",
-    //     mode: "basic"
-    //   },
-    //   defaultValue: null, // Значение по умолчанию
-    //   validators: [
-    //     (value) => (value ? true : "SVG file is required"),
-    //     (value) =>
-    //         value && value.type === "image/svg+xml"
-    //             ? true
-    //             : "Only SVG files are allowed",
-    //   ],
-    // },
+    {
+      code: "icon",
+      component: "FileUpload",
+      props: {
+        accept: "image/svg+xml",
+        placeholder: "Upload SVG File",
+        style: "width: 100%; margin-bottom: 15px",
+        mode: "basic",
+      },
+      defaultValue: null
+    },
   ];
 };
-
-// Todo написать константу которая будет разрешать добавления на уровень вложености в ребенка
-// Todo когда открытый узел сделать так чтобы его было лучше видно
-
-const onAdvancedUpload = (event) => {
-  console.log('event.target', event)
-  const file = event.files[0];
-  if (file) {
-    console.log("File selected: newNodeFilter", newNodeFilter);
-    newNodeFilter.filters[0].icon = file; // Сохраняем файл во временную переменную
-    newNodeFilter.filters[0].children[0].icon = file; // Сохраняем файл во временную переменную
-    console.log("File selected:", file);
-  }
-
-  console.log('newNodeFilter', newNodeFilter);
-}
-
-const getRowClass = (node) => {
-  return !!node.children?.length;
-}
 
 const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
@@ -407,7 +380,7 @@ const handleAddRootNode = (newFilter) => {
       },
       code: newFilter.code,
       description: newFilter.description,
-      icon: "25kb",
+      icon: newFilter.icon || '',
     },
     children: [],
   }
@@ -441,7 +414,7 @@ const createChildNode = (parent, newFilter) => {
         ru: newFilter['name.ru'],
       },
       code: newFilter.code,
-      icon: "25kb",
+      icon: newFilter.icon,
       description: newFilter.description,
     },
     children: [],
@@ -497,6 +470,7 @@ const saveFilters = async () => {
     await deleteFilters(deleteItems.value);
     return;
   }
+
   if (nodes.value.length > 0) {
     await createFilters(mapFiltersForSubmit(nodes.value));
     emit('filters-updated');

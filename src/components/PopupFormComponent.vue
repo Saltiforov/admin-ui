@@ -17,7 +17,7 @@
             :is="field.component"
             v-model="formValues[field.code]"
             v-bind="field.props"
-            @input="handleFileUpload(field, $event)"
+            @select="handleFileUpload(field, $event)"
         />
         <Message
             v-if="errors[field.code]"
@@ -30,7 +30,7 @@
         </Message>
       </div>
       <div class="image-wrapper">
-        <img v-if="formValues.icon" :src="formValues.icon" alt="Image" class="uploaded-image"
+        <img v-if="iconPath" :src="iconPath" alt="Image" class="uploaded-image"
              style="filter: grayscale(100%)"/>
       </div>
       <div class="form-buttons">
@@ -46,6 +46,7 @@ import {reactive, ref} from 'vue';
 import eventBus from '../../eventBus';
 
 const isVisible = ref(false);
+const iconPath = ref('');
 const popupConfig = reactive({});
 const formValues = reactive({});
 const errors = reactive({});
@@ -63,14 +64,16 @@ eventBus.on('show-popup', (config) => {
 });
 
 const handleFileUpload = (field, event) => {
-  if (field.code === "icon" && event?.target?.files?.length) {
-    const file = event.target.files[0];
+  const file = event?.files[0];
+
+  if (field.code === "icon" && file) {
+    formValues[field.code] = file;
 
     // Проверяем формат файла
     if (file.type === "image/svg+xml") {
       const reader = new FileReader();
       reader.onload = () => {
-        formValues[field.code] = reader.result; // Сохраняем base64
+        iconPath.value = reader.result; // Сохраняем base64
       };
       reader.readAsDataURL(file);
     } else {

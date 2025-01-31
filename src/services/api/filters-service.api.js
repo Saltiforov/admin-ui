@@ -3,25 +3,6 @@ import app from '@/main';
 const routes = {
     filters: '/api/filters'
 }
-export async function uploadIconForFilter(iconFile, filterCode) {
-    const api = app.config.globalProperties.$api;
-
-    try {
-        const formData = new FormData();
-        formData.append('icon', iconFile);
-
-        const response = await api.post(
-            `${routes.filters}/${filterCode}/upload-icon`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
-
-        return response.data;
-    } catch (error) {
-        console.error('Error in uploadIconForFilter:', error);
-        throw error;
-    }
-}
 
 export async function deleteFilter(id) {
     try {
