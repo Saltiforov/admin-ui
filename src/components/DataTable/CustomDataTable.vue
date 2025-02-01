@@ -84,6 +84,7 @@ const getSeverity = (product) => {
 <style scoped>
 .table-image {
   width: 150px;
+  border-radius: 4px;
 }
 
 .custom-table :deep(table) {
