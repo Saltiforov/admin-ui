@@ -76,7 +76,7 @@
 <script setup>
 import {ref, onMounted} from 'vue';
 import {useRoute} from 'vue-router';
-import {ProductService} from "@/services/api/product-service.api.js";
+// import {ProductService} from "@/services/api/product-service.api.js";
 import {useToast} from "primevue/usetoast";
 
 const toast = useToast();
@@ -97,9 +97,9 @@ const onAdvancedUpload = (event) => {
 };
 
 onMounted(async () => {
-  const productById = ProductService.getProductById(route.params.id);
-  console.log('currentProduct', productById);
-  product.value = productById;
+  // const productById = ProductService.getProductById(route.params.id);
+  // console.log('currentProduct', productById);
+  // product.value = productById;
 
 });
 </script>

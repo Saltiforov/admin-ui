@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container">
-      <div  v-if="product" >
+      <div v-if="product">
         <div class="product-content form-grid">
           <!-- Левая колонка -->
           <div class="form-group">
@@ -39,7 +39,8 @@
 
           <div class="form-group">
             <p class="product__title">Product Price:</p>
-            <InputNumber v-model="product.price" inputId="currency-us" mode="currency" currency="USD" locale="en-US" fluid />
+            <InputNumber v-model="product.price" inputId="currency-us" mode="currency" currency="USD" locale="en-US"
+                         fluid/>
           </div>
 
           <div class="form-group full-width">
@@ -54,14 +55,14 @@
           </div>
 
 
-<!--          <div class="form-group">-->
-<!--            <p class="product__title">Product Image:</p>-->
-<!--            <img-->
-<!--                :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image"-->
-<!--                alt="Product Image"-->
-<!--                class="product-image"-->
-<!--            />-->
-<!--          </div>-->
+          <!--          <div class="form-group">-->
+          <!--            <p class="product__title">Product Image:</p>-->
+          <!--            <img-->
+          <!--                :src="'https://primefaces.org/cdn/primevue/images/product/' + product.image"-->
+          <!--                alt="Product Image"-->
+          <!--                class="product-image"-->
+          <!--            />-->
+          <!--          </div>-->
 
 
           <div class="form-group full-width">
@@ -98,8 +99,9 @@
 <script setup>
 import {ref, onMounted} from 'vue';
 import {useRoute} from 'vue-router';
-import {ProductService} from "@/services/api/product-service.api.js";
+// import {ProductService} from "@/services/api/product-service.api.js";
 import {useToast} from "primevue/usetoast";
+import {getProductById} from "@/services/api/product-service.api.js";
 
 const toast = useToast();
 const route = useRoute();
@@ -119,10 +121,8 @@ const onAdvancedUpload = (event) => {
 };
 
 onMounted(async () => {
-  const productById = ProductService.getProductById(route.params.id);
-  console.log('currentProduct', productById);
+  const productById = await getProductById(route.params.id);
   product.value = productById;
-
 });
 </script>
 
@@ -133,16 +133,19 @@ onMounted(async () => {
   justify-content: end;
   padding: 20px 0;
 }
+
 .container {
   max-width: 1230px;
   padding: 0 15px;
   margin: 0 auto;
 }
+
 .product__page-title {
   margin-bottom: 1rem;
   font-size: 2.2rem;
   font-weight: 700;
 }
+
 /* Грид для двух колонок */
 .form-grid {
   display: grid;

@@ -8,6 +8,7 @@ import Login from "@/views/Auth/Login.vue";
 import ProductDetails from "@/components/Products/ProductDetails.vue";
 import Details from "@/components/Products/Details.vue";
 import Register from "@/views/Auth/Register.vue";
+import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -28,17 +29,12 @@ const routes = [
                 name: "Products",
                 component: Products,
             },
-            // {
-            //     path: "products/:id", // Динамический путь для деталей продукта
-            //     name: "ProductDetails", // Название маршрута для страницы продукта
-            //     component: ProductDetails, // Компонент для страницы продукта
-            // },
             {
                 path: "products/:id", // Динамический путь для деталей продукта
-                name: "Details", // Название маршрута для страницы продукта
-                component: Details, // Компонент для страницы продукта
+                meta: { pageType: 'products' },
+                name: "DetailsPage", // Название маршрута для страницы продукта
+                component: DetailsPage, // Компонент для страницы продукта
             },
-
             {
                 path: "filters",
                 name: "Filters",
