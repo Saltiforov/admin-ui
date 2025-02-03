@@ -1,6 +1,11 @@
-@import 'primeicons/primeicons.css';
-@import "tailwindcss/preflight";
-@tailwind utilities;
+/*@import 'primeicons/primeicons.css';*/
+/*@import "tailwindcss/preflight";*/
+/*@tailwind utilities;*/
+
+@use 'primeicons/primeicons.css';
+@use "tailwindcss/preflight";
+@use "tailwindcss/utilities";
+@use "assets/styles/basic";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

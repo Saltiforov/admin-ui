@@ -1,0 +1,34 @@
+:root {
+    --header-color-primary: #575669;
+}
+
+.header-default h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: var(--header-color-primary); // todo example how to use color from var
+}
+
+.header-primary h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.header-secondary h2 {
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+
+.header-large h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.header-small h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}

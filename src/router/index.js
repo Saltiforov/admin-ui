@@ -5,9 +5,6 @@ import Products from "@/views/Products.vue";
 import Filters from "@/views/Filters.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
-import ProductDetails from "@/components/Products/ProductDetails.vue";
-import Details from "@/components/Products/Details.vue";
-import Register from "@/views/Auth/Register.vue";
 import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 
 function isAuthenticated() {
@@ -31,6 +28,12 @@ const routes = [
             },
             {
                 path: "products/:id", // Динамический путь для деталей продукта
+                meta: { pageType: 'products' },
+                name: "DetailsPage", // Название маршрута для страницы продукта
+                component: DetailsPage, // Компонент для страницы продукта
+            },
+            {
+                path: "products/create-new-product", // Динамический путь для деталей продукта
                 meta: { pageType: 'products' },
                 name: "DetailsPage", // Название маршрута для страницы продукта
                 component: DetailsPage, // Компонент для страницы продукта

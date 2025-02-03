@@ -1,93 +1,89 @@
 <template>
-  <div>
+  <div class="fields-block mb-12">
+    <div v-if="config?.header" class="mb-4 header-default">
+      <h2 class="text-lg font-bold">{{ config.header }}</h2>
+    </div>
+
     <div class="container">
-      <div class="form-content form-grid">
-        <div
-            v-for="(field, index) in config.fields"
-            :key="field.name"
-            class="form-group"
-            :class="getColumnClass(index, config.fields.length)"
-        >
-          <p class="form__title">{{ field.label }}:</p>
+      <div class="form-content grid grid-cols-2 gap-6">
+        <template v-for="field in baseFields" :key="field.name">
+          <div class="form-group">
+            <p class="form__title">{{ field.label }}:</p>
+            <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]" />
+          </div>
+        </template>
 
-          <component
-              :is="field.type"
-              v-bind="field.props"
-              v-model="formData[field.name]"
-              v-if="!field.slot"
-          >
-            <template v-slot:default>
-              <slot :name="field.slot" :data="formData" />
-            </template>
-          </component>
-        </div>
-      </div>
+        <template v-for="(group, index) in optionFieldGroups" :key="`group-${index}`">
+          <div class="form-group col-span-2 flex items-center gap-6">
+            <div v-for="field in group" :key="field.name">
+              <p class="form__title">{{ field.label }}:</p>
+              <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]" />
+            </div>
+          </div>
+        </template>
 
-      <div class="form-details__button">
-        <Button @click="saveForm">Save</Button>
+        <template v-for="field in textAreaFields" :key="field.name">
+          <div class="form-group col-span-2">
+            <p class="form__title">{{ field.label }}:</p>
+            <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]" />
+          </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
+import { ref, computed, onMounted } from "vue";
 
-  import {ref} from "vue";
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+  config: {
+    type: Object,
+    required: true,
+  }
+});
 
-  const formData = ref({})
+const formData = ref({});
 
-  defineProps({
-    data: {
-      type: Object,
-      required: true,
-    },
-    config: {
-      type: Object,
-      required: true,
+onMounted(() => {
+  props.config.items.forEach((field) => {
+    if (field.code && props?.data?.[field?.code]) {
+      formData.value[field.code] =
+          props.data[field.code] !== undefined ? props.data[field.code] : "";
     }
-  })
+  });
+});
 
-  const getColumnClass = (index, totalFields) => {
-    if (totalFields === 4) {
-      return index % 2 === 0 ? 'col-span-1' : 'col-span-1';
-    }
-    if (totalFields === 3) {
-      return index === 2 ? 'col-span-2' : 'col-span-1';
-    }
-    return 'col-span-1'; // Для случаев с 1 или 2 полями
-  };
+const baseFields = computed(() => {
+  return props.config.items.filter(f => !["Checkbox", "Rating", "TextArea"].includes(f.type));
+});
 
-  const saveForm = () => {
-    console.log('Form data saved:', formData.value);
-  };
+const optionFieldGroups = computed(() => {
+  const { groups, currentGroup } = props.config.items.reduce(
+      (acc, field) => {
+        if (field.type === "Checkbox" || field.type === "Rating") {
+          acc.currentGroup.push(field);
+        } else if (acc.currentGroup.length) {
+          acc.groups.push(acc.currentGroup);
+          acc.currentGroup = [];
+        }
+        return acc;
+      },
+      { groups: [], currentGroup: [] }
+  );
 
+  if (currentGroup.length) {
+    groups.push(currentGroup);
+  }
+
+  return groups;
+});
+
+const textAreaFields = computed(() => {
+  return props.config.items.filter(f => f.type === "TextArea");
+});
 </script>
-
-<style scoped>
-.container {
-  max-width: 1230px;
-  padding: 0 15px;
-  margin: 0 auto;
-}
-
-/* Грид для двух колонок */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 колонки */
-  gap: 24px 32px;
-  align-items: start;
-  max-width: 1200px;
-}
-
-/* Группировка заголовка и инпута */
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Если нужно растянуть блок на всю ширину */
-.full-width {
-  grid-column: span 2;
-}
-</style>
