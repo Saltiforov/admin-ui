@@ -26,6 +26,11 @@
       </div>
       <FileUpload
           ref="uploadRef"
+          :pt="{
+            status: {
+              style: 'background-color: green; color: white;'
+            }
+          }"
           :name="config.fieldName"
           :url="config.uploadUrl"
           :multiple="config.multiple"

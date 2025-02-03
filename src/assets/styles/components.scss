@@ -9,6 +9,9 @@
   height: 0;
 }
 
+.p-fileupload-status,.p-fileupload-file-badge {
+  display: none;
+}
 .custom-scroll {
   scrollbar-width: none;
 }

@@ -27,6 +27,12 @@ const routes = [
                 component: Products,
             },
             {
+                path: "/products/new", // Статический маршрут для создания нового продукта
+                meta: { pageType: 'products' },
+                name: "ProductCreate",
+                component: DetailsPage, // Компонент для создания продукта
+            },
+            {
                 path: "products/:id", // Динамический путь для деталей продукта
                 meta: { pageType: 'products' },
                 name: "DetailsPage", // Название маршрута для страницы продукта

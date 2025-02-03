@@ -3,7 +3,7 @@
     <!-- Боковое меню -->
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <img class="sidebrar-logo__img" src="../assets/icons/svg-11.svg" alt="">
+        <img class="sidebrar-logo__img" src="../assets/logo/sp-balkan-logo.png" alt="">
       </div>
       <ul class="menu">
         <li

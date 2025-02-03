@@ -5,7 +5,7 @@
         :config="dataTableConfig"
     >
       <template #header="{ data }">
-        <Button @click="addNewProduct(data._id)"> Add new product </Button>
+        <Button @click="addNewProduct"> Add new product </Button>
       </template>
       <template #image="{ data }">
         <img :src="data.image ? data.image : defaultProductImage" alt="Product image"
@@ -84,10 +84,9 @@ const deleteProduct = async (id) => {
   await deleteProductById(id)
 };
 
-const addNewProduct = (id) => {
+const addNewProduct = () => {
   router.push({
-    name: 'DetailsPage',
-    params: {id},
+    name: 'ProductCreate',
   });
 }
 
