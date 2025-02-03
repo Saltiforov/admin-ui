@@ -237,15 +237,16 @@ watch(
 const menu = ref();
 const items = ref([
   {
+    label: 'Operations',
     items: [
       {
         label: "Add",
-        icon: "pi pi-refresh",
+        icon: "pi pi-plus",
         command: () => handleOpenPopup(activeFilter.value, "add"),
       },
       {
         label: "Edit",
-        icon: "pi pi-upload",
+        icon: "pi pi-pencil",
         command: () => handleOpenPopup(activeFilter.value, "edit"),
       },
     ],

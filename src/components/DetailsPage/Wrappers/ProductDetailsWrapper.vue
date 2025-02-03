@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import {defineProps, ref, watch} from 'vue';
+import {computed, defineProps, ref, watch} from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import {deepClone} from "@/utils/index.js";
 
@@ -33,10 +33,14 @@ const props = defineProps({
   }
 });
 
+const isEditMode = computed(() => {
+  return props.data && props.data._id;  // Предполагаем, что "id" означает наличие данных для редактирования
+});
+
 const onSubmit = () => {
   //todo send create product request
   // todo check post or put (u can use route id for this)
-  console.log('SUBMIT');
+  console.log('SUBMIT', props.data);
 };
 
 watch(

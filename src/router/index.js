@@ -33,12 +33,6 @@ const routes = [
                 component: DetailsPage, // Компонент для страницы продукта
             },
             {
-                path: "products/create-new-product", // Динамический путь для деталей продукта
-                meta: { pageType: 'products' },
-                name: "DetailsPage", // Название маршрута для страницы продукта
-                component: DetailsPage, // Компонент для страницы продукта
-            },
-            {
                 path: "filters",
                 name: "Filters",
                 component: Filters,

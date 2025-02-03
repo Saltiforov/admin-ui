@@ -5,31 +5,65 @@
         :config="dataTableConfig"
     >
       <template #header="{ data }">
-        <Button @click="addNewProduct(data)"> Add new product </Button>
+        <Button @click="addNewProduct(data._id)"> Add new product </Button>
       </template>
       <template #image="{ data }">
-        <img :src="`https://primefaces.org/cdn/primevue/images/product/${data.image}`" alt="Product image"
-             class="w-full table-image h-auto rounded object-contain"/>
+        <img :src="data.image ? data.image : defaultProductImage" alt="Product image"
+             class="table-image h-auto rounded object-contain"/>
       </template>
       <template style="width: 5%" #actions="{ data }">
-        <Button class="action-button"  @click="editProduct(data._id)"> <i class="pi pi-pencil" style="font-size: 1rem"></i> </Button>
-        <Button class="action-button"  @click="confirmDelete(data)"> <i class="pi pi-trash" style="font-size: 1rem"></i> </Button>
+        <Button
+            type="button"
+            icon="pi pi-ellipsis-v"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+            @click="(event) => toggle(event, data)"
+        />
+        <div>
+        </div>
       </template>
     </CustomDataTable>
     <ConfirmDialog/>
+    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
   </div>
 </template>
 
 <script setup>
-import {ref, watchEffect} from 'vue';
+import {computed, ref, watchEffect} from 'vue';
 import {deleteProductById, getProductsList} from "@/services/api/product-service.api.js";
 import { useToast } from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import router from "@/router/index.js";
+import defaultProductImage from '@/assets/icons/shopping-bag.svg';
 
 const confirm = useConfirm();
 const toast = useToast();
 
+const productData = ref({});
+const toggle = (event, data) => {
+  productData.value = data
+  menu.value.toggle(event);
+};
+
+
+const menu = ref();
+const items = ref([
+  {
+    label: 'Operations',
+    items: [
+      {
+        label: "Edit",
+        icon: "pi pi-pencil",
+        command: () => editProduct(productData.value._id),
+      },
+      {
+        label: "Delete",
+        icon: "pi pi-trash",
+        command: () => confirmDelete(productData.value),
+      },
+    ],
+  },
+]);
 
 const products = ref();
 
@@ -50,7 +84,11 @@ const deleteProduct = async (id) => {
   await deleteProductById(id)
 };
 
-const addNewProduct = (data) => {
+const addNewProduct = (id) => {
+  router.push({
+    name: 'DetailsPage',
+    params: {id},
+  });
 }
 
 

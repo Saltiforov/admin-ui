@@ -2,8 +2,11 @@
   <div class="dynamic-attrs-block mb-12">
     <Accordion v-if="config.accordion" class="mt-12">
       <AccordionTab :header="config.header || 'Настройки'">
-        <div class="p-4">
-          <div class="grid gap-6">
+        <div class="p-4 flex justify-between">
+          <div
+              class="grid gap-6 custom-scroll"
+              :style="keyValuePairs.length > 6 ? 'height: 400px; overflow-y: auto;' : ''"
+          >
             <div
                 v-for="(pair, index) in keyValuePairs"
                 :key="index"
@@ -23,7 +26,7 @@
           </div>
           <Button
               :label="config.buttonLabel"
-              class="mt-3"
+              class="self-start"
               @click="addPair"
               outlined
           />
@@ -53,12 +56,12 @@
             />
           </div>
         </div>
-        <Button
-            :label="config.buttonLabel"
-            class="mt-3"
-            @click="addPair"
-            outlined
-        />
+          <Button
+              :label="config.buttonLabel"
+              class="mt-3"
+              @click="addPair"
+              outlined
+          />
       </div>
     </div>
   </div>
@@ -98,7 +101,7 @@ function addPair() {
 
 <style scoped>
 .p-4 {
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
 }
 </style>
