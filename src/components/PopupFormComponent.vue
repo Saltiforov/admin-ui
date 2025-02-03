@@ -7,7 +7,7 @@
       :style="{ width: '40rem' }"
       class="p-fluid"
   >
-    <form @submit.prevent="onFormSubmit" class="flex items-center flex-col gap-4 w-full">
+    <form @submit.prevent="onFormSubmit">
       <div
           v-for="field in popupConfig?.fields"
           :key="field.code"
