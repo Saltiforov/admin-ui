@@ -121,32 +121,6 @@ const props = defineProps({
 })
 
 
-function mapFilters(inputArray) {
-  const mapNode = (item, idx, parentKey = "") => {
-    const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
-
-    return {
-      key: key, // Теперь ключ создается правильно
-      id: item._id,
-      data: {
-        name: {
-          uk: item.name.uk,
-          ru: item.name.ru,
-        },
-        code: item.code || "unknown",
-        icon: item.icon,
-        description: item.description || "Нет описания",
-      },
-      children: item.children && item.children.length
-          ? item.children.map((child, childIdx) => mapNode(child, childIdx, key)) // Передаем текущий key как parentKey
-          : [],
-    };
-  };
-
-  return inputArray.map((item, idx) => mapNode(item, idx));
-}
-
-
 const deleteItems = ref([]);
 
 const deleteNodeRecursive = (nodesArray, nodeId, nodeCode) => {
@@ -231,11 +205,10 @@ const onNodeExpand = (node) => {
 };
 
 const onNodeCollapse = (node) => {
-  const updatedKeys = { ...selectedKeys.value };
+  const updatedKeys = {...selectedKeys.value};
   updatedKeys[node.key] = false;
   selectedKeys.value = updatedKeys;
 };
-
 
 
 watch(() => selectedKeys.value, () => {
@@ -360,11 +333,8 @@ const updateExpandedKeys = (keys) => {
 const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
 
-  console.log("onAddFilter", options);
-  console.log("onAddFilter", parent);
 
   if (isInvalidParent(parent)) {
-    console.error("Parent key is invalid:", parent);
     return;
   }
 
@@ -374,7 +344,10 @@ const onAddFilter = (options) => {
   }
 
   if (!parent) {
-    handleAddRootNode(newFilter);
+    console.log("newFilter", newFilter)
+    createNode(newFilter);
+
+
     show(`${capitalizeFirstLetter(newFilter['name.ua'])} / ${capitalizeFirstLetter(newFilter['name.ru'])} added as a new node `)
     return;
   }
@@ -400,75 +373,41 @@ const handleEditFilter = (parent, newFilter) => {
 
 const addedNodes = ref(0)
 
-const handleAddRootNode = (newFilter) => {
-  const newKey = nodes.value.length.toString();
-  const nodeData = {
-    key: newKey,
-    data: {
-      name: {
-        uk: newFilter['name.ua'],
-        ru: newFilter['name.ru'],
-      },
-      code: newFilter.code,
-      description: newFilter.description,
-      icon: newFilter.icon || '',
-    },
-    children: [],
-  }
-
-  addedNodes.value++
-  nodes.value.push(nodeData);
-
-  console.log("handleAddRootNode", newFilter)
-  console.log("Added new root node",addedNodes.value);
-};
-
-
-const handleAddChildNode = (parent, newFilter) => {
-  const activeFilter = deepSearchByCode(nodes.value, parent.key);
-
-  if (!activeFilter) {
-    console.error("Active filter not found for parent key:", parent.key);
-    return;
-  }
-
-  const childNode = createChildNode(parent, newFilter);
-  activeFilter.children.push(childNode);
-
-  expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
-};
-
-const createChildNode = (parent, newFilter) => {
-  return {
-    key: pathGenerator(parent),
-    data: {
-      name: {
-        uk: newFilter['name.ua'],
-        ru: newFilter['name.ru'],
-      },
-      code: newFilter.code,
-      icon: newFilter.icon,
-      description: newFilter.description,
-    },
-    children: [],
-  };
-};
-
-onMounted(() => {
-  eventBus.on("add-filter", onAddFilter);
-});
-
-onUnmounted(() => {
-  eventBus.off("add-filter", onAddFilter);
-});
-
-const activeFilter = ref({});
-
-const toggle = (event, node, level) => {
-  console.log("toggle node", node)
-  activeFilter.value = node;
-  menu.value.toggle(event);
-};
+// const handleAddRootNode = (newFilter) => {
+//   const newKey = nodes.value.length.toString();
+//   const nodeData = {
+//     key: newKey,
+//     data: {
+//       name: {
+//         uk: newFilter['name.ua'],
+//         ru: newFilter['name.ru'],
+//       },
+//       code: newFilter.code,
+//       description: newFilter.description,
+//       icon: newFilter.icon || '',
+//     },
+//     children: [],
+//   }
+//
+//   addedNodes.value++
+//   nodes.value.push(nodeData);
+// };
+//
+// const createChildNode = (parent, newFilter) => {
+//   return {
+//     key: pathGenerator(parent),
+//     data: {
+//       name: {
+//         uk: newFilter['name.ua'],
+//         ru: newFilter['name.ru'],
+//       },
+//       code: newFilter.code,
+//       icon: newFilter.icon,
+//       description: newFilter.description,
+//     },
+//     children: [],
+//   };
+// };
 
 const mapFiltersForSubmit = (data) => {
   const mapChildren = (children) => {
@@ -491,6 +430,87 @@ const mapFiltersForSubmit = (data) => {
     }))
   };
 };
+
+function mapFilters(inputArray) {
+  const mapNode = (item, idx, parentKey = "") => {
+    const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
+
+    return {
+      key: key, // Теперь ключ создается правильно
+      id: item._id,
+      data: {
+        name: {
+          uk: item.name.uk,
+          ru: item.name.ru,
+        },
+        code: item.code || "unknown",
+        icon: item.icon,
+        description: item.description || "Нет описания",
+      },
+      children: item.children && item.children.length
+          ? item.children.map((child, childIdx) => mapNode(child, childIdx, key)) // Передаем текущий key как parentKey
+          : [],
+    };
+  };
+
+  return inputArray.map((item, idx) => mapNode(item, idx));
+}
+
+const createNode = (parent = null, newFilter) => {
+  const newKey = parent ? pathGenerator(parent) : nodes.value.length.toString();
+
+  const node = {
+    key: newKey,
+    data: {
+      name: {
+        uk: newFilter['name.ua'],
+        ru: newFilter['name.ru'],
+      },
+      code: newFilter.code,
+      description: newFilter.description,
+      icon: newFilter.icon || null,
+    },
+    children: [],
+  }
+
+  if (parent) {
+    return node
+  } else {
+    addedNodes.value++
+    nodes.value.push(node);
+  }
+}
+
+const handleAddChildNode = (parent, newFilter) => {
+  const activeFilter = deepSearchByCode(nodes.value, parent.key);
+
+  if (!activeFilter) {
+    console.error("Active filter not found for parent key:", parent.key);
+    return;
+  }
+
+  const childNode = createNode(parent, newFilter);
+  activeFilter.children.push(childNode);
+
+  expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
+};
+
+
+onMounted(() => {
+  eventBus.on("add-filter", onAddFilter);
+});
+
+onUnmounted(() => {
+  eventBus.off("add-filter", onAddFilter);
+});
+
+const activeFilter = ref({});
+
+const toggle = (event, node, level) => {
+  activeFilter.value = node;
+  menu.value.toggle(event);
+};
+
 
 const capitalizeFirstLetter = (value) => {
   if (!value) return '';
@@ -545,7 +565,7 @@ const configActionsBar = ref({
       props: {
         label: 'Submit',
         class: 'filter-button',
-        style: { margin: '0 10px' },
+        style: {margin: '0 10px'},
         icon: 'pi pi-check',
       },
       onClick: saveFilters,

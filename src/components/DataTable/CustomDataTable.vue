@@ -8,9 +8,6 @@
         :tableStyle="config.tableStyle"
         :class="config.class"
     >
-      <template #header>
-        <slot name="header"></slot>
-      </template>
       <!-- Динамическое создание колонок -->
       <template v-for="col in config.columns" :key="col.field">
         <Column

@@ -1,6 +1,10 @@
 <template>
   <div class="additional__actions"></div>
-  <FilterConfiguratorTable @filters-updated="emit('filters-updated')" :filters="filters"></FilterConfiguratorTable>
+  <FilterConfiguratorTable
+      :filters="filters"
+      @filters-updated="emit('filters-updated')"
+  >
+  </FilterConfiguratorTable>
   <div class="footer__blocks"></div>
 </template>
 
