@@ -1,16 +1,19 @@
 <template>
   <div>
+    <ActionsButtonsBar :config="configActionsBar"/>
     <CustomDataTable
         title="Products"
         :config="dataTableConfig"
     >
-      <template #header="{ data }">
-        <Button @click="addNewProduct"> Add new product </Button>
-      </template>
       <template #image="{ data }">
         <img :src="data.image ? data.image : defaultProductImage" alt="Product image"
              class="table-image h-auto rounded object-contain"/>
       </template>
+      <template #availability="{ data }">
+        <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
+        <span v-else>---</span>
+      </template>
+
       <template style="width: 5%" #actions="{ data }">
         <Button
             type="button"
@@ -35,9 +38,28 @@ import { useToast } from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import router from "@/router/index.js";
 import defaultProductImage from '@/assets/icons/shopping-bag.svg';
+import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 
 const confirm = useConfirm();
 const toast = useToast();
+
+const inputCodeValue = ref('');
+const noResultsMessage = ref('');
+
+const addNewFilter = () => {
+  console.log('Add new filter');
+};
+const saveFilters = () => {
+  console.log('Save filters');
+};
+const onSearch = () => {
+  console.log('Search', inputCodeValue.value);
+};
+
 
 const productData = ref({});
 const toggle = (event, data) => {
@@ -90,6 +112,19 @@ const addNewProduct = () => {
   });
 }
 
+const configActionsBar = ref({
+  buttons: [
+    {
+      component: Button,
+      props: {
+        label: 'Add new product',
+        class: 'filter-button',
+        icon: 'pi pi-check',
+      },
+      onClick: addNewProduct
+    },
+  ],
+});
 
 const dataTableConfig = ref({
   value: products.value,
@@ -108,7 +143,7 @@ const dataTableConfig = ref({
     {field: 'price', header: 'Price'},
     {field: 'description', header: 'Description'},
     {field: 'category', header: 'Category'},
-    {field: 'availability', header: 'Availability'},
+    {field: 'availability', header: 'Availability', slotName: 'availability'},
     {
       field: 'actions',
       header: '',

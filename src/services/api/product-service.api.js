@@ -1263,6 +1263,24 @@ export async function getProductById(productId) {
     }
 }
 
+export async function updateProductById(productId, updatedProduct) {
+    try {
+        const api = app.config.globalProperties.$api;
+
+        const response = await api.put(`${router.products}/${productId}`, updatedProduct);
+
+        if (response.status === 200) {
+            return response.data;
+        }
+
+    } catch (error) {
+        console.error('Error in getFiltersList:', error);
+        throw error;
+    }
+}
+
+
+
 export async function deleteProductById(productId) {
     const api = app.config.globalProperties.$api;
 

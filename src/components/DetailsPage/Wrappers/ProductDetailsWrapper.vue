@@ -1,6 +1,11 @@
 <template>
   <div class="page-container">
-    <FieldsBlock :config="config.fields" :data="data" />
+    <FieldsBlock
+        :config="config.fields"
+        :data="data"
+        :errors="fieldsErrors"
+        @update:formData="handleFormDataUpdate"
+    />
     <UploadFilesBlock :config="config.files" :data="data" />
     <DynamicAttrsBlock :config="config.dynamicAttrs" :data="data" />
     <FooterActionBlock :config="config.footerActions" :data="data" @submit="onSubmit" />
@@ -14,9 +19,9 @@
 </template>
 
 <script setup>
-import {computed, defineProps, ref, watch} from 'vue';
+import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
-import {deepClone} from "@/utils/index.js";
+import {createProduct, updateProductById} from "@/services/api/product-service.api.js";
 
 const props = defineProps({
   config: {
@@ -34,13 +39,91 @@ const props = defineProps({
 });
 
 const isEditMode = computed(() => {
-  return props.data && props.data._id;  // Предполагаем, что "id" означает наличие данных для редактирования
+  return !!props.data;  // Предполагаем, что "id" означает наличие данных для редактирования
 });
 
-const onSubmit = () => {
+
+const productData = ref(null);
+
+onMounted(() => {
+  console.log("onMounted", props.config);
+})
+
+const fieldsErrors = ref(null);
+
+const validateForm = () => {
+  if (isEditMode && !productData.value) {
+    return;
+  }
+  const requiredFields = props.config.fields.items.filter(field => field.props?.required);
+
+  const invalidFields = requiredFields.filter(field => {
+    const value = productData.value?.[field.name];
+    return value === undefined || value === null || value === "";
+  });
+
+  if (invalidFields.length) {
+    fieldsErrors.value = invalidFields.reduce((acc, field) => {
+      acc[field.code] = `${field.label || field.code} is required`;
+      return acc;
+    }, {});
+    return false;
+  }
+  fieldsErrors.value = {}
+  return true;
+};
+
+const formatOptionsForSubmit = (data) => {
+  if (!data) return [];
+
+  if (Array.isArray(data)) {
+    return data.map(item => item.name);
+  }
+
+  if (typeof data === "object" && data.name) {
+    return [data.name];
+  }
+
+  return [];
+};
+
+const createNewProduct = async (product) => {
+  try {
+    const data = {
+      ...product,
+      tags: formatOptionsForSubmit(product.tags),
+      deliveryOptions: formatOptionsForSubmit(product.deliveryOptions),
+    }
+    await createProduct(data)
+  } catch (error) {
+    console.error('Error in createProduct:', error);
+  }
+}
+
+
+
+const handleFormDataUpdate = (newFormData) => {
+  productData.value = newFormData;
+};
+
+
+
+const onSubmit = async (action) => {
+
+  if ( !validateForm() ) return;
+
+  if (!isEditMode.value) {
+    await createNewProduct(productData.value);
+    return;
+  }
+
+  await updateProductById(props.data._id, productData.value)
+
+
+
   //todo send create product request
   // todo check post or put (u can use route id for this)
-  console.log('SUBMIT', props.data);
+  console.log('onSubmit', action);
 };
 
 watch(

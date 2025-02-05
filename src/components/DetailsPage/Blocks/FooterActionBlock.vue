@@ -7,6 +7,8 @@
         :class="action.class"
         @click="handleAction(action)"
     />
+
+
   </div>
 </template>
 
@@ -18,14 +20,26 @@ const props = defineProps({
   config: {
     type: Object,
     required: true,
+  },
+  data: {
+    type: Object,
+    required: true,
   }
 });
 
+const isEditMode = computed(() => {
+  return !!props.data;
+})
+
 const actions = computed(() => {
-  return props.config || [
-    { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
-    { label: 'Save', type: 'save', actionEventName: 'submit' }
-  ];
+  if (!props.config) {
+    return [
+      { label: 'Cancel1', type: 'cancel', actionEventName: 'cancel' },
+      { label: 'Save', type: 'save', actionEventName: 'submit' }
+    ];
+  }
+
+  return props.config[isEditMode.value ? 'edit' : 'create'] || [];
 });
 
 const emit = defineEmits(['submit', 'cancel']);

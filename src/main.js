@@ -6,6 +6,7 @@ import PrimeVue from "primevue/config";
 import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
+import IconField from "primevue/iconfield";
 import FileUpload from "primevue/fileupload";
 import Rating from 'primevue/rating';
 import Select from 'primevue/select';
@@ -22,6 +23,7 @@ import AppState from './plugins/appState.js';
 
 const app = createApp(App);
 import router from "./router";
+import InputIcon from "primevue/inputicon";
 app.use(AppState);
 app.use(fetchPlugin);
 app.use(ToastService);
@@ -29,6 +31,8 @@ app.use(ConfirmationService);
 
 app.component('InputText', InputText);
 app.component('InputNumber', InputNumber);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
 app.component('Checkbox', Checkbox);
 app.component('MultiSelect', MultiSelect);
 app.component('Button', Button);

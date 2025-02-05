@@ -115,12 +115,14 @@ export function useDetailsConfig(pageType, id) {
                             code: 'rating',
                             label: 'Rating',
                             type: 'Rating',
+                            onlyEditMode: true,
                             props: {
                                 stars: 5,
                                 cancel: false,
                                 placeholder: 'Select rating',
                                 required: false
-                            }
+                            },
+
                         },
                         {
                             name: 'reviewCount',
@@ -175,6 +177,13 @@ export function useDetailsConfig(pageType, id) {
                     header: 'Specification:',
                     accordion: true,
                 },
+                footerActions: {
+                    create: [{ label: 'Create new product', type: 'create',actionEventName: 'create'}],
+                    edit: [
+                        { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
+                        { label: 'Save', type: 'save', actionEventName: 'submit' }
+                    ]
+                }
             },
             pageName: ProductDetailsWrapper,
             fetchData: async () => await getProductById(id),

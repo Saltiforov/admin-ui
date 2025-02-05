@@ -1,16 +1,6 @@
 <template>
   <div>
-    <div class="buttons-wrapper">
-      <Button label="Add" class="filter-button" icon="pi pi-check" @click="addNewFilter"/>
-      <Button label="Submit" class="filter-button" icon="pi pi-check" @click="saveFilters"/>
-      <IconField class="filter-button">
-        <InputIcon class="pi pi-search"/>
-        <InputText v-model="inputCodeValue" @input="onSearch" placeholder="Enter the code, please."/>
-      </IconField>
-      <div v-if="noResultsMessage" class="no-results-message">
-        {{ noResultsMessage }}
-      </div>
-    </div>
+    <ActionsButtonsBar :config="configActionsBar"/>
     <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
         class="configurator-table"
@@ -77,8 +67,7 @@ import {deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
 import {createFilters, deleteFilters} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
+import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -175,6 +164,11 @@ const collectDeletedIds = (node) => {
   if (node.children && node.children.length > 0) {
     node.children.forEach((child) => collectDeletedIds(child)); // Рекурсивно записываем ID всех потомков
   }
+};
+
+const onSearch = (event) => {
+  const searchCode = event.target.value;
+  searchByCodeTopLevel(searchCode);
 };
 
 const deleteNode = async (node) => {
@@ -281,7 +275,7 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
     },
     {
       code: "description",
-      component: "InputText",
+      component: "TextArea",
       props: {type: "text", placeholder: "Description", style: "width: 100%; margin-bottom: 15px"},
       defaultValue: isEditMode && filter ? filter.data.description : "",
       validators: [
@@ -499,6 +493,52 @@ const pathGenerator = (parent) => {
 
 const inputCodeValue = ref('')
 
+const configActionsBar = ref({
+  buttons: [
+    {
+      component: 'Button',
+      props: {
+        label: 'Add',
+        class: 'filter-button',
+        icon: 'pi pi-check',
+      },
+      onClick: addNewFilter,
+    },
+    {
+      component: 'Button',
+      props: {
+        label: 'Submit',
+        class: 'filter-button',
+        style: { margin: '0 10px' },
+        icon: 'pi pi-check',
+      },
+      onClick: saveFilters,
+    },
+    {
+      component: 'IconField',
+      props: {
+        class: 'filter-button',
+      },
+      children: [
+        {
+          component: 'InputIcon',
+          props: {
+            class: 'pi pi-search',
+          },
+        },
+        {
+          component: 'InputText',
+          props: {
+            vModel: inputCodeValue,
+            placeholder: 'Enter the code, please.',
+            onInput: onSearch,
+          },
+        },
+      ],
+    },
+  ],
+});
+
 
 const searchByCodeTopLevel = (searchCode) => {
   if (searchCode.trim().length >= 3) {
@@ -524,11 +564,6 @@ const searchByCodeTopLevel = (searchCode) => {
     nodes.value = [...originalNodes.value];
     noResultsMessage.value = '';
   }
-};
-
-const onSearch = (event) => {
-  const searchCode = event.target.value;
-  searchByCodeTopLevel(searchCode);
 };
 
 

@@ -111,6 +111,7 @@ const onFormSubmit = () => {
       parent: popupConfig.parentFilter,
       eventType: popupConfig.eventType,
     });
+    iconPath.value = null
     closePopup();
   }
   console.log('Valid data popupConfig: END', popupConfig);
