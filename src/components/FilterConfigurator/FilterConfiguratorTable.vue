@@ -456,7 +456,9 @@ function mapFilters(inputArray) {
   return inputArray.map((item, idx) => mapNode(item, idx));
 }
 
-const createNode = (parent = null, newFilter) => {
+const createNode = (newFilter, parent = null) => {
+  console.log('parent', parent)
+  console.log('createNode newFilter', newFilter)
   const newKey = parent ? pathGenerator(parent) : nodes.value.length.toString();
 
   const node = {
@@ -489,7 +491,7 @@ const handleAddChildNode = (parent, newFilter) => {
     return;
   }
 
-  const childNode = createNode(parent, newFilter);
+  const childNode = createNode(newFilter, parent);
   activeFilter.children.push(childNode);
 
   expandedKeys.value = {...expandedKeys.value, [parent.key]: true};

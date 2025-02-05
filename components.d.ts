@@ -13,6 +13,7 @@ declare module 'vue' {
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
     AccordionTab: typeof import('primevue/accordiontab')['default']
     AccordionThree: typeof import('./src/components/AccordionThree.vue')['default']
+    ActionsButtonsBar: typeof import('./src/components/ActionsButtonsBar/ActionsButtonsBar.vue')['default']
     AuthForm: typeof import('./src/components/AuthForm.vue')['default']
     Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
