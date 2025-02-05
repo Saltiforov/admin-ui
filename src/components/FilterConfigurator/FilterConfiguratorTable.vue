@@ -279,7 +279,7 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
       defaultValue: isEditMode && filter ? filter.data.code : "",
       validators: [
         (value) => (value ? true : "Code is required"),
-        (value) => /^[a-zA-Z]+$/.test(value) || "Code can only contain English letters",
+        (value) => /^[a-zA-Z0-9-_]+$/.test(value) || "Code can only contain English letters",
       ],
     },
     {

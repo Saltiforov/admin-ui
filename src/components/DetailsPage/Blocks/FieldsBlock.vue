@@ -84,6 +84,7 @@ onMounted(() => {
 
 const emit = defineEmits(["update:formData"]);
 
+// TODO refactor over emitted ( trigger on any changes  )
 const handleInput = (fieldName) => {
   emit("update:formData", formData.value);
 };
