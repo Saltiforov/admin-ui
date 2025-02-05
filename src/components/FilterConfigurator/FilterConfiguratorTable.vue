@@ -6,7 +6,10 @@
         class="configurator-table"
         v-else
         v-model:contextMenuSelection="selectedNode"
+        v-model:selectionKeys="selectedKeys"
         autoLayout
+        selectionMode="none"
+        :metaKeySelection="false"
         :value="nodes"
         :loading="loading"
         :paginator="true"
@@ -14,8 +17,11 @@
         :rowsPerPageOptions="[5, 10, 25]"
         :expanded-keys="expandedKeys"
         contextMenu
+        @click="onRowClick"
         @row-contextmenu="onRowContextMenu"
         @update:expandedKeys="updateExpandedKeys"
+        @nodeExpand="onNodeExpand"
+        @nodeCollapse="onNodeCollapse"
     >
       <Column header="Name" :expander="true" style="width: 34%">
         <template #body="{ node }">
@@ -205,6 +211,36 @@ const confirmDelete = (node) => {
     },
   });
 };
+
+const onRowClick = (node) => {
+  console.log("onRowClick", node);
+}
+
+const selectedKeys = ref({});
+
+const addSelectedKeysRecursively = (node) => {
+  selectedKeys.value[node.key] = true;
+
+  if (node.children && node.children.length > 0) {
+    node.children.forEach(child => addSelectedKeysRecursively(child));
+  }
+};
+
+const onNodeExpand = (node) => {
+  addSelectedKeysRecursively(node);
+};
+
+const onNodeCollapse = (node) => {
+  const updatedKeys = { ...selectedKeys.value };
+  updatedKeys[node.key] = false;
+  selectedKeys.value = updatedKeys;
+};
+
+
+
+watch(() => selectedKeys.value, () => {
+  console.log("selectedKeys.value", selectedKeys.value);
+});
 
 
 onMounted(() => {

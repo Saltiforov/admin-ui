@@ -8,6 +8,15 @@
   display: none;
 }
 
+.p-treetable-tbody > tr.p-treetable-row-selected {
+  background-color: #d3d3d3 !important;
+  color: black !important;
+}
+
+.p-treetable-tbody > tr[aria-level]:not([aria-level="1"]).p-treetable-row-selected {
+  background-color: #efefef !important;
+}
+
 .p-accordionpanel:not(.p-accordionpanel-active):not(.p-disabled) > .p-accordionheader:hover {
   color: var(--header-color-primary) !important;
 }
