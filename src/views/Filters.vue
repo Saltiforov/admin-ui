@@ -1,5 +1,8 @@
 <template>
-  <FilterConfiguratorWrapper @filters-updated="filtersUpdated" :filters="filters"></FilterConfiguratorWrapper>
+  <FilterConfiguratorWrapper
+      @filters-updated="filtersUpdated"
+      :filters="filters"
+  />
 </template>
 
 <script setup>

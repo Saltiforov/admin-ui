@@ -8,7 +8,7 @@
         v-model:contextMenuSelection="selectedNode"
         v-model:selectionKeys="selectedKeys"
         autoLayout
-        selectionMode="none"
+        selectionMode="multiple"
         :metaKeySelection="false"
         :value="nodes"
         :loading="loading"
@@ -17,17 +17,18 @@
         :rowsPerPageOptions="[5, 10, 25]"
         :expanded-keys="expandedKeys"
         contextMenu
-        @click="onRowClick"
         @row-contextmenu="onRowContextMenu"
         @update:expandedKeys="updateExpandedKeys"
         @nodeExpand="onNodeExpand"
         @nodeCollapse="onNodeCollapse"
+        @nodeSelect="onNodeSelect"
+        @nodeUnselect="onNodeUnselect"
     >
-      <Column header="Name" :expander="true" style="width: 34%">
-        <template #body="{ node }">
-          <div>{{ capitalizeFirstLetter(node.data.name['uk']) }}</div>
-          /
-          <div>{{ capitalizeFirstLetter(node.data.name['ru']) }}</div>
+      <Column  header="Name" :expander="true" style="width: 34%" >
+        <template #body="{ node }" >
+            <div>{{ capitalizeFirstLetter(node.data.name['uk']) }}</div>
+            /
+            <div>{{ capitalizeFirstLetter(node.data.name['ru']) }}</div>
         </template>
       </Column>
       <Column field="code" header="Code" style="width: 15%"></Column>
@@ -186,9 +187,15 @@ const confirmDelete = (node) => {
   });
 };
 
-const onRowClick = (node) => {
-  console.log("onRowClick", node);
-}
+
+const onNodeSelect = (node) => {
+  expandedKeys.value = {...expandedKeys.value, [node.key]: true};
+};
+const onNodeUnselect = (node) => {
+  if (node.key in expandedKeys.value) {
+    delete expandedKeys.value[node.key]; // Удаляем ноду из expandedKeys
+  }
+};
 
 const selectedKeys = ref({});
 
