@@ -9,6 +9,10 @@
         <p v-if="data.roles.length"> {{ data.roles }} </p>
         <p v-else>---</p>
       </template>
+      <template #street="{ data }">{{ data.address['street'] }}</template>
+      <template #city="{ data }">{{ data.address['city'] }}</template>
+      <template #postalCode="{ data }">{{ data.address['postalCode'] }}</template>
+      <template #country="{ data }">{{ data.address['country'] }}</template>
     </CustomDataTable>
   </div>
 </template>
@@ -36,10 +40,20 @@ const dataTableConfig = ref({
   tableStyle: "min-width: 50rem; border-radius: 20px",
   class: "custom-table",
   columns: [
-    {field: 'last_interaction', header: 'Last Interaction'},
     {field: 'username', header: 'Username'},
-    {field: 'password', header: 'Password'},
+    {field: 'firstName', header: 'First Name'},
+    {field: 'lastName', header: 'Last Name'},
+    {field: 'email', header: 'Email'},
+    {field: 'phone', header: 'Phone'},
     {field: 'roles', header: 'Roles', slotName: 'roles'},
+    {field: 'last_interaction', header: 'Last Interaction'},
+    {field: 'createdAt', header: 'Created At'},
+    {field: 'updatedAt', header: 'Updated At'},
+    // Разбираем вложенный объект address
+    {field: 'address.street', header: 'Street', slotName: 'street'},
+    {field: 'address.city', header: 'City', slotName: 'city'},
+    {field: 'address.postalCode', header: 'Postal Code', slotName: 'postalCode'},
+    {field: 'address.country', header: 'Country', slotName: 'country'},
   ],
 });
 

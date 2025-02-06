@@ -22,7 +22,6 @@
     <div v-if="isLoading" class="loader-overlay">
       <!-- Можно использовать любой компонент лоадера, например, из PrimeVue -->
       <ProgressSpinner class="loader-spinner"/>
-      {{ allData }}
     </div>
   </div>
 </template>

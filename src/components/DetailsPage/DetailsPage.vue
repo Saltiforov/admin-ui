@@ -24,7 +24,6 @@ const route = useRoute();
 const pageType = route.meta.pageType; // например, "products" или "users"
 const id = route.params.id;
 
-console.log(" useDetailsConfig(pageType, id)",  useDetailsConfig(pageType, id))
 console.log(" route.params.id", id)
 
 const { config, data, pageName, isLoading, stopLoading, startLoading } = useDetailsConfig(pageType, id);
