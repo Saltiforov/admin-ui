@@ -18,8 +18,10 @@ import {ref, watchEffect} from "vue";
 import {getUserList} from "@/services/api/user-service.api.js";
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import Button from "primevue/button";
+import router from "@/router/index.js";
 
 const users = ref([])
+
 
 const fetchUsers = async () => {
   users.value = await getUserList()
@@ -50,6 +52,9 @@ const configActionsBar = ref({
         class: 'filter-button',
         icon: 'pi pi-user-plus',
       },
+      onClick: () => router.push({
+        name: 'UserCreate',
+      }),
     },
   ],
 });

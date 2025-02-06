@@ -49,6 +49,13 @@ const routes = [
                 name: "Users",
                 component: Users,
             },
+            {
+                path: "/users/new",
+                meta: { pageType: 'users' },
+                name: "UserCreate",
+                component: DetailsPage,
+            },
+
 
         ],
     },

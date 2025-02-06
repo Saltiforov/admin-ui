@@ -1,6 +1,7 @@
 import {ref, computed, onMounted} from 'vue';
 import {getProductById} from '@/services/api/product-service.api.js';
 import ProductDetailsWrapper from "@/components/DetailsPage/Wrappers/ProductDetailsWrapper.vue";
+import UserDetailsWrapper from "@/components/DetailsPage/Wrappers/UserDetailsWrapper.vue";
 
 export function useDetailsConfig(pageType, id) {
     const data = ref(null);
@@ -187,6 +188,60 @@ export function useDetailsConfig(pageType, id) {
             },
             pageName: ProductDetailsWrapper,
             fetchData: async () => await getProductById(id),
+        },
+        users: {
+            blockList: {
+                fields: {
+                    items: [
+                        {
+                            name: 'userName',
+                            code: 'userName',
+                            label: 'User Name',
+                            type: 'InputText',
+                            props: {
+                                type: 'text',
+                                placeholder: 'Enter user name',
+                                required: true
+                            }
+                        },
+                        {
+                            name: 'roles',
+                            code: 'roles',
+                            label: 'Roles',
+                            type: 'MultiSelect',
+                            props: {
+                                options: [
+                                    { label: 'Admin', value: 'admin' },
+                                    { label: 'SuperAdmin', value: 'super Admin' },
+                                ],
+                                optionLabel: 'label',
+                                placeholder: 'Select roles',
+                                class: 'w-full md:w-56',
+                                required: false
+                            }
+                        },
+                    ],
+                    header: 'Fill user information:',
+                },
+                files: {
+                    uploadUrl: `${import.meta.env.VITE_BASIC_API_URL}/api/upload`,
+                    fieldName: 'file',
+                    multiple: true,
+                    auto: false,
+                    maxFileSize: 1000000,
+                    customUpload: false,
+                    accordion: true,
+                    header: 'Upload Image:',
+                },
+                footerActions: {
+                    create: [{ label: 'Create new user', type: 'create',actionEventName: 'create'}],
+                    edit: [
+                        { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
+                        { label: 'Save', type: 'save', actionEventName: 'submit' }
+                    ]
+                }
+            },
+            pageName: UserDetailsWrapper,
         },
     };
 
