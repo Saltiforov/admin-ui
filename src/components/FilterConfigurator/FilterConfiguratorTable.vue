@@ -663,8 +663,7 @@ button[style*="visibility: hidden"] svg {
 .no-expander .p-treetable-toggler {
   visibility: hidden !important; /* Скрыть кнопку раскрытия */
 }
-</style>
-<style scoped>
+
 .filter-button {
   margin: 0 10px;
 }
@@ -684,15 +683,6 @@ button[style*="visibility: hidden"] svg {
   display: flex;
 }
 
-.configurator-table {
-  background: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.10);
-  border-radius: 4px;
-}
-
-:deep(.p-treetable .p-component .configurator-table) {
-  border-radius: 15px !important;
-}
 
 
 .filters-empty {

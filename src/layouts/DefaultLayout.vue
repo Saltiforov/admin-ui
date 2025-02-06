@@ -61,6 +61,7 @@ const menuItems = [
     items: [
       {label: "Filters", icon: "pi pi-filter", command: () => router.push("/filters")},
       {label: "Products", icon: "pi pi-shopping-cart", command: () => router.push("/products")},
+      {label: "Users", icon: "pi pi-user", command: () => router.push("/users")},
     ],
   },
 ];

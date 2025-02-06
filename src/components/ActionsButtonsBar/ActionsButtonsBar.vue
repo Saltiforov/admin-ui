@@ -1,20 +1,22 @@
 <template>
   <div class="buttons-wrapper">
-    <div v-for="(item, index) in config.buttons" :key="index">
-      <component
-          :is="item.component"
-          v-bind="item.props"
-          :class="item.class"
-          :style="item.styles"
-          @click="item.onClick"
-      >
+    <div v-if="config" class="flex">
+      <div v-for="(item, index) in config.buttons" :key="index">
         <component
-            v-for="(child, childIndex) in item.children"
-            :key="childIndex"
-            :is="child.component"
-            v-bind="child.props"
-        />
-      </component>
+            :is="item.component"
+            v-bind="item.props"
+            :class="item.class"
+            :style="item.styles"
+            @click="item.onClick"
+        >
+          <component
+              v-for="(child, childIndex) in item.children"
+              :key="childIndex"
+              :is="child.component"
+              v-bind="child.props"
+          />
+        </component>
+      </div>
     </div>
   </div>
 </template>
@@ -25,7 +27,7 @@ import {defineProps} from 'vue';
 const props = defineProps({
   config: {
     type: Object,
-    required: true,
+    required: false,
   },
 });
 

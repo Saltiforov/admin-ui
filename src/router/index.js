@@ -6,6 +6,7 @@ import Filters from "@/views/Filters.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
 import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
+import Users from "@/views/Users.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -43,6 +44,12 @@ const routes = [
                 name: "Filters",
                 component: Filters,
             },
+            {
+                path: "users",
+                name: "Users",
+                component: Users,
+            },
+
         ],
     },
     {

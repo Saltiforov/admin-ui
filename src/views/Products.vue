@@ -39,9 +39,6 @@ import {useConfirm} from "primevue/useconfirm";
 import router from "@/router/index.js";
 import defaultProductImage from '@/assets/icons/shopping-bag.svg';
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 
 const confirm = useConfirm();

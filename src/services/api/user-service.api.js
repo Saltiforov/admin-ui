@@ -6,8 +6,11 @@ const routes = {
 
 export async function getUserList() {
     const api =  app.config.globalProperties.$api;
-    return api.get(routes.userList).catch(error => {
-        console.log('error', error)
-    })
+    try {
+        const res = await api.get(routes.userList)
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
