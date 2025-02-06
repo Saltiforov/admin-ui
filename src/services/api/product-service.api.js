@@ -1267,11 +1267,11 @@ export async function updateProductById(productId, updatedProduct) {
     try {
         const api = app.config.globalProperties.$api;
 
-        const response = await api.put(`${router.products}/${productId}`, updatedProduct);
-
-        if (response.status === 200) {
-            return response.data;
-        }
+        return  await api.put(`${router.products}/${productId}`, updatedProduct);
+        //
+        // if (response.status === 200) {
+        //     return response.data;
+        // }
 
     } catch (error) {
         console.error('Error in getFiltersList:', error);
@@ -1301,7 +1301,7 @@ export async function createProduct(product) {
 
         const response = await api.post(`${router.products}`, product);
 
-        return response.data;
+        return response;
 
     } catch (error) {
         console.error('Error in createProduct:', error);

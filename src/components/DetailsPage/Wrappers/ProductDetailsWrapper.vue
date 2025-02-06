@@ -4,16 +4,25 @@
         :config="config.fields"
         :data="data"
         :errors="fieldsErrors"
-        @update:formData="handleFormDataUpdate"
+        ref="fieldsBlockRef"
     />
-    <UploadFilesBlock :config="config.files" :data="data" />
-    <DynamicAttrsBlock :config="config.dynamicAttrs" :data="data" />
-    <FooterActionBlock :config="config.footerActions" :data="data" @submit="onSubmit" />
+    <UploadFilesBlock
+        ref="uploadFilesRef"
+        :config="config.files"
+        :data="data"
+    />
+    <DynamicAttrsBlock
+        ref="dynamicAttrsRef"
+        :config="config.dynamicAttrs"
+        :data="data"
+    />
+    <FooterActionBlock :config="config.footerActions" :data="data" @submit="collectDataFromComponents"/>
 
     <!-- Лоадер, который отображается поверх содержимого при загрузке -->
     <div v-if="isLoading" class="loader-overlay">
       <!-- Можно использовать любой компонент лоадера, например, из PrimeVue -->
-      <ProgressSpinner class="loader-spinner" />
+      <ProgressSpinner class="loader-spinner"/>
+      {{ allData }}
     </div>
   </div>
 </template>
@@ -22,6 +31,10 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import {createProduct, updateProductById} from "@/services/api/product-service.api.js";
+import {login} from "@/services/api/auth-serivce.api.js";
+import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
+import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
+
 
 const props = defineProps({
   config: {
@@ -35,6 +48,14 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false,
+  },
+  startLoading: {
+    type: Function,
+    required: true,
+  },
+  stopLoading: {
+    type: Function,
+    required: true,
   }
 });
 
@@ -42,8 +63,21 @@ const isEditMode = computed(() => {
   return !!props.data;  // Предполагаем, что "id" означает наличие данных для редактирования
 });
 
+const fieldsBlockRef = ref(null);
+const uploadFilesRef = ref(null);
+const dynamicAttrsRef = ref(null);
 
-const productData = ref(null);
+const allData = ref({});
+
+const collectDataFromComponents = () => {
+  allData.value = {
+    ...fieldsBlockRef.value.getData(),
+    ...dynamicAttrsRef.value.getData(),
+  };
+  console.log("collectDataFromChildren", allData.value);
+  onSubmit()
+};
+
 
 onMounted(() => {
   console.log("onMounted", props.config);
@@ -52,13 +86,13 @@ onMounted(() => {
 const fieldsErrors = ref(null);
 
 const validateForm = () => {
-  if (isEditMode && !productData.value) {
+  if (isEditMode && !allData.value) {
     return;
   }
   const requiredFields = props.config.fields.items.filter(field => field.props?.required);
 
   const invalidFields = requiredFields.filter(field => {
-    const value = productData.value?.[field.name];
+    const value = allData.value?.[field.name];
     return value === undefined || value === null || value === "";
   });
 
@@ -73,57 +107,31 @@ const validateForm = () => {
   return true;
 };
 
-const formatOptionsForSubmit = (data) => {
-  if (!data) return [];
-
-  if (Array.isArray(data)) {
-    return data.map(item => item.name);
-  }
-
-  if (typeof data === "object" && data.name) {
-    return [data.name];
-  }
-
-  return [];
-};
 
 const createNewProduct = async (product) => {
+  props.startLoading()
   try {
-    const data = {
-      ...product,
-      tags: formatOptionsForSubmit(product.tags),
-      deliveryOptions: formatOptionsForSubmit(product.deliveryOptions),
-    }
-    await createProduct(data)
+    const res = await createProduct(product)
+    if (res.status === 201 || res.status === 200) props.stopLoading()
   } catch (error) {
     console.error('Error in createProduct:', error);
   }
 }
 
+const onSubmit = async () => {
+  props.startLoading()
 
-
-const handleFormDataUpdate = (newFormData) => {
-  productData.value = newFormData;
-};
-
-
-
-const onSubmit = async (action) => {
-
-  if ( !validateForm() ) return;
+  // if ( !validateForm() ) return;
 
   if (!isEditMode.value) {
-    await createNewProduct(productData.value);
+    await createNewProduct(allData.value);
     return;
   }
 
-  await updateProductById(props.data._id, productData.value)
-
-
-
-  //todo send create product request
-  // todo check post or put (u can use route id for this)
-  console.log('onSubmit', action);
+  updateProductById(props.data._id, allData.value)
+      .then((res) => {
+        if (res.status === 200) props.stopLoading()
+      })
 };
 
 watch(

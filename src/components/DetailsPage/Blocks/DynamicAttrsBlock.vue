@@ -97,6 +97,15 @@ const keyValuePairs = ref(pairs);
 function addPair() {
   keyValuePairs.value.push({ key: '', value: '' });
 }
+
+const getData = () => {
+  return { ...pairs };  // Возвращаем данные формы
+};
+
+defineExpose({
+  getData
+});
+
 </script>
 
 <style scoped>

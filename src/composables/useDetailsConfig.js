@@ -73,10 +73,10 @@ export function useDetailsConfig(pageType, id) {
                             type: 'MultiSelect',
                             props: {
                                 options: [
-                                    { label: 'Gaming', value: 'gaming' },
-                                    { label: 'Mouse', value: 'mouse' },
-                                    { label: 'Wireless', value: 'wireless' },
-                                    { label: 'RGB', value: 'RGB' }
+                                    {label: 'Gaming', value: 'gaming'},
+                                    {label: 'Mouse', value: 'mouse'},
+                                    {label: 'Wireless', value: 'wireless'},
+                                    {label: 'RGB', value: 'RGB'}
                                 ],
                                 optionLabel: 'label',
                                 placeholder: 'Select tags',
@@ -102,8 +102,8 @@ export function useDetailsConfig(pageType, id) {
                             type: 'MultiSelect',
                             props: {
                                 options: [
-                                    { label: 'Standard Shipping', value: 'Standard Shipping' },
-                                    { label: 'Express Delivery', value: 'Express Delivery' }
+                                    {label: 'Standard Shipping', value: 'Standard Shipping'},
+                                    {label: 'Express Delivery', value: 'Express Delivery'}
                                 ],
                                 optionLabel: 'label',
                                 placeholder: 'Select delivery options',
@@ -165,10 +165,10 @@ export function useDetailsConfig(pageType, id) {
                 dynamicAttrs: {
                     relationCode: 'attributes',
                     initialPairs: [
-                        { key: '', value: '' },
-                        { key: '', value: '' },
-                        { key: '', value: '' },
-                        { key: '', value: '' }
+                        {key: '', value: ''},
+                        {key: '', value: ''},
+                        {key: '', value: ''},
+                        {key: '', value: ''}
                     ],
                     placeholders: {
                         key: 'Key',
@@ -179,10 +179,10 @@ export function useDetailsConfig(pageType, id) {
                     accordion: true,
                 },
                 footerActions: {
-                    create: [{ label: 'Create new product', type: 'create',actionEventName: 'create'}],
+                    create: [{label: 'Create new product', type: 'create', actionEventName: 'submit'}],
                     edit: [
-                        { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
-                        { label: 'Save', type: 'save', actionEventName: 'submit' }
+                        {label: 'Cancel', type: 'cancel', actionEventName: 'cancel'},
+                        {label: 'Save', type: 'save', actionEventName: 'submit'}
                     ]
                 }
             },
@@ -211,8 +211,8 @@ export function useDetailsConfig(pageType, id) {
                             type: 'MultiSelect',
                             props: {
                                 options: [
-                                    { label: 'Admin', value: 'admin' },
-                                    { label: 'SuperAdmin', value: 'super Admin' },
+                                    {label: 'Admin', value: 'admin'},
+                                    {label: 'SuperAdmin', value: 'super Admin'},
                                 ],
                                 optionLabel: 'label',
                                 placeholder: 'Select roles',
@@ -234,10 +234,10 @@ export function useDetailsConfig(pageType, id) {
                     header: 'Upload Image:',
                 },
                 footerActions: {
-                    create: [{ label: 'Create new user', type: 'create',actionEventName: 'create'}],
+                    create: [{label: 'Create new user', type: 'create', actionEventName: 'submit'}],
                     edit: [
-                        { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
-                        { label: 'Save', type: 'save', actionEventName: 'submit' }
+                        {label: 'Cancel', type: 'cancel', actionEventName: 'cancel'},
+                        {label: 'Save', type: 'save', actionEventName: 'submit'}
                     ]
                 }
             },
@@ -245,26 +245,35 @@ export function useDetailsConfig(pageType, id) {
         },
     };
 
-   async function useFetch() {
-       if (configs[pageType]?.fetchData && id) {
-           // todo delete after testing
-           // setTimeout(async () => {
-           data.value = await configs[pageType].fetchData();
-           loading.value = false;
-           // }, 5000)
-       } else {
-           loading.value = false;
-       }
+    async function useFetch() {
+        if (configs[pageType]?.fetchData && id) {
+            // todo delete after testing
+            // setTimeout(async () => {
+            data.value = await configs[pageType].fetchData();
+            loading.value = false;
+            // }, 5000)
+        } else {
+            loading.value = false;
+        }
+    }
+
+    const startLoading = () => {
+        loading.value = true;
+    }
+
+    const stopLoading = () => {
+        loading.value = false;
     }
 
     useFetch().catch(console.error);
-
 
 
     return {
         data,
         config: computed(() => configs[pageType]?.blockList || {}),
         pageName: computed(() => configs[pageType]?.pageName || ''),
-        isLoading: computed(() => loading.value)
+        isLoading: computed(() => loading.value),
+        stopLoading: stopLoading,
+        startLoading: startLoading,
     };
 }

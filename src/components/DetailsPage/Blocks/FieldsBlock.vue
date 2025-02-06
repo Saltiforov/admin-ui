@@ -10,7 +10,7 @@
           <div   class="form-group">
             <p class="form__title">{{ field.label }}:</p>
             <component class="w-full"  :is="field.type" v-bind="field.props" v-model="formData[field.name]"
-                       @input="handleInput(field.name)"/>
+                       />
             <Message
                 v-if="errors && errors[field.code]"
                 severity="error"
@@ -29,7 +29,7 @@
               <div v-if="!field.onlyEditMode || isEditMode" class="">
                 <p class="form__title">{{ field.label }}:</p>
                 <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
-                           @input="handleInput(field.name)"/>
+                />
               </div>
             </div>
           </div>
@@ -39,7 +39,7 @@
           <div class="form-group col-span-2">
             <p class="form__title">{{ field.label }}:</p>
             <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
-                       @input="handleInput(field.name)"/>
+                       />
           </div>
         </template>
       </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from "vue";
+import {ref, computed, onMounted, inject} from "vue";
 
 const props = defineProps({
   data: {
@@ -71,6 +71,14 @@ const isEditMode = computed(() => {
   return !!props.data
 })
 
+const getData = () => {
+  return { ...formData.value };  // Возвращаем данные формы
+};
+
+defineExpose({
+  getData
+});
+
 onMounted(() => {
   console.log("onMounted", !!props.data,);
   props.config.items.forEach((field) => {
@@ -87,6 +95,11 @@ const emit = defineEmits(["update:formData"]);
 // TODO refactor over emitted ( trigger on any changes  )
 const handleInput = (fieldName) => {
   emit("update:formData", formData.value);
+};
+
+const collectData = inject('collectData');
+const updateFields = () => {
+  collectData(); // Вызов функции для получения данных
 };
 
 const baseFields = computed(() => {

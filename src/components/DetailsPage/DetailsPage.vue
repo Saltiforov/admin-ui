@@ -9,6 +9,8 @@
         :config="config"
         :data="data"
         :isLoading="isLoading"
+        :startLoading="startLoading"
+        :stopLoading="stopLoading"
     />
   </div>
 </template>
@@ -25,7 +27,7 @@ const id = route.params.id;
 console.log(" useDetailsConfig(pageType, id)",  useDetailsConfig(pageType, id))
 console.log(" route.params.id", id)
 
-const { config, data, pageName, isLoading } = useDetailsConfig(pageType, id);
+const { config, data, pageName, isLoading, stopLoading, startLoading } = useDetailsConfig(pageType, id);
 </script>
 
 <style scoped>

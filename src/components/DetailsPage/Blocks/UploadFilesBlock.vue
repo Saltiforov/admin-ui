@@ -60,6 +60,14 @@ const props = defineProps({
 const uploadRef = ref(null)
 const uploadedFiles = ref([])
 
+// const getData = () => {
+//   return { ...uploadedFiles };  // Возвращаем данные формы
+// };
+//
+// defineExpose({
+//   getData
+// });
+
 function handleUpload(event) {
   console.log('Upload successful:', event)
   if (event.files && event.files.length) {
