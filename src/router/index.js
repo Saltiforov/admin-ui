@@ -7,6 +7,7 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
 import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 import Users from "@/views/Users.vue";
+import SignUp from "@/views/Auth/SignUp.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -69,8 +70,9 @@ const routes = [
                 component: Login,
             },
             {
-                path: "register",
-                name: "Register",
+                path: "signup",
+                name: "Signup",
+                component: SignUp,
             },
         ],
     },

@@ -19,7 +19,7 @@ export function pathBuilder(item) {
         return URL.createObjectURL(item);
     }
 
-    return item ? `http://localhost:3000${item}`: 'No icon';
+    return item ? `http://localhost:3000${item}` : 'No icon';
 }
 
 export function deepSearchByCode(array, code, source = 'key') {
@@ -35,5 +35,35 @@ export function deepSearchByCode(array, code, source = 'key') {
     }
 
     return null;
+}
+
+export function formatDate(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+}
+
+export function mapObject(obj) {
+    return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => {
+            if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) {
+                return [key, "---"];
+            }
+
+            // Преобразование строки с датой в форматированную дату
+            if (typeof value === "string" && !isNaN(Date.parse(value))) {
+                return [key, new Date(value).toLocaleDateString("ru-RU", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                })];
+            }
+
+            return [key, value];
+        })
+    );
 }
 
