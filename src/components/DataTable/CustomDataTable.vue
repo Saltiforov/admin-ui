@@ -7,6 +7,7 @@
         :rowsPerPageOptions="config.rowsPerPageOptions"
         :tableStyle="config.tableStyle"
         :class="config.class"
+        :scrollable="config.scrollable"
     >
       <!-- Динамическое создание колонок -->
       <template v-for="col in config.columns" :key="col.field">
@@ -41,7 +42,7 @@ defineProps({
   config: {
     type: Object,
     required: true,
-  }
+  },
 });
 
 </script>

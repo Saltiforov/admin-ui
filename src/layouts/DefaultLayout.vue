@@ -99,7 +99,8 @@ const activeTab = computed(() => {
 .main-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  flex-grow: 1;
+  min-width: 0;
 }
 
 /* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); */
@@ -206,6 +207,7 @@ const activeTab = computed(() => {
 }
 
 .content {
+  min-width: 0;
   flex: 1;
   padding: 3rem;
   overflow-y: auto;

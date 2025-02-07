@@ -37,7 +37,7 @@
 
 .auth-content {
   width: 100%;
-  max-width: 400px; /* Максимальная ширина для форм */
+  max-width: 600px; /* Максимальная ширина для форм */
   background: #fff;
   padding: 40px 20px 20px 20px;
   border-radius: 8px;

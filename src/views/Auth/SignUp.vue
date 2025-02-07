@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AuthForm title="Register"></AuthForm>
+    <AuthForm title="Register" :is-register=true></AuthForm>
   </div>
 </template>
 
