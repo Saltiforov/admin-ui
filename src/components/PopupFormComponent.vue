@@ -44,6 +44,7 @@
 <script setup>
 import {reactive, ref} from 'vue';
 import eventBus from '../../eventBus';
+import {convertDottedFieldKeysToNested} from "@/utils/index.js";
 
 const isVisible = ref(false);
 const iconPath = ref('');
@@ -84,9 +85,7 @@ const handleFileUpload = (field, event) => {
 
 // Сабмит формы
 const onFormSubmit = () => {
-  console.log('Valid data popupConfig: STARt', popupConfig);
   let isValid = true;
-  console.log("onFormSubmit", popupConfig);
   popupConfig.fields.forEach((field) => {
     errors[field.code] = null;
 
@@ -101,21 +100,16 @@ const onFormSubmit = () => {
       }
     }
   });
-  console.log("onFormSubmit", isValid);
-
-  console.log("formValues", formValues)
 
   if (isValid) {
     eventBus.emit("add-filter", {
-      newFilter: formValues,
+      newFilter: convertDottedFieldKeysToNested(formValues),
       parent: popupConfig.parentFilter,
       eventType: popupConfig.eventType,
     });
     iconPath.value = null
     closePopup();
   }
-  console.log('Valid data popupConfig: END', popupConfig);
-
 };
 
 // Закрытие попапа

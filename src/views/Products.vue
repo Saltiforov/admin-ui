@@ -13,7 +13,6 @@
         <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
         <span v-else>---</span>
       </template>
-
       <template style="width: 5%" #actions="{ data }">
         <Button
             type="button"

@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.scss'
 import App from './App.vue'
 import fetchPlugin from './plugins/fetch';
+import AsyncTreeSelect from '@/components/UI/AsyncTreeSelect.vue';
 import PrimeVue from "primevue/config";
 import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
@@ -15,6 +16,7 @@ import TextArea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import MultiSelect from 'primevue/multiselect';
+import TreeSelect from 'primevue/treeselect';
 import Checkbox from 'primevue/checkbox';
 
 import ToastService from 'primevue/toastservice';
@@ -35,6 +37,8 @@ app.component('IconField', IconField);
 app.component('InputIcon', InputIcon);
 app.component('Checkbox', Checkbox);
 app.component('MultiSelect', MultiSelect);
+app.component('TreeSelect', TreeSelect);
+app.component('AsyncTreeSelect', AsyncTreeSelect);
 app.component('Button', Button);
 app.component('Tag', Tag);
 app.component('TextArea', TextArea);

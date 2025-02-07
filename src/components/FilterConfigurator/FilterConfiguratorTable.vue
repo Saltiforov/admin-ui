@@ -75,6 +75,8 @@ import {createFilters, deleteFilters} from "@/services/api/filters-service.api.j
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
+import nodeBuilder from "@/services/builder/node-builder-service.js";
+import {login} from "@/services/api/auth-serivce.api.js";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -96,15 +98,10 @@ const menuModel = ref(
 );
 
 const nodes = ref([])
-const maxMenuDepth = ref(3);
-const originalNodes = ref(null); // Копия исходного массива nodes
-
-const shouldShowButton = (key, maxDepth = 3) => {
-  const levels = key.split('-').length;
-  return levels <= maxDepth;
-};
+const originalNodes = ref(null);
 
 const activeNode = ref(null);
+
 const onRowContextMenu = (event) => {
   activeNode.value = event.node;
   cm.value.show(event.originalEvent);
@@ -154,9 +151,7 @@ const onSearch = (event) => {
 
 const deleteNode = async (node) => {
   nodes.value = deleteNodeRecursive(nodes.value, node.id, node.data.code);
-  console.log("deleteItems", deleteItems.value)
 };
-
 
 const confirmDelete = (node) => {
   confirm.require({
@@ -186,7 +181,6 @@ const confirmDelete = (node) => {
     },
   });
 };
-
 
 const onNodeSelect = (node) => {
   expandedKeys.value = {...expandedKeys.value, [node.key]: true};
@@ -240,7 +234,7 @@ watch(
         originalNodes.value = [...nodes.value];
       }
     },
-    {immediate: true} // Запускаем при первой загрузке
+    {immediate: true}
 );
 
 
@@ -266,7 +260,7 @@ const items = ref([
 const generatePopupFields = (filter = null, isEditMode = false) => {
   return [
     {
-      code: "name.ua",
+      code: "name.uk",
       component: "InputText",
       props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px"},
       defaultValue: isEditMode && filter ? filter.data.name.uk : "",
@@ -341,9 +335,7 @@ const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
 
 
-  if (isInvalidParent(parent)) {
-    return;
-  }
+  if (isInvalidParent(parent)) return;
 
   if (eventType === "edit") {
     handleEditFilter(parent, newFilter);
@@ -351,95 +343,74 @@ const onAddFilter = (options) => {
   }
 
   if (!parent) {
-    console.log("newFilter", newFilter)
     createNode(newFilter);
-
-
-    show(`${capitalizeFirstLetter(newFilter['name.ua'])} / ${capitalizeFirstLetter(newFilter['name.ru'])} added as a new node `)
+    show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['ru'])} added as a new node `)
     return;
   }
 
   handleAddChildNode(parent, newFilter);
-  show(`${capitalizeFirstLetter(newFilter['name.ua'])} / ${capitalizeFirstLetter(newFilter['name.ru'])} added to ${capitalizeFirstLetter(parent.data.name['uk'])} / ${capitalizeFirstLetter(parent.data.name['ru'])} `)
+  show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['name.ru'])} added to ${capitalizeFirstLetter(parent.data.name['uk'])} / ${capitalizeFirstLetter(parent.data.name['ru'])} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
+
+const getBasicEntityFilledModel = (item) => {
+  return {
+    name: item?.data?.name || item?.name,
+    code: item?.data?.code ||item?.code,
+    icon: item?.data?.icon ||item?.icon || '',
+    description: item?.data?.description ||item?.description,
+  }
+}
 
 const handleEditFilter = (parent, newFilter) => {
   const activeFilter = deepSearchByCode(nodes.value, parent?.key);
   if (!activeFilter) return;
 
-  activeFilter.data.name.uk = newFilter['name.ua'];
-  activeFilter.data.name.ru = newFilter['name.ru'];
-  activeFilter.data.code = newFilter.code;
-  activeFilter.data.description =
-      newFilter.description || activeFilter.data.description;
-
-  console.log("Updated activeFilter", activeFilter);
+  activeFilter.data = {
+    ...activeFilter.data,
+    ...getBasicEntityFilledModel(newFilter),
+  }
 };
 
-const addedNodes = ref(0)
+const createNode = (newFilter, parent = null) => {
+  const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
 
-// const handleAddRootNode = (newFilter) => {
-//   const newKey = nodes.value.length.toString();
-//   const nodeData = {
-//     key: newKey,
-//     data: {
-//       name: {
-//         uk: newFilter['name.ua'],
-//         ru: newFilter['name.ru'],
-//       },
-//       code: newFilter.code,
-//       description: newFilter.description,
-//       icon: newFilter.icon || '',
-//     },
-//     children: [],
-//   }
-//
-//   addedNodes.value++
-//   nodes.value.push(nodeData);
-// };
-//
-// const createChildNode = (parent, newFilter) => {
-//   return {
-//     key: pathGenerator(parent),
-//     data: {
-//       name: {
-//         uk: newFilter['name.ua'],
-//         ru: newFilter['name.ru'],
-//       },
-//       code: newFilter.code,
-//       icon: newFilter.icon,
-//       description: newFilter.description,
-//     },
-//     children: [],
-//   };
-// };
+  const node = {
+    key: newKey,
+    data: { ...getBasicEntityFilledModel(newFilter) },
+    children: [],
+  }
+
+  if (parent) {
+    return node
+  } else {
+    addedNodes.value++
+    nodes.value.push(node);
+  }
+}
+
+const addedNodes = ref(0)
 
 const mapFiltersForSubmit = (data) => {
   const mapChildren = (children) => {
     return children.map(child => ({
-      name: child.data.name,
-      code: child.data.code,
-      icon: child.data.icon || '',
-      description: child.data.description,
-      children: mapChildren(child.children) // рекурсивно обрабатываем детей
+      ...getBasicEntityFilledModel(child),
+      children: mapChildren(child.children)
     }));
   };
 
   return {
     filters: data.map(item => ({
-      name: item.data.name,
-      code: item.data.code,
-      icon: item.data.icon || '', // по умолчанию пустая строка
-      description: item.data.description,
-      children: mapChildren(item.children) // обрабатываем детей рекурсивно
+      ...getBasicEntityFilledModel(item),
+      children: mapChildren(item.children)
     }))
   };
 };
 
 function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
+    console.log('item', item);
     const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
 
     return {
@@ -463,33 +434,6 @@ function mapFilters(inputArray) {
   return inputArray.map((item, idx) => mapNode(item, idx));
 }
 
-const createNode = (newFilter, parent = null) => {
-  console.log('parent', parent)
-  console.log('createNode newFilter', newFilter)
-  const newKey = parent ? pathGenerator(parent) : nodes.value.length.toString();
-
-  const node = {
-    key: newKey,
-    data: {
-      name: {
-        uk: newFilter['name.ua'],
-        ru: newFilter['name.ru'],
-      },
-      code: newFilter.code,
-      description: newFilter.description,
-      icon: newFilter.icon || null,
-    },
-    children: [],
-  }
-
-  if (parent) {
-    return node
-  } else {
-    addedNodes.value++
-    nodes.value.push(node);
-  }
-}
-
 const handleAddChildNode = (parent, newFilter) => {
   const activeFilter = deepSearchByCode(nodes.value, parent.key);
 
@@ -503,7 +447,6 @@ const handleAddChildNode = (parent, newFilter) => {
 
   expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
 };
-
 
 onMounted(() => {
   eventBus.on("add-filter", onAddFilter);
@@ -520,12 +463,10 @@ const toggle = (event, node, level) => {
   menu.value.toggle(event);
 };
 
-
 const capitalizeFirstLetter = (value) => {
   if (!value) return '';
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
-
 
 const saveFilters = async () => {
   if (deleteItems.value.length > 0 && addedNodes.value === 0) {
@@ -539,22 +480,6 @@ const saveFilters = async () => {
     emit('filters-updated');
   }
 }
-
-const pathGenerator = (parent) => {
-  const children = parent.children || [];
-
-  if (children.length === 0) {
-    const newIndex = 0;
-    return `${parent.key}-${newIndex}`;
-  }
-
-  const lastChild = children[children.length - 1];
-
-  const lastKeyParts = lastChild.key.split('-');
-  const lastIndex = parseInt(lastKeyParts.pop(), 10);
-
-  return `${parent.key}-${lastIndex + 1}`;
-};
 
 const inputCodeValue = ref('')
 
@@ -603,7 +528,6 @@ const configActionsBar = ref({
     },
   ],
 });
-
 
 const searchByCodeTopLevel = (searchCode) => {
   if (searchCode.trim().length >= 3) {

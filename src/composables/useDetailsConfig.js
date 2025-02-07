@@ -41,6 +41,20 @@ export function useDetailsConfig(pageType, id) {
                             }
                         },
                         {
+                            name: 'tags',
+                            code: 'filters1',
+                            label: 'Related Filters',
+                            type: 'AsyncTreeSelect',
+                            props: {
+                                restOptionsUrl: 'api/filters',
+                                placeholder: 'Select tags',
+                                selectionMode: 'multiple',
+                                class: 'w-full product-input md:w-56',
+                                required: false,
+                                showClear: true,
+                            }
+                        },
+                        {
                             name: 'discount',
                             code: 'discount',
                             label: 'Discount (%)',
@@ -64,89 +78,6 @@ export function useDetailsConfig(pageType, id) {
                                 class: 'product-input',
                                 placeholder: 'Enter category',
                                 required: true
-                            }
-                        },
-                        {
-                            name: 'tags',
-                            code: 'tags',
-                            label: 'Tags',
-                            type: 'MultiSelect',
-                            props: {
-                                options: [
-                                    {label: 'Gaming', value: 'gaming'},
-                                    {label: 'Mouse', value: 'mouse'},
-                                    {label: 'Wireless', value: 'wireless'},
-                                    {label: 'RGB', value: 'RGB'}
-                                ],
-                                optionLabel: 'label',
-                                placeholder: 'Select tags',
-                                class: 'w-full product-input md:w-56',
-                                required: false
-                            }
-                        },
-                        {
-                            name: 'availability',
-                            code: 'availability',
-                            label: 'Availability',
-                            type: 'Checkbox',
-                            props: {
-                                binary: true,
-                                placeholder: 'Is the product available?',
-                                required: false
-                            }
-                        },
-                        {
-                            name: 'deliveryOptions',
-                            code: 'deliveryOptions',
-                            label: 'Delivery Options',
-                            type: 'MultiSelect',
-                            props: {
-                                options: [
-                                    {label: 'Standard Shipping', value: 'Standard Shipping'},
-                                    {label: 'Express Delivery', value: 'Express Delivery'}
-                                ],
-                                optionLabel: 'label',
-                                placeholder: 'Select delivery options',
-                                class: 'w-full product-input md:w-56',
-                                required: false
-                            }
-                        },
-                        {
-                            name: 'rating',
-                            code: 'rating',
-                            label: 'Rating',
-                            type: 'Rating',
-                            onlyEditMode: true,
-                            props: {
-                                stars: 5,
-                                cancel: false,
-                                placeholder: 'Select rating',
-                                required: false
-                            },
-
-                        },
-                        {
-                            name: 'reviewCount',
-                            code: 'reviewCount',
-                            label: 'Review Count',
-                            type: 'InputNumber',
-                            props: {
-                                min: 0,
-                                placeholder: 'Enter review count',
-                                required: false
-                            }
-                        },
-                        {
-                            name: 'description',
-                            code: 'description',
-                            label: 'Description',
-                            type: 'TextArea',
-                            props: {
-                                rows: 8,
-                                cols: 40,
-                                class: 'product-textarea',
-                                placeholder: 'Enter product description',
-                                required: false
                             }
                         },
                     ],

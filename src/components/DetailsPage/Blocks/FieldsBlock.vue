@@ -9,8 +9,13 @@
         <template v-for="field in baseFields" :key="field.name">
           <div   class="form-group">
             <p class="form__title">{{ field.label }}:</p>
-            <component class="w-full"  :is="field.type" v-bind="field.props" v-model="formData[field.name]"
-                       />
+            <component
+                class="w-full"
+                :is="field.type"
+                v-bind="field.props"
+                :config="field.props"
+                v-model="formData[field.name]"
+             />
             <Message
                 v-if="errors && errors[field.code]"
                 severity="error"

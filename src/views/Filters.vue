@@ -34,7 +34,6 @@ const fetchFiltersList = async () => {
       // localStorage.setItem(cacheKey, JSON.stringify(filters.value));
       // localStorage.setItem(cacheTimestampKey, Date.now().toString());
 
-      console.log("fetchFiltersList", filters.value);
     } catch (err) {
       error.value = 'Ошибка загрузки пользователей';
     }
