@@ -41,10 +41,11 @@ export function useDetailsConfig(pageType, id) {
                             }
                         },
                         {
-                            name: 'tags',
-                            code: 'filters1',
+                            name: 'filters',
+                            code: 'filters',
                             label: 'Related Filters',
                             type: 'AsyncTreeSelect',
+                            disablePropsBinding: true,
                             props: {
                                 restOptionsUrl: 'api/filters',
                                 placeholder: 'Select tags',

@@ -17,7 +17,7 @@ class nodeBuilder {
         const mapNode = (node, idx, parentKey = "") => {
             const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
             const mappedNode = options.mapper(node, key, parentKey, idx);
-            if (node.children && node.children.length > 0 && !mappedNode.children) {
+            if (node.children && node.children.length > 0) {
                 mappedNode.children = node.children.map((child, childIdx) =>
                     mapNode(child, childIdx, key)
                 );
@@ -25,9 +25,8 @@ class nodeBuilder {
             return mappedNode;
         };
 
-        return nodes.map((node, idx) => mapNode(node, idx));
+        return nodes.map((node, idx) => mapNode(node, idx, ""));
     }
-
     /**
      * Generates a new path key for a node based on its current key and its children.
      *

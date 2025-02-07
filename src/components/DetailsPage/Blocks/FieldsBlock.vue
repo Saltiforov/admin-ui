@@ -12,7 +12,7 @@
             <component
                 class="w-full"
                 :is="field.type"
-                v-bind="field.props"
+                v-bind="field.disablePropsBinding ? {} : (field.props || {})"
                 :config="field.props"
                 v-model="formData[field.name]"
              />

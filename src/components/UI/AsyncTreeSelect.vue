@@ -1,11 +1,13 @@
 <template>
+  <div>
     <TreeSelect
-        v-model="selectedValue"
+        v-bind="props.config"
         :options="computedOptions"
-        :maxSelectedLabels="3"
+        :maxSelectedLabels="2"
         display="chip"
         @change="prepareSelectedValue"
     />
+  </div>
 </template>
 
 <script setup>
@@ -57,17 +59,22 @@ function findSelectedNodes(nodes, selectedKeys) {
   }
   return result;
 }
+
 const emit = defineEmits(['update:modelValue']);
 
-
-const prepareSelectedValue = () => {
-  payload.value = findSelectedNodes(nodes.value, selectedValue.value).map(item => item.id);
+const prepareSelectedValue = (selectedValue) => {
+  if (selectedValue === null) {
+    payload.value = [];
+    return;
+  }
+  payload.value = findSelectedNodes(nodes.value, selectedValue).map(item => item.id);
   emit('update:modelValue', payload.value);
 }
 
 const attrs = useAttrs();
 
 const computedOptions = computed(() => {
+
   return attrs.options ? attrs.options : nodes.value;
 });
 
