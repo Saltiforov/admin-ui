@@ -207,5 +207,6 @@ export function useDetailsConfig(pageType, id) {
         isLoading: computed(() => loading.value),
         stopLoading: stopLoading,
         startLoading: startLoading,
+        useFetch: useFetch,
     };
 }

@@ -11,6 +11,7 @@
         :isLoading="isLoading"
         :startLoading="startLoading"
         :stopLoading="stopLoading"
+        :useFetch="useFetch"
     />
   </div>
 </template>
@@ -26,7 +27,7 @@ const id = route.params.id;
 
 console.log(" route.params.id", id)
 
-const { config, data, pageName, isLoading, stopLoading, startLoading } = useDetailsConfig(pageType, id);
+const { config, data, pageName, isLoading, stopLoading, startLoading, useFetch } = useDetailsConfig(pageType, id);
 </script>
 
 <style scoped>

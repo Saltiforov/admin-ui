@@ -55,6 +55,10 @@ const props = defineProps({
   stopLoading: {
     type: Function,
     required: true,
+  },
+  useFetch: {
+    type: Function,
+    required: false,
   }
 });
 
@@ -117,6 +121,8 @@ const createNewProduct = async (product) => {
   }
 }
 
+const emit = defineEmits(['productUpdated'])
+
 const onSubmit = async () => {
   props.startLoading()
 
@@ -129,7 +135,11 @@ const onSubmit = async () => {
 
   updateProductById(props.data._id, allData.value)
       .then((res) => {
-        if (res.status === 200) props.stopLoading()
+        if (res.status === 200) {
+          console.log("updateProductById", res)
+          props.useFetch()
+          props.stopLoading()
+        }
       })
 };
 

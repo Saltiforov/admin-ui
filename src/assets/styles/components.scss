@@ -12,6 +12,14 @@
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
+
+[data-pc-section="headertitle"] {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--header-color-primary); // todo example how to use color from var
+}
+
+
 .p-paginator {
   border-bottom-left-radius: 10px !important;
   border-bottom-right-radius: 10px !important;

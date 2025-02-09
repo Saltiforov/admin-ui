@@ -1267,7 +1267,7 @@ export async function updateProductById(productId, updatedProduct) {
     try {
         const api = app.config.globalProperties.$api;
 
-        return  await api.put(`${router.products}/${productId}`, updatedProduct);
+        return await api.put(`${router.products}/${productId}`, updatedProduct);
         //
         // if (response.status === 200) {
         //     return response.data;

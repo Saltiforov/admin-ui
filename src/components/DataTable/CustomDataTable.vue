@@ -15,6 +15,7 @@
             :field="col.field"
             :header="col.header"
             :style="col.style"
+            :sortable="col.sortable"
         >
 
           <!-- Использование слота для кастомного контента -->

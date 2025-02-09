@@ -86,19 +86,19 @@
         </FloatLabel>
       </div>
 
-      <div class="field" v-if="isRegister">
-        <FloatLabel>
-          <Password
-              id="confirm-password"
-              v-model="formData.confirmPassword"
-              placeholder=" "
-              toggleMask
-              feedback="false"
-              class="w-full"
-          />
-          <label for="confirm-password">Confirm Password</label>
-        </FloatLabel>
-      </div>
+<!--      <div class="field" v-if="isRegister">-->
+<!--        <FloatLabel>-->
+<!--          <Password-->
+<!--              id="confirm-password"-->
+<!--              v-model="formData.confirmPassword"-->
+<!--              placeholder=" "-->
+<!--              toggleMask-->
+<!--              feedback="false"-->
+<!--              class="w-full"-->
+<!--          />-->
+<!--          <label for="confirm-password">Confirm Password</label>-->
+<!--        </FloatLabel>-->
+<!--      </div>-->
 
       <div class="submit-button">
         <Button
@@ -118,7 +118,7 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import FloatLabel from 'primevue/floatlabel';
-import {login} from "@/services/api/auth-serivce.api.js";
+import { login, register} from "@/services/api/auth-serivce.api.js";
 import {useRouter} from 'vue-router';
 
 const router = useRouter();
@@ -157,22 +157,37 @@ function getInitialFormData(isRegister) {
         postalCode: '',
         country: '',
       },
-      confirmPassword: '',
+      roles: []
     };
   }
 
   return baseData;
 }
 
-
 const onFormSubmit = async () => {
   console.log('Form submitted:', formData.value);
-  await login(formData.value).then(res => {
-    if (res.token) {
+
+  try {
+    const response = props.isRegister
+        ? await register(formData.value)
+        : await login(formData.value);
+
+    if (response.token) {
       router.push('/filters');
     }
-  })
+  } catch (error) {
+    console.error("Authentication error:", error);
+  }
 };
+
+// const onFormSubmit = async () => {
+//   console.log('Form submitted:', formData.value);
+//   await login(formData.value).then(res => {
+//     if (res.token) {
+//       router.push('/filters');
+//     }
+//   })
+// };
 </script>
 
 <style scoped>

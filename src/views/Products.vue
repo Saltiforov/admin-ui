@@ -136,7 +136,7 @@ const dataTableConfig = ref({
       header: 'Image',
       slotName: 'image',  // Указываем имя слота
     },
-    {field: 'price', header: 'Price'},
+    {field: 'price', header: 'Price', sortable: true},
     {field: 'description', header: 'Description'},
     {field: 'category', header: 'Category'},
     {field: 'availability', header: 'Availability', slotName: 'availability'},

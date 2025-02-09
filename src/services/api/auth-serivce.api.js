@@ -1,7 +1,8 @@
 import app from '@/main';
 
 const routes = {
-    userList: '/api/login'
+    userList: '/api/login',
+    signup: '/api/signup'
 }
 
 export async function login(payload) {
@@ -23,3 +24,21 @@ export async function login(payload) {
         });
 }
 
+export async function register(payload) {
+    const api = app.config.globalProperties.$api;
+
+    return api.post(routes.signup, payload)
+        .then(response => {
+            if (response.data && response.data.token) {
+                localStorage.setItem("authToken", response.data.token);
+                console.log("Token saved:", response.data.token);
+            } else {
+                console.warn("No token received from backend.");
+            }
+            return response.data;
+        })
+        .catch(error => {
+            console.error("Registration error:", error);
+            throw error;
+        });
+}
