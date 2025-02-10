@@ -1,13 +1,13 @@
 <template>
   <div class="page-container">
     <FieldsBlock
-        :config="config.fields"
+        :config="blockList.fields"
         :data="data"
         :errors="fieldsErrors"
         @update:formData="handleFormDataUpdate"
     />
-    <UploadFilesBlock :config="config.files" :data="data" />
-    <FooterActionBlock :config="config.footerActions" :data="data"/>
+    <UploadFilesBlock :config="blockList.files" :data="data" />
+    <FooterActionBlock :config="blockList.footerActions" :data="data"/>
 
     <!-- Лоадер, который отображается поверх содержимого при загрузке -->
     <div v-if="isLoading" class="loader-overlay">
@@ -22,7 +22,8 @@ import ProgressSpinner from "primevue/progressspinner";
 import {defineProps} from "vue";
 
 const props = defineProps({
-  config: {
+  // SEPARETE FROM blockList add dynamic render for every key in blockList
+  blockList: {
     type: Object,
     required: true,
   },

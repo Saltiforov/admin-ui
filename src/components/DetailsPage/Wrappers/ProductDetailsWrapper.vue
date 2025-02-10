@@ -1,26 +1,24 @@
 <template>
   <div class="page-container">
     <FieldsBlock
-        :config="config.fields"
-        :data="data"
+        :config="blockList.fields"
+        :data="detailsPageData"
         :errors="fieldsErrors"
         ref="fieldsBlockRef"
     />
     <UploadFilesBlock
         ref="uploadFilesRef"
-        :config="config.files"
-        :data="data"
+        :config="blockList.files"
+        :data="detailsPageData"
     />
     <DynamicAttrsBlock
         ref="dynamicAttrsRef"
-        :config="config.dynamicAttrs"
-        :data="data"
+        :config="blockList.dynamicAttrs"
+        :data="detailsPageData"
     />
-    <FooterActionBlock :config="config.footerActions" :data="data" @submit="collectDataFromComponents"/>
+    <FooterActionBlock :config="blockList.footerActions" :data="detailsPageData" @submit="collectDataFromComponents"/>
 
-    <!-- Лоадер, который отображается поверх содержимого при загрузке -->
     <div v-if="isLoading" class="loader-overlay">
-      <!-- Можно использовать любой компонент лоадера, например, из PrimeVue -->
       <ProgressSpinner class="loader-spinner"/>
     </div>
   </div>
@@ -33,10 +31,11 @@ import {createProduct, updateProductById} from "@/services/api/product-service.a
 import {login} from "@/services/api/auth-serivce.api.js";
 import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
+import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 
 
 const props = defineProps({
-  config: {
+  blockList: {
     type: Object,
     required: true,
   },
@@ -62,8 +61,12 @@ const props = defineProps({
   }
 });
 
+const detailsPageData = computed(() => {
+  return props.data[DETAILS_PAGES.PRODUCTS];
+});
+
 const isEditMode = computed(() => {
-  return !!props.data;  // Предполагаем, что "id" означает наличие данных для редактирования
+  return !!detailsPageData.data;
 });
 
 const fieldsBlockRef = ref(null);
@@ -71,6 +74,8 @@ const uploadFilesRef = ref(null);
 const dynamicAttrsRef = ref(null);
 
 const allData = ref({});
+
+console.log('blockList', props.blockList);
 
 const collectDataFromComponents = () => {
   allData.value = {
@@ -81,18 +86,13 @@ const collectDataFromComponents = () => {
   onSubmit()
 };
 
-
-onMounted(() => {
-  console.log("onMounted", props.config);
-})
-
 const fieldsErrors = ref(null);
 
 const validateForm = () => {
   if (isEditMode && !allData.value) {
     return;
   }
-  const requiredFields = props.config.fields.items.filter(field => field.props?.required);
+  const requiredFields = props.blockList.fields.items.filter(field => field.props?.required);
 
   const invalidFields = requiredFields.filter(field => {
     const value = allData.value?.[field.name];
@@ -133,7 +133,7 @@ const onSubmit = async () => {
     return;
   }
 
-  updateProductById(props.data._id, allData.value)
+  updateProductById(detailsPageData._id, allData.value)
       .then((res) => {
         if (res.status === 200) {
           console.log("updateProductById", res)
@@ -142,22 +142,6 @@ const onSubmit = async () => {
         }
       })
 };
-
-watch(
-    () => props.data,
-    (newFilters) => {
-      console.log('ON DATA CHANGE', newFilters)
-    }
-);
-
-watch(
-    () => props.isLoading,
-    (isLoading) => {
-      console.log('ON DATA CHANGE isLoading', isLoading)
-    }
-);
-
-console.log('props', props);
 </script>
 
 <style scoped>

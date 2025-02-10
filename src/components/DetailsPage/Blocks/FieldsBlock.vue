@@ -108,6 +108,7 @@ const updateFields = () => {
 };
 
 const baseFields = computed(() => {
+  console.log('props.config', props);
   return props.config.items.filter(f => !["Checkbox", "Rating", "TextArea"].includes(f.type));
 });
 

@@ -1,4 +1,3 @@
-// TreeNodeService.js
 class nodeBuilder {
     /**
      * Recursively maps an array of nodes using a custom mapper function.

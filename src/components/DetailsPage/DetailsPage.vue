@@ -6,7 +6,7 @@
     <component
         v-else
         :is="pageName"
-        :config="config"
+        :blockList="blockList"
         :data="data"
         :isLoading="isLoading"
         :startLoading="startLoading"
@@ -18,16 +18,23 @@
 
 <script setup>
 import { useRoute } from 'vue-router';
-import { useDetailsConfig } from "@/composables/useDetailsConfig.js";
+import { usePagesConfig } from "@/composables/usePagesConfig.js";
 import ProgressSpinner from 'primevue/progressspinner';
+import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 
 const route = useRoute();
 const pageType = route.meta.pageType; // например, "products" или "users"
 const id = route.params.id;
 
-console.log(" route.params.id", id)
-
-const { config, data, pageName, isLoading, stopLoading, startLoading, useFetch } = useDetailsConfig(pageType, id);
+const {
+  blockList,
+  data,
+  pageName,
+  isLoading,
+  stopLoading,
+  startLoading,
+  useFetch
+} = usePagesConfig(pageType, { id });
 </script>
 
 <style scoped>
