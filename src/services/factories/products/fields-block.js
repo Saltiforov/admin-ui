@@ -41,6 +41,7 @@ export const productsFieldsBlock = {
                     class: 'w-full product-input md:w-56',
                     required: false,
                     showClear: true,
+                    fullWidth: true,
                 }
             },
             {

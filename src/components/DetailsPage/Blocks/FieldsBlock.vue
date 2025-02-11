@@ -28,6 +28,7 @@
           </div>
         </template>
 
+
         <template v-for="(group, index) in optionFieldGroups" :key="`group-${index}`">
           <div class="form-group col-span-2 flex items-center gap-6">
             <div v-for="field in group" :key="field.name">
@@ -48,12 +49,36 @@
           </div>
         </template>
       </div>
+      <div class="mt-4">
+        <template v-if="baseFieldsWithFullWidth" v-for="fieldFullWidth in baseFieldsWithFullWidth">
+          <div   class="form-group">
+            <p class="form__title">{{ fieldFullWidth.label }}:</p>
+            <component
+                class="w-full"
+                :is="fieldFullWidth.type"
+                v-bind="fieldFullWidth.disablePropsBinding ? {} : (fieldFullWidth.props || {})"
+                :config="fieldFullWidth.props"
+                v-model="formData[fieldFullWidth.name]"
+            />
+            <Message
+                v-if="errors && errors[fieldFullWidth.code]"
+                severity="error"
+                size="small"
+                variant="simple"
+                class="message-error"
+            >
+              {{ errors[fieldFullWidth.code] }}
+            </Message>
+          </div>
+        </template>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref, computed, onMounted, inject} from "vue";
+import {ref, computed, onMounted, inject, watchEffect} from "vue";
 
 const props = defineProps({
   data: {
@@ -77,8 +102,12 @@ const isEditMode = computed(() => {
 })
 
 const getData = () => {
-  return { ...formData.value };  // Возвращаем данные формы
+  return { ...formData.value };
 };
+
+watchEffect(() => {
+  formData.value = { ...props.data };
+});
 
 defineExpose({
   getData
@@ -95,22 +124,16 @@ onMounted(() => {
 });
 
 
-const emit = defineEmits(["update:formData"]);
-
-// TODO refactor over emitted ( trigger on any changes  )
-const handleInput = (fieldName) => {
-  emit("update:formData", formData.value);
-};
-
-const collectData = inject('collectData');
-const updateFields = () => {
-  collectData(); // Вызов функции для получения данных
-};
-
 const baseFields = computed(() => {
   console.log('props.config', props);
-  return props.config.items.filter(f => !["Checkbox", "Rating", "TextArea"].includes(f.type));
+  return props.config.items.filter(f => {
+    return !["Checkbox", "Rating", "TextArea"].includes(f.type) && !f.props.fullWidth
+  });
 });
+
+const baseFieldsWithFullWidth = computed(() => {
+  return props.config.items.filter(f => f.props.fullWidth)
+})
 
 const optionFieldGroups = computed(() => {
   const {groups, currentGroup} = props.config.items.reduce(
