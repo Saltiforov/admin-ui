@@ -1,104 +1,39 @@
 <template>
   <div class="card flex justify-center">
     <form class="flex flex-col gap-4 w-full sm:w-64" @submit.prevent="onFormSubmit">
-      <div class="field">
+
+      <div v-for="(field, key) in fullWidthFields" :key="key" class="field">
         <FloatLabel>
-          <InputText
-              v-model="formData.username"
+          <component
+              :is="field.component"
+              v-model="formData[key]"
               class="w-full"
           />
-          <label for="username">Username</label>
+          <label :for="key">{{ field.label }}</label>
         </FloatLabel>
+
+        <Message
+            v-if="errors && errors[key]"
+            severity="error"
+            size="small"
+            variant="simple"
+            class="message-error"
+        >
+          {{ errors[key] }}
+        </Message>
+
       </div>
 
 
-      <div class="field" v-if="isRegister">
-        <FloatLabel>
-          <InputText
-              v-model="formData.email"
-              class="w-full"
-          />
-          <label for="email">Email</label>
-        </FloatLabel>
-      </div>
-      <div class="field" v-if="isRegister">
-        <FloatLabel>
-          <InputText
-              v-model="formData.firstName"
-              class="w-full"
-          />
-          <label for="firstName">First Name</label>
-        </FloatLabel>
-      </div>
-      <div class="field" v-if="isRegister">
-        <FloatLabel>
-          <InputText
-              v-model="formData.lastName"
-              class="w-full"
-          />
-          <label for="lastName">Last Name</label>
-        </FloatLabel>
-      </div>
-      <div class="field" v-if="isRegister">
-        <label class="m" for="phone">Phone</label>
-        <InputMask id="phone" v-model="formData.phone" mask="+380 (99) 999-99-99" placeholder="+380 (__) ___-__-__"
-                   fluid/>
-      </div>
 
-      <div v-if="isRegister" class="address-form">
-        <div class="field">
+      <div v-if="optionalFields" class="address-form">
+        <div class="field" v-for="(optField, key) in optionalFields" :key="optField.value">
           <FloatLabel>
-            <InputText v-model="formData['address'].street"  class="w-full"/>
-            <label for="street">Street</label>
-          </FloatLabel>
-        </div>
-
-        <div class="field">
-          <FloatLabel>
-            <InputText v-model="formData['address'].city" class="w-full"/>
-            <label for="city">City</label>
-          </FloatLabel>
-        </div>
-
-        <div class="field">
-          <FloatLabel>
-            <InputText v-model="formData['address'].postalCode" class="w-full"/>
-            <label for="postalCode">Postal Code</label>
-          </FloatLabel>
-        </div>
-
-        <div class="field">
-          <FloatLabel>
-            <InputText v-model="formData['address'].country" class="w-full"/>
-            <label for="country">Country</label>
+            <InputText v-model="formData[key]"  class="w-full"/>
+            <label for="street">{{ optField.label }}</label>
           </FloatLabel>
         </div>
       </div>
-
-      <div class="field">
-        <FloatLabel>
-          <Password
-              :feedback="false"
-              v-model="formData.password"
-              class="w-full"
-          />
-          <label for="password">Password</label>
-        </FloatLabel>
-      </div>
-
-<!--      <div class="field" v-if="isRegister">-->
-<!--        <FloatLabel>-->
-<!--          <Password-->
-<!--              id="confirm-password"-->
-<!--              v-model="formData.confirmPassword"-->
-<!--              placeholder=" "-->
-<!--              toggleMask-->
-<!--              feedback="false"-->
-<!--              class="w-full"-->
-<!--          />-->
-<!--          <label for="confirm-password">Confirm Password</label>-->
-<!--        </FloatLabel>-->
-<!--      </div>-->
 
       <div class="submit-button">
         <Button
@@ -113,16 +48,18 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue';
+import {computed, reactive, ref, watch} from 'vue';
 import InputText from 'primevue/inputtext';
+import { InputMask } from "primevue";
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import FloatLabel from 'primevue/floatlabel';
-import { login, register} from "@/services/api/auth-serivce.api.js";
 import {useRouter} from 'vue-router';
+import { useValidation } from "@/composables/useValidation.js";
+
+import { login, register } from "@/services/api/auth-serivce.api.js";
 
 const router = useRouter();
-
 
 const props = defineProps({
   isRegister: {
@@ -131,41 +68,169 @@ const props = defineProps({
   }
 })
 
+const fieldsConfig = {
+  login: {
+    username: {
+      component: InputText,
+      type: String,
+      required: true,
+      label: "Username",
+      validators: [
+        (value) => (value ? true : "Username is required"),
+        (value) => (value.length >= 3 ? true : "Username must be at least 3 characters"),
+      ],
+    },
+    password: {
+      component: Password,
+      type: String,
+      required: true,
+      label: "Password",
+      validators: [
+        (value) => (value ? true : "Password is required"),
+        (value) => (value.length >= 6 ? true : "Password must be at least 6 characters"),
+      ],
+    },
+  },
 
-const formData = ref(getInitialFormData(props.isRegister));
+  register: {
+    username: {
+      component: InputText,
+      type: String,
+      required: true,
+      label: "Username",
+      validators: [
+        (value) => (value ? true : "Username is required"),
+        (value) => (value.length >= 3 ? true : "Username must be at least 3 characters"),
+      ],
+    },
+    password: {
+      component: Password,
+      type: String,
+      required: true,
+      label: "Password",
+      validators: [
+        (value) => (value ? true : "Password is required"),
+        (value) => (value.length >= 6 ? true : "Password must be at least 6 characters"),
+      ],
+    },
+    email: {
+      component: InputText,
+      type: String,
+      required: true,
+      label: "Email",
+      validators: [
+        (value) => (value ? true : "Email is required"),
+        (value) => (/\S+@\S+\.\S+/.test(value) ? true : "Invalid email format"),
+      ],
+    },
+    firstName: {
+      component: InputText,
+      type: String,
+      required: true,
+      label: "First Name",
+      validators: [(value) => (value ? true : "First name is required")],
+    },
+    lastName: {
+      component: InputText,
+      type: String,
+      required: true,
+      label: "Last Name",
+      validators: [(value) => (value ? true : "Last name is required")],
+    },
+    //TODO NEED FIX THIS FIELD ERROR IN BROWSER CONSOLE
+    // phone: {
+    //   component: InputMask,
+    //   type: String,
+    //   required: false,
+    //   label: "Phone",
+    //   mask: "+380 (99) 999-99-99",
+    // },
+    address: {
+      street: {
+        component: InputText,
+        type: String,
+        required: false,
+        fullWidth: false,
+        label: "Street",
+      },
+      city: {
+        component: InputText,
+        type: String,
+        required: false,
+        fullWidth: false,
+        label: "City",
+      },
+      postalCode: {
+        component: InputText,
+        type: String,
+        required: false,
+        fullWidth: false,
+        label: "Postal Code",
+      },
+      country: {
+        component: InputText,
+        type: String,
+        required: false,
+        fullWidth: false,
+        label: "Country",
+      },
+    },
+  },
+};
 
-watch(() => props.isRegister, (newVal) => {
-  formData.value = getInitialFormData(newVal);
+const authFields = computed(() => {
+  return props.isRegister ? fieldsConfig.register : fieldsConfig.login;
+})
+
+const optionalFields = computed(() => {
+  return props.isRegister ? authFields.value.address : {};
 });
 
-function getInitialFormData(isRegister) {
-  const baseData = {
-    username: '',
-    password: '',
-  };
-
-  if (isRegister) {
-    return {
-      ...baseData,
-      email: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      address: {
-        street: '',
-        city: '',
-        postalCode: '',
-        country: '',
-      },
-      roles: []
-    };
+const fullWidthFields = computed(() => {
+  if (props.isRegister) {
+    const { address, ...restRegisterFields } = authFields.value; // Извлекаем address
+    return restRegisterFields; // Возвращаем остальные поля без address
   }
 
-  return baseData;
+  return authFields.value;
+});
+
+const formData = ref(
+    Object.keys(authFields.value).reduce((acc, key) => {
+      addFieldToFormData(acc, key, authFields.value[key]);
+      return acc;
+    }, {})
+);
+
+function addFieldToFormData(acc, key, field) {
+  if (typeof field === "object" && field !== null && !Array.isArray(field) && !field.component) {
+    Object.keys(field).forEach((subKey) => {
+      addFieldToFormData(acc, subKey, field[subKey]);
+    });
+  } else {
+    acc[key] = "";
+  }
 }
 
+const { isValid, errors, validateFields } = useValidation(authFields.value, formData.value);
+
+const addressKeys = ["street", "city", "postalCode", "country"];
+
+const formatUserData = (data) => {
+  return Object.entries(data).reduce((acc, [key, value]) => {
+    if (addressKeys.includes(key)) {
+      acc.address[key] = value;
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, { address: {} });
+};
+
 const onFormSubmit = async () => {
-  console.log('Form submitted:', formData.value);
+  validateFields();
+
+  if (!isValid.value) return;
 
   try {
     const response = props.isRegister
@@ -179,15 +244,6 @@ const onFormSubmit = async () => {
     console.error("Authentication error:", error);
   }
 };
-
-// const onFormSubmit = async () => {
-//   console.log('Form submitted:', formData.value);
-//   await login(formData.value).then(res => {
-//     if (res.token) {
-//       router.push('/filters');
-//     }
-//   })
-// };
 </script>
 
 <style scoped>
@@ -214,6 +270,7 @@ const onFormSubmit = async () => {
 :deep(.p-inputtext) {
   width: 100%;
 }
+
 
 :deep(.p-password) {
   width: 100%;
