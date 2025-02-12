@@ -7,6 +7,7 @@
           <component
               :is="field.component"
               v-model="formData[key]"
+              :mask="field.mask"
               class="w-full"
           />
           <label :for="key">{{ field.label }}</label>
@@ -25,11 +26,10 @@
       </div>
 
 
-
       <div v-if="optionalFields" class="address-form">
         <div class="field" v-for="(optField, key) in optionalFields" :key="optField.value">
           <FloatLabel>
-            <InputText v-model="formData[key]"  class="w-full"/>
+            <InputText v-model="formData[key]" class="w-full"/>
             <label for="street">{{ optField.label }}</label>
           </FloatLabel>
         </div>
@@ -50,14 +50,14 @@
 <script setup>
 import {computed, reactive, ref, watch} from 'vue';
 import InputText from 'primevue/inputtext';
-import { InputMask } from "primevue";
+import {InputMask} from "primevue";
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import FloatLabel from 'primevue/floatlabel';
 import {useRouter} from 'vue-router';
-import { useValidation } from "@/composables/useValidation.js";
+import {useValidation} from "@/composables/useValidation.js";
 
-import { login, register } from "@/services/api/auth-serivce.api.js";
+import {login, register} from "@/services/api/auth-serivce.api.js";
 
 const router = useRouter();
 
@@ -138,13 +138,13 @@ const fieldsConfig = {
       validators: [(value) => (value ? true : "Last name is required")],
     },
     //TODO NEED FIX THIS FIELD ERROR IN BROWSER CONSOLE
-    // phone: {
-    //   component: InputMask,
-    //   type: String,
-    //   required: false,
-    //   label: "Phone",
-    //   mask: "+380 (99) 999-99-99",
-    // },
+    phone: {
+      component: InputMask,
+      type: String,
+      required: false,
+      label: "Phone",
+      mask: "+380 (99) 999-99-99",
+    },
     address: {
       street: {
         component: InputText,
@@ -188,7 +188,7 @@ const optionalFields = computed(() => {
 
 const fullWidthFields = computed(() => {
   if (props.isRegister) {
-    const { address, ...restRegisterFields } = authFields.value; // Извлекаем address
+    const {address, ...restRegisterFields} = authFields.value; // Извлекаем address
     return restRegisterFields; // Возвращаем остальные поля без address
   }
 
@@ -212,7 +212,7 @@ function addFieldToFormData(acc, key, field) {
   }
 }
 
-const { isValid, errors, validateFields } = useValidation(authFields.value, formData.value);
+const {isValid, errors, validateFields} = useValidation(authFields.value, formData.value);
 
 const addressKeys = ["street", "city", "postalCode", "country"];
 
@@ -224,7 +224,7 @@ const formatUserData = (data) => {
       acc[key] = value;
     }
     return acc;
-  }, { address: {} });
+  }, {address: {}});
 };
 
 const onFormSubmit = async () => {
@@ -234,7 +234,7 @@ const onFormSubmit = async () => {
 
   try {
     const response = props.isRegister
-        ? await register(formData.value)
+        ? await register(formatUserData(formData.value))
         : await login(formData.value);
 
     if (response.token) {
