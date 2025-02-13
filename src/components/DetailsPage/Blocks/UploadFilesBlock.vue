@@ -55,7 +55,13 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  data: {
+    type: Object,
+    required: true
+  },
 })
+
+console.log("UploadFilesBlock.vue", props.config)
 
 const uploadRef = ref(null)
 const uploadedFiles = ref([])

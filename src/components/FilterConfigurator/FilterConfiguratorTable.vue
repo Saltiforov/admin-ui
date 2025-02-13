@@ -516,11 +516,14 @@ const configActionsBar = ref({
       },
       onClick: saveFilters,
     },
+
+  ],
+  filters: [
     {
       component: 'IconField',
-      props: {
-        class: 'filter-button',
-      },
+      disablePropsBinding: false,
+      name: 'iconField',
+      props: {},
       children: [
         {
           component: 'InputIcon',
@@ -538,7 +541,7 @@ const configActionsBar = ref({
         },
       ],
     },
-  ],
+  ]
 });
 
 const searchByCodeTopLevel = (searchCode) => {

@@ -65,6 +65,7 @@ const configActionsBar = ref({
       }),
     },
   ],
+  filters: [],
 });
 
 const mappedUsers = computed(() => {

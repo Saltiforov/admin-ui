@@ -39,6 +39,7 @@ import router from "@/router/index.js";
 import defaultProductImage from '@/assets/icons/shopping-bag.svg';
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import Button from "primevue/button";
+import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -118,6 +119,22 @@ const configActionsBar = ref({
         icon: 'pi pi-check',
       },
       onClick: addNewProduct
+    },
+  ],
+  filters: [
+    {
+      component: AsyncTreeSelect,
+      disablePropsBinding: true,
+      name: 'filters',
+      props: {
+        restOptionsUrl: 'api/filters',
+        placeholder: 'Select filters, please',
+        selectionMode: 'multiple',
+        class: 'w-full product-input md:w-56',
+        required: false,
+        showClear: true,
+        fullWidth: true,
+      }
     },
   ],
 });

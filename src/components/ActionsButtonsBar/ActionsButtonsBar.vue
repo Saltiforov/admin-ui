@@ -1,28 +1,16 @@
 <template>
   <div class="buttons-wrapper">
-    <div v-if="config" class="flex">
-      <div v-for="(item, index) in config.buttons" :key="index">
-        <component
-            :is="item.component"
-            v-bind="item.props"
-            :class="item.class"
-            :style="item.styles"
-            @click="item.onClick"
-        >
-          <component
-              v-for="(child, childIndex) in item.children"
-              :key="childIndex"
-              :is="child.component"
-              v-bind="child.props"
-          />
-        </component>
-      </div>
+    <div v-if="config" class="grid w-full grid-cols-2 gap-4">
+      <ActionsBlock :actions="config.buttons"/>
+      <FiltersBlock :filters="config.filters" @update:filters="selectedFilters"/>
     </div>
   </div>
 </template>
 
 <script setup>
-import {defineProps} from 'vue';
+import {computed, defineProps} from 'vue';
+import ActionsBlock from "@/components/ActionsButtonsBar/ActionsBlock/ActionsBlock.vue";
+import FiltersBlock from "@/components/ActionsButtonsBar/FiltersBlock/FiltersBlock.vue";
 
 const props = defineProps({
   config: {
@@ -30,6 +18,10 @@ const props = defineProps({
     required: false,
   },
 });
+
+const selectedFilters = (filters) => {
+  console.log("selectedFilters", filters)
+}
 
 
 </script>
