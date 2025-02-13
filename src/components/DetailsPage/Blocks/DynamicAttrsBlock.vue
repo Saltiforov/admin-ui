@@ -56,19 +56,19 @@
             />
           </div>
         </div>
-          <Button
-              :label="config.buttonLabel"
-              class="mt-3"
-              @click="addPair"
-              outlined
-          />
+        <Button
+            :label="config.buttonLabel"
+            class="mt-3"
+            @click="addPair"
+            outlined
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
 const props = defineProps({
   data: {
@@ -85,8 +85,12 @@ const props = defineProps({
 // преобразуем объект в массив пар вида [{ key: 'color', value: 'Black' }, ...]
 let pairs = [];
 if (props.config.relationCode && props.data && props.data[props.config.relationCode]) {
-  pairs = Object.entries(props.data[props.config.relationCode]).map(
-      ([key, value]) => ({ key, value })
+  pairs = Object.entries(props.data[props.config.relationCode]).reduce(
+      (acc, [key, value]) => {
+        acc.push({ key: value.key, value: value.value });
+        return acc;
+      },
+      []
   );
 } else {
   pairs = [...props.config.initialPairs];
@@ -95,11 +99,11 @@ if (props.config.relationCode && props.data && props.data[props.config.relationC
 const keyValuePairs = ref(pairs);
 
 function addPair() {
-  keyValuePairs.value.push({ key: '', value: '' });
+  keyValuePairs.value.push({key: '', value: ''});
 }
 
 const getData = () => {
-  return { ...pairs };  // Возвращаем данные формы
+  return {attributes: {...pairs}};  // Возвращаем данные формы
 };
 
 defineExpose({
