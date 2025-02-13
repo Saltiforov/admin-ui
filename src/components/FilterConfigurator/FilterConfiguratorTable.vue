@@ -310,6 +310,8 @@ const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
   const title = isEditMode ? "Edit Filter" : "Add Filter";
 
+  console.log("handleOpenPopup", filter);
+
   eventBus.emit("show-popup", {
     title,
     parentFilter: filter,
@@ -334,10 +336,14 @@ const updateExpandedKeys = (keys) => {
 const onAddFilter = (options) => {
   const {parent, newFilter, eventType} = options;
 
+  console.log("NEW FIlter ", newFilter)
+  console.log("NEW FIlter parent", parent)
+
 
   if (isInvalidParent(parent)) return;
 
   if (eventType === "edit") {
+    console.log("handleEditFilter")
     handleEditFilter(parent, newFilter);
     return;
   }
@@ -355,7 +361,9 @@ const onAddFilter = (options) => {
 const isInvalidParent = (parent) => parent && !parent.key;
 
 const getBasicEntityFilledModel = (item) => {
+  console.log("getBasicEntityFilledModel",item);
   return {
+    id: item?.data?.id || item?.id,
     name: item?.data?.name || item?.name,
     code: item?.data?.code ||item?.code,
     icon: item?.data?.icon ||item?.icon || '',
@@ -365,12 +373,15 @@ const getBasicEntityFilledModel = (item) => {
 
 const handleEditFilter = (parent, newFilter) => {
   const activeFilter = deepSearchByCode(nodes.value, parent?.key);
+
   if (!activeFilter) return;
 
   activeFilter.data = {
     ...activeFilter.data,
     ...getBasicEntityFilledModel(newFilter),
   }
+  console.log("handleEditFilter activeFilter", activeFilter.data)
+  console.log("getBasicEntityFilledModel(newFilter)", getBasicEntityFilledModel(newFilter))
 };
 
 const createNode = (newFilter, parent = null) => {
@@ -475,9 +486,10 @@ const saveFilters = async () => {
   }
 
   if (nodes.value.length > 0) {
+    console.log("mapFiltersForSubmit", mapFiltersForSubmit(nodes.value))
     await createFilters(mapFiltersForSubmit(nodes.value));
     addedNodes.value = 0;
-    emit('filters-updated');
+    // emit('filters-updated');
   }
 }
 

@@ -102,8 +102,9 @@ const onFormSubmit = () => {
   });
 
   if (isValid) {
+    const newFilter = { ...convertDottedFieldKeysToNested(formValues), id: popupConfig.parentFilter.id }
     eventBus.emit("add-filter", {
-      newFilter: convertDottedFieldKeysToNested(formValues),
+      newFilter,
       parent: popupConfig.parentFilter,
       eventType: popupConfig.eventType,
     });
