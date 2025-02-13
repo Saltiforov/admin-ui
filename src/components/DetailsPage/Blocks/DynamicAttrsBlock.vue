@@ -10,7 +10,8 @@
             <div
                 v-for="(pair, index) in keyValuePairs"
                 :key="index"
-                class="grid grid-cols-2 gap-6 items-center"
+                class="grid gap-6 items-center"
+                style="grid-template-columns: 1fr 1fr auto;"
             >
               <InputText
                   v-model="pair.key"
@@ -22,6 +23,12 @@
                   :placeholder="config.placeholders.value"
                   class="w-full"
               />
+              <i
+                  v-if="index > 0"
+                  class="pi pi-times w-6 text-center pointer"
+                  @click="deletePair(index)"
+              ></i>
+              <div v-else class="empty-block"></div>
             </div>
           </div>
           <Button
@@ -37,12 +44,13 @@
       <div v-if="config.header" class="mb-4 header-default">
         <h2 class="text-lg font-bold">{{ config.header }}</h2>
       </div>
-      <div class="p-4">
+      <div class="p-4 flex justify-between">
         <div class="grid gap-6">
           <div
               v-for="(pair, index) in keyValuePairs"
               :key="index"
-              class="grid grid-cols-2 gap-6 items-center"
+              class="grid gap-6 items-center"
+              style="grid-template-columns: 1fr 1fr auto;"
           >
             <InputText
                 v-model="pair.key"
@@ -54,21 +62,28 @@
                 :placeholder="config.placeholders.value"
                 class="w-full"
             />
+            <i
+                v-if="index > 0"
+                class="pi pi-times w-6 text-center pointer"
+                @click="deletePair(index)"
+            ></i>
+            <div v-else class="empty-block"></div>
           </div>
         </div>
         <Button
             :label="config.buttonLabel"
-            class="mt-3"
+            class="self-start"
             @click="addPair"
             outlined
         />
+
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, watchEffect} from 'vue';
 
 const props = defineProps({
   data: {
@@ -81,29 +96,28 @@ const props = defineProps({
   },
 });
 
-// Если в конфиге задан relationCode и в data есть соответствующее поле,
-// преобразуем объект в массив пар вида [{ key: 'color', value: 'Black' }, ...]
-let pairs = [];
-if (props.config.relationCode && props.data && props.data[props.config.relationCode]) {
-  pairs = Object.entries(props.data[props.config.relationCode]).reduce(
-      (acc, [key, value]) => {
-        acc.push({ key: value.key, value: value.value });
-        return acc;
-      },
-      []
-  );
-} else {
-  pairs = [...props.config.initialPairs];
-}
+const keyValuePairs = ref([]);
 
-const keyValuePairs = ref(pairs);
+watchEffect(() => {
+  if (props.config.relationCode && props.data && props.data[props.config.relationCode]) {
+    keyValuePairs.value = Object.entries(props.data[props.config.relationCode]).map(
+        ([key, value]) => ({ key: value.key, value: value.value })
+    );
+  } else {
+    keyValuePairs.value = [...props.config.initialPairs];
+  }
+});
+
+const deletePair = (idx) => {
+  keyValuePairs.value = keyValuePairs.value.filter((_, i) => i !== idx);
+};
 
 function addPair() {
   keyValuePairs.value.push({key: '', value: ''});
 }
 
 const getData = () => {
-  return {attributes: {...pairs}};  // Возвращаем данные формы
+  return {attributes: {...keyValuePairs.value}};
 };
 
 defineExpose({
@@ -116,5 +130,8 @@ defineExpose({
 .p-4 {
   max-width: 600px;
   margin: auto;
+}
+.empty-block {
+  width: 16px;
 }
 </style>
