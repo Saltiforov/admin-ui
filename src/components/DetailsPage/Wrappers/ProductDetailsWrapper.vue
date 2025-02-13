@@ -16,23 +16,21 @@
         :config="blockList.dynamicAttrs"
         :data="detailsPageData"
     />
-    <FooterActionBlock :config="blockList.footerActions" :data="detailsPageData" @submit="collectDataFromComponents"/>
-
-    <div v-if="isLoading" class="loader-overlay">
-      <ProgressSpinner class="loader-spinner"/>
-    </div>
+    <FooterActionBlock
+        :config="blockList.footerActions"
+        :data="detailsPageData"
+        @click="collectDataFromComponents"
+    />
   </div>
 </template>
 
 <script setup>
-import {computed, defineProps, onMounted, ref, watch} from 'vue';
-import ProgressSpinner from 'primevue/progressspinner';
+import {computed, defineProps, ref} from 'vue';
 import {createProduct, updateProductById} from "@/services/api/product-service.api.js";
-import {login} from "@/services/api/auth-serivce.api.js";
 import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
-
+import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
 
 const props = defineProps({
   blockList: {
@@ -66,8 +64,10 @@ const detailsPageData = computed(() => {
 });
 
 const isEditMode = computed(() => {
-  return !!detailsPageData.data;
+  return !!detailsPageData.value;
 });
+
+const productId = computed(() => detailsPageData.value._id)
 
 const fieldsBlockRef = ref(null);
 const uploadFilesRef = ref(null);
@@ -75,15 +75,14 @@ const dynamicAttrsRef = ref(null);
 
 const allData = ref({});
 
-console.log('blockList', props.blockList);
 
-const collectDataFromComponents = () => {
+const collectDataFromComponents = (e) => {
+  console.log("collectDataFromComponents", e)
   allData.value = {
     ...fieldsBlockRef.value.getData(),
     ...dynamicAttrsRef.value.getData(),
   };
-  console.log("collectDataFromChildren", allData.value);
-  onSubmit()
+  handleProduct()
 };
 
 const fieldsErrors = ref(null);
@@ -121,9 +120,7 @@ const createNewProduct = async (product) => {
   }
 }
 
-const emit = defineEmits(['productUpdated'])
-
-const onSubmit = async () => {
+const handleProduct = async () => {
   props.startLoading()
 
   // if ( !validateForm() ) return;
@@ -133,12 +130,12 @@ const onSubmit = async () => {
     return;
   }
 
-  updateProductById(detailsPageData._id, allData.value)
+  updateProductById(productId.value, allData.value)
       .then((res) => {
         if (res.status === 200) {
-          console.log("updateProductById", res)
-          props.useFetch()
-          props.stopLoading()
+          setTimeout(() => {
+            props.stopLoading()
+          }, 1000)
         }
       })
 };
@@ -146,26 +143,6 @@ const onSubmit = async () => {
 
 <style scoped>
 .page-container {
-  position: relative; /* для абсолютного позиционирования overlay внутри */
-}
-
-/* Стили для overlay лоадера */
-.loader-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000; /* поверх всего контента */
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8); /* полупрозрачный фон */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Дополнительные стили для лоадера, если требуется */
-.loader-spinner {
-  width: 50px;
-  height: 50px;
+  position: relative;
 }
 </style>
