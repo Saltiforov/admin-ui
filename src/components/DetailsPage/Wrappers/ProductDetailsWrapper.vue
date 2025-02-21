@@ -75,7 +75,6 @@ const dynamicAttrsRef = ref(null);
 
 const allData = ref({});
 
-
 const collectDataFromComponents = (e) => {
   console.log("collectDataFromComponents", e)
   allData.value = {
@@ -111,13 +110,14 @@ const validateForm = () => {
 
 
 const createNewProduct = async (product) => {
-  props.startLoading()
-  try {
-    const res = await createProduct(product)
-    if (res.status === 201 || res.status === 200) props.stopLoading()
-  } catch (error) {
-    console.error('Error in createProduct:', error);
-  }
+  console.log("createNewProduct", product);
+  // props.startLoading()
+  // try {
+  //   const res = await createProduct(product)
+  //   if (res.status === 201 || res.status === 200) props.stopLoading()
+  // } catch (error) {
+  //   console.error('Error in createProduct:', error);
+  // }
 }
 
 const handleProduct = async () => {

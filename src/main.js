@@ -59,4 +59,22 @@ app.use(PrimeVue, {
 });
 export default app;
 
+const api = app.config.globalProperties.$api;
+
+api.instance.interceptors?.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 403) {
+            localStorage.removeItem('token');
+
+            app.config.globalProperties.$router.push('/auth/login').catch(() => {});
+
+            console.log("Redirecting to login due to 403 error");
+
+            return Promise.reject(error);
+        }
+        return Promise.reject(error);
+    }
+);
+
 app.mount('#app');

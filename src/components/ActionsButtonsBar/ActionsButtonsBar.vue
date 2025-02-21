@@ -11,6 +11,7 @@
 import {computed, defineProps} from 'vue';
 import ActionsBlock from "@/components/ActionsButtonsBar/ActionsBlock/ActionsBlock.vue";
 import FiltersBlock from "@/components/ActionsButtonsBar/FiltersBlock/FiltersBlock.vue";
+import {createQueryString} from "@/utils/index.js";
 
 const props = defineProps({
   config: {
@@ -21,6 +22,8 @@ const props = defineProps({
 
 const selectedFilters = (filters) => {
   console.log("selectedFilters", filters)
+  const query = createQueryString(filters)
+  console.log("query", query)
 }
 
 

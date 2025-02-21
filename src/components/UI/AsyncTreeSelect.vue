@@ -2,8 +2,9 @@
   <div>
     <TreeSelect
         v-bind="props.config"
+        v-model="selectedKeys"
         :options="computedOptions"
-        :maxSelectedLabels="2"
+        :maxSelectedLabels="4"
         display="chip"
         @change="prepareSelectedValue"
     />
@@ -11,13 +12,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, useAttrs, computed } from 'vue';
+import {ref, onMounted, useAttrs, computed} from 'vue';
 import nodeBuilder from '@/services/builder/node-builder-service.js';
 
 import app from '@/main';
 
 const props = defineProps({
   config: {
+    type: Object,
+    required: true,
+  },
+  filters: {
     type: Object,
     required: true,
   }
@@ -39,7 +44,7 @@ const loadOptions = async () => {
       const api = app.config.globalProperties.$api;
       const response = await api.get(props.config.restOptionsUrl);
       if (Array.isArray(response.data)) {
-        nodes.value = nodeBuilder.recursiveNodeBuilder(response.data, { mapper: nodeMapper });
+        nodes.value = nodeBuilder.recursiveNodeBuilder(response.data, {mapper: nodeMapper});
       }
     } catch (error) {
       console.error('Error loading options:', error);
@@ -68,15 +73,42 @@ const prepareSelectedValue = (selectedValue) => {
     return;
   }
   payload.value = findSelectedNodes(nodes.value, selectedValue).map(item => item.id);
+  console.log("payload.value", payload.value)
   emit('update:modelValue', payload.value);
 }
 
 const attrs = useAttrs();
 
 const computedOptions = computed(() => {
-
   return attrs.options ? attrs.options : nodes.value;
 });
+
+
+const extractValues = (items, field) => {
+  return items?.map(item => item[field]);
+};
+
+const getSelectedKeys = (nodes, matchBy) => {
+  let selected = {};
+
+  const traverse = (items) => {
+    for (const item of items) {
+      if (matchBy?.includes(item.id)) {
+        selected[item.key] = true;
+      }
+      if (item.children) {
+        traverse(item.children);
+      }
+    }
+  };
+
+  traverse(nodes);
+  return selected;
+};
+
+const searchCriteria = computed(() => extractValues(props.filters, "_id"));
+
+const selectedKeys = computed(() => getSelectedKeys(nodes.value, searchCriteria.value));
 
 onMounted(() => {
   loadOptions();

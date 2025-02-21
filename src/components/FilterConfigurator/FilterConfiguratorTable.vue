@@ -421,7 +421,6 @@ const mapFiltersForSubmit = (data) => {
 
 function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
-    console.log('item', item);
     const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
 
     return {

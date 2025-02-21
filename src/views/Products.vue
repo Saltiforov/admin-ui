@@ -47,14 +47,11 @@ const toast = useToast();
 const inputCodeValue = ref('');
 const noResultsMessage = ref('');
 
-const addNewFilter = () => {
-  console.log('Add new filter');
-};
-const saveFilters = () => {
-  console.log('Save filters');
-};
 const onSearch = () => {
-  console.log('Search', inputCodeValue.value);
+  console.log('onSearch', inputCodeValue.value);
+};
+const onChangeFilter = (val) => {
+  console.log('onChangeFilter', val);
 };
 
 
@@ -87,7 +84,8 @@ const items = ref([
 const products = ref();
 
 const fetchProducts = async () => {
-  products.value = await getProductsList()
+  const res = await getProductsList()
+  products.value = res.list
 }
 fetchProducts()
 
@@ -134,7 +132,30 @@ const configActionsBar = ref({
         required: false,
         showClear: true,
         fullWidth: true,
+        'onUpdate:modelValue': onChangeFilter,
       }
+    },
+    {
+      component: 'IconField',
+      disablePropsBinding: false,
+      name: 'iconField',
+      props: {},
+      children: [
+        {
+          component: 'InputIcon',
+          props: {
+            class: 'pi pi-search',
+          },
+        },
+        {
+          component: 'InputText',
+          props: {
+            vModel: inputCodeValue,
+            placeholder: 'Enter the code, please.',
+            onInput: onSearch,
+          },
+        },
+      ],
     },
   ],
 });

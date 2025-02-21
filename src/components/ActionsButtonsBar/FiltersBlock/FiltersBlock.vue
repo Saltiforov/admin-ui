@@ -1,7 +1,7 @@
 <template>
   <div v-if="filters.length" class="filters-wrapper">
     <div class="flex">
-      <div v-for="(filter, index) in filters" :key="index">
+      <div class="filter" v-for="(filter, index) in filters" :key="index">
         <component
             class="w-full"
             :is="filter.component"
@@ -52,5 +52,16 @@ const updateFilter = (value, name) => {
   background: white;
   border-radius: 10px;
   display: flex;
+}
+.filter {
+  margin: 0 5px;
+}
+
+.filter:first-child {
+  margin-left: 0;
+}
+
+.filter:last-child {
+  margin-right: 0;
 }
 </style>

@@ -6,8 +6,14 @@
         :errors="fieldsErrors"
         @update:formData="handleFormDataUpdate"
     />
-    <UploadFilesBlock :config="blockList.files" :data="data" />
-    <FooterActionBlock :config="blockList.footerActions" :data="data"/>
+    <UploadFilesBlock
+        :config="blockList.files"
+        :data="data"
+    />
+    <FooterActionBlock
+        :config="blockList.footerActions"
+        :data="data"
+    />
 
     <!-- Лоадер, который отображается поверх содержимого при загрузке -->
     <div v-if="isLoading" class="loader-overlay">

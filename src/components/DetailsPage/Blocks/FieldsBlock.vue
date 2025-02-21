@@ -58,6 +58,7 @@
                 :is="fieldFullWidth.type"
                 v-bind="fieldFullWidth.disablePropsBinding ? {} : (fieldFullWidth.props || {})"
                 :config="fieldFullWidth.props"
+                :filters="data?.filters"
                 v-model="formData[fieldFullWidth.name]"
             />
             <Message

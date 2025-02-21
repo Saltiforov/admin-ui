@@ -19,7 +19,6 @@
 import { useRoute } from 'vue-router';
 import { usePagesConfig } from "@/composables/usePagesConfig.js";
 import ProgressSpinner from 'primevue/progressspinner';
-import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 
 const route = useRoute();
 const pageType = route.meta.pageType;

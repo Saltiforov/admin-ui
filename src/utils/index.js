@@ -109,3 +109,22 @@ export function mapObject(obj) {
     );
 }
 
+export function createQueryString (params)  {
+    const queryParams = [];
+
+    // Проходим по объекту и добавляем каждый параметр в строку запроса
+    for (const [key, value] of Object.entries(params)) {
+        if (Array.isArray(value)) {
+            // Если значение - это массив (например, для filters), соединяем значения через запятую
+            queryParams.push(`${key}=${value.join(',')}`);
+        } else if (value !== undefined && value !== null) {
+            // Если значение не пустое, добавляем его в строку
+            queryParams.push(`${key}=${encodeURIComponent(value)}`);
+        }
+    }
+
+    // Собираем все параметры в одну строку
+    return queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+}
+
+
