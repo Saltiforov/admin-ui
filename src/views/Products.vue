@@ -4,6 +4,7 @@
     <CustomDataTable
         title="Products"
         :config="dataTableConfig"
+        :loading="isLoading"
     >
       <template #image="{ data }">
         <img :src="data.image ? data.image : defaultProductImage" alt="Product image"
@@ -40,6 +41,7 @@ import defaultProductImage from '@/assets/icons/shopping-bag.svg';
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
+import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -172,7 +174,7 @@ const dataTableConfig = ref({
     {
       field: 'image',
       header: 'Image',
-      slotName: 'image',  // Указываем имя слота
+      slotName: 'image',
     },
     {field: 'price', header: 'Price', sortable: true},
     {field: 'description', header: 'Description'},
@@ -181,7 +183,7 @@ const dataTableConfig = ref({
     {
       field: 'actions',
       header: '',
-      slotName: 'actions',  // Указываем имя слота
+      slotName: 'actions',
       style: 'width: 10%',
     },
   ],
@@ -190,6 +192,13 @@ const dataTableConfig = ref({
 watchEffect(() => {
   dataTableConfig.value = { ...dataTableConfig.value, value: products.value };
 });
+
+// const isLoading = computed(() => !products.value);
+const isLoading = ref(true);
+
+timeoutService.setTimeout(() => {
+  isLoading.value = false;
+},1000)
 
 const confirmDelete = (product) => {
   console.log(confirm.require)

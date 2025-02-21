@@ -4,6 +4,7 @@
     <CustomDataTable
         title="Users"
         :config="dataTableConfig"
+        :loading="isLoading"
     >
     </CustomDataTable>
   </div>
@@ -17,7 +18,7 @@ import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.
 import Button from "primevue/button";
 import router from "@/router/index.js";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
-
+import { timeoutService } from "@/services/timeoutService/timeoutService.js";
 
 const users = ref([])
 const fetchUsers = async () => {
@@ -87,6 +88,14 @@ const mappedUsers = computed(() => {
 watchEffect(() => {
   dataTableConfig.value.value = mappedUsers.value;
 });
+
+// const isLoading = computed(() => !users.value.length)
+const isLoading = ref(true);
+
+timeoutService.setTimeout(() => {
+  isLoading.value = false
+}, 1000);
+
 
 </script>
 

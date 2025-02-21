@@ -1,16 +1,14 @@
 <template>
   <div>
     <ActionsButtonsBar :config="configActionsBar"/>
-    <h3 v-if="!nodes.length" class="filters-empty">Filters are missing please add a new one</h3>
     <TreeTable
         class="configurator-table"
-        v-else
         v-model:contextMenuSelection="selectedNode"
         v-model:selectionKeys="selectedKeys"
         autoLayout
         selectionMode="multiple"
         :metaKeySelection="false"
-        :value="nodes"
+        :value="loading ? skeletonNodes : nodes"
         :loading="loading"
         :paginator="true"
         :rows="5"
@@ -24,18 +22,29 @@
         @nodeSelect="onNodeSelect"
         @nodeUnselect="onNodeUnselect"
     >
-      <Column  header="Name" :expander="true" style="width: 34%" >
-        <template #body="{ node }" >
-            <div>{{ capitalizeFirstLetter(node.data.name['uk']) }}</div>
+      <Column field="name" header="Name" :expander="true" style="width: 34%">
+        <template #body="{ node }">
+            <Skeleton v-if="loading" width="80%" height="1rem"/>
+          <div class="flex" v-else>
+            <div>{{ capitalizeFirstLetter(node.data.name['uk']) || '' }}</div>
             /
-            <div>{{ capitalizeFirstLetter(node.data.name['ru']) }}</div>
+            <div>{{ capitalizeFirstLetter(node.data.name['ru']) || '' }}</div>
+          </div>
         </template>
       </Column>
-      <Column field="code" header="Code" style="width: 15%"></Column>
+
+      <Column field="code" header="Code" style="width: 15%">
+        <template #body="{ node }">
+          <Skeleton v-if="loading" width="50%" height="1rem"/>
+          <span v-else>{{ node.data.code }}</span>
+        </template>
+      </Column>
+
       <Column field="icon" header="Icon" style="width: 15%">
         <template #body="{ node }">
+          <Skeleton v-if="loading" width="30px" height="30px"/>
           <img
-              v-if="node.data.icon"
+              v-else-if="node.data.icon"
               :src="pathBuilder(node.data.icon)"
               alt="icon"
               style="width: 30px; height: 30px; object-fit: contain;"
@@ -43,23 +52,31 @@
           <span v-else>---</span>
         </template>
       </Column>
-      <Column field="description" header="Description" style="width: 33%"></Column>
-      <Column
-          style="width: 33%"
-      >
+
+      <Column field="description" header="Description" style="width: 33%">
+        <template #body="{ node }">
+          <Skeleton v-if="loading" width="90%" height="1rem"/>
+          <span v-else>{{ node.data.description }}</span>
+        </template>
+      </Column>
+
+      <Column style="width: 33%">
         <template #body="{ node, level }">
           <div>
             <Button
+                v-if="!loading"
                 type="button"
                 icon="pi pi-ellipsis-v"
                 aria-haspopup="true"
                 aria-controls="overlay_menu"
-                @click="(event) => toggle(event,node, level)"
+                @click="(event) => toggle(event, node, level)"
             />
+            <Skeleton v-else width="30px" height="30px"/>
           </div>
         </template>
       </Column>
     </TreeTable>
+
     <ContextMenu ref="cm" :model="menuModel" @hide="selectedNode = null"/>
     <ConfirmDialog/>
     <Toast/>
@@ -77,6 +94,7 @@ import {useConfirm} from "primevue/useconfirm";
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import nodeBuilder from "@/services/builder/node-builder-service.js";
 import {login} from "@/services/api/auth-serivce.api.js";
+import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -85,7 +103,24 @@ const emit = defineEmits(['filters-updated'])
 const noResultsMessage = ref('');
 const selectedNode = ref();
 const cm = ref();
-const loading = ref(false);
+const loading = ref(true);
+
+timeoutService.setTimeout(() => {
+  loading.value = false;
+}, 1000)
+
+const skeletonNodes = ref(
+    Array.from({ length: 5 }).map((_, i) => ({
+      key: `skeleton-${i}`,
+      data: {
+        name: { uk: "", ru: "", },
+        code: "",
+        icon: "",
+        description: "",
+      },
+      children: [],
+    }))
+);
 
 const menuModel = ref(
     [
@@ -361,13 +396,13 @@ const onAddFilter = (options) => {
 const isInvalidParent = (parent) => parent && !parent.key;
 
 const getBasicEntityFilledModel = (item) => {
-  console.log("getBasicEntityFilledModel",item);
+  console.log("getBasicEntityFilledModel", item);
   return {
     id: item?.data?.id || item?.id,
     name: item?.data?.name || item?.name,
-    code: item?.data?.code ||item?.code,
-    icon: item?.data?.icon ||item?.icon || '',
-    description: item?.data?.description ||item?.description,
+    code: item?.data?.code || item?.code,
+    icon: item?.data?.icon || item?.icon || '',
+    description: item?.data?.description || item?.description,
   }
 }
 
@@ -389,7 +424,7 @@ const createNode = (newFilter, parent = null) => {
 
   const node = {
     key: newKey,
-    data: { ...getBasicEntityFilledModel(newFilter) },
+    data: {...getBasicEntityFilledModel(newFilter)},
     children: [],
   }
 
@@ -620,7 +655,6 @@ button[style*="visibility: hidden"] svg {
   border-radius: 10px;
   display: flex;
 }
-
 
 
 .filters-empty {
