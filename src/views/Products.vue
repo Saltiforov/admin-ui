@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ActionsButtonsBar :config="configActionsBar"/>
+    <ActionsButtonsBar :config="configActionsBar" @update:filters="updateQuery"/>
     <CustomDataTable
         title="Products"
         :config="dataTableConfig"
@@ -32,9 +32,9 @@
 </template>
 
 <script setup>
-import {computed, ref, watchEffect} from 'vue';
+import {computed, onMounted, ref, watch, watchEffect} from 'vue';
 import {deleteProductById, getProductsList} from "@/services/api/product-service.api.js";
-import { useToast } from "primevue/usetoast";
+import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import router from "@/router/index.js";
 import defaultProductImage from '@/assets/icons/shopping-bag.svg';
@@ -42,20 +42,27 @@ import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.
 import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
+import {useRoute, useRouter} from "vue-router";
+import {createQueryString} from "@/utils/index.js";
+import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
+import createDebouncedService from "@/services/debounceService/debounceService.js";
 
 const confirm = useConfirm();
 const toast = useToast();
 
-const inputCodeValue = ref('');
-const noResultsMessage = ref('');
+const route = useRoute()
+const products = ref();
 
-const onSearch = () => {
-  console.log('onSearch', inputCodeValue.value);
-};
-const onChangeFilter = (val) => {
-  console.log('onChangeFilter', val);
-};
+const isLoading = ref(true);
 
+
+const {debounceService} = createDebouncedService();
+
+const {updateQuery} = useQueryUpdater();
+
+const getSearchQueryValue = computed(() => route.query && route.query.q ? route.query.q : "");
+
+const searchQuery = ref(getSearchQueryValue.value);
 
 const productData = ref({});
 const toggle = (event, data) => {
@@ -83,12 +90,16 @@ const items = ref([
   },
 ]);
 
-const products = ref();
 
 const fetchProducts = async () => {
-  const res = await getProductsList()
+  isLoading.value = true;
+  const res = await getProductsList(createQueryString(route.query));
   products.value = res.list
+  timeoutService.setTimeout(() => {
+    isLoading.value = false;
+  }, 500)
 }
+
 fetchProducts()
 
 const editProduct = (id) => {
@@ -123,6 +134,29 @@ const configActionsBar = ref({
   ],
   filters: [
     {
+      component: 'IconField',
+      disablePropsBinding: false,
+      name: 'q',
+      vModel: searchQuery,
+      props: {},
+      children: [
+        {
+          component: 'InputIcon',
+          props: {
+            class: 'pi pi-search',
+
+          },
+        },
+        {
+          component: 'InputText',
+          props: {
+            placeholder: 'Enter the code, please.',
+            class: 'w-full',
+          },
+        },
+      ],
+    },
+    {
       component: AsyncTreeSelect,
       disablePropsBinding: true,
       name: 'filters',
@@ -134,38 +168,19 @@ const configActionsBar = ref({
         required: false,
         showClear: true,
         fullWidth: true,
-        'onUpdate:modelValue': onChangeFilter,
       }
-    },
-    {
-      component: 'IconField',
-      disablePropsBinding: false,
-      name: 'iconField',
-      props: {},
-      children: [
-        {
-          component: 'InputIcon',
-          props: {
-            class: 'pi pi-search',
-          },
-        },
-        {
-          component: 'InputText',
-          props: {
-            vModel: inputCodeValue,
-            placeholder: 'Enter the code, please.',
-            onInput: onSearch,
-          },
-        },
-      ],
     },
   ],
 });
 
+const tableRows = ref(route.query.top ? parseInt(route.query.top) : 5);
+const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
+
 const dataTableConfig = ref({
   value: products.value,
   paginator: true,
-  rows: 5,
+  rows: tableRows.value,
+  skip: tableSkip.value,
   rowsPerPageOptions: [5, 10, 20, 50],
   tableStyle: "min-width: 50rem",
   class: "custom-table",
@@ -189,16 +204,28 @@ const dataTableConfig = ref({
   ],
 });
 
+// TODO перезатирается параметр skip при выборе
+watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
+
+watch(
+    () => [dataTableConfig.value.rows, dataTableConfig.value.skip],
+    ([top, skip]) => {
+      updateQuery({top, skip});
+    },
+    {immediate: false}
+);
+
+console.log("route.query", route.query)
+
 watchEffect(() => {
-  dataTableConfig.value = { ...dataTableConfig.value, value: products.value };
+  dataTableConfig.value = {...dataTableConfig.value, value: products.value};
 });
 
 // const isLoading = computed(() => !products.value);
-const isLoading = ref(true);
 
 timeoutService.setTimeout(() => {
   isLoading.value = false;
-},1000)
+}, 1000)
 
 const confirmDelete = (product) => {
   console.log(confirm.require)

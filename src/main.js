@@ -65,7 +65,7 @@ api.instance.interceptors?.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 403) {
-            localStorage.removeItem('token');
+            localStorage.removeItem('authToken');
 
             app.config.globalProperties.$router.push('/auth/login').catch(() => {});
 

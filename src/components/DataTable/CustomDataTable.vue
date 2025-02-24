@@ -1,6 +1,8 @@
 <template>
   <div>
     <DataTable
+        v-model:rows="config.rows"
+        v-model:first="config.skip"
         :loading="loading"
         :value="loading ? placeholderRows : config.value"
         :paginator="config.paginator"

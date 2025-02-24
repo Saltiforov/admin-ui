@@ -1,6 +1,6 @@
 <template>
   <div v-if="filters.length" class="filters-wrapper">
-    <div class="flex">
+    <div class="filters-content">
       <div class="filter" v-for="(filter, index) in filters" :key="index">
         <component
             class="w-full"
@@ -8,7 +8,7 @@
             v-bind="filter.disablePropsBinding ? {} : (filter.props || {})"
             :config="filter.props"
             :class="filter.class"
-            :modelValue="formData[filter.name]"
+            :modelValue="filter.vModel"
             @update:modelValue="updateFilter($event, filter.name)"
         >
           <component
@@ -16,6 +16,8 @@
               :key="childIndex"
               :is="child.component"
               v-bind="child.props"
+              :modelValue="filter.vModel"
+              @update:modelValue="updateFilter($event, filter.name)"
           />
         </component>
       </div>
@@ -38,7 +40,7 @@ const formData = ref({})
 
 const updateFilter = (value, name) => {
   formData.value[name] = value;
-  emit('update:filters', { ...formData.value }); // Передаем обновленный объект
+  emit('update:filters', {...formData.value}); // Передаем обновленный объект
 };
 
 
@@ -51,17 +53,11 @@ const updateFilter = (value, name) => {
   margin-bottom: 15px;
   background: white;
   border-radius: 10px;
-  display: flex;
-}
-.filter {
-  margin: 0 5px;
 }
 
-.filter:first-child {
-  margin-left: 0;
-}
-
-.filter:last-child {
-  margin-right: 0;
+.filters-content {
+  display: grid;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 </style>

@@ -127,4 +127,23 @@ export function createQueryString (params)  {
     return queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
 }
 
+function getQueryParams(queryString) {
+    // Убираем символ "?" из начала строки, если он есть
+    const query = queryString.startsWith('?') ? queryString.slice(1) : queryString;
+
+    // Разбиваем строку на параметры по символу "&"
+    const pairs = query.split('&');
+
+    // Преобразуем массив пар в объект
+    const params = pairs.reduce((acc, pair) => {
+        const [key, value] = pair.split('=');
+        if (key) {
+            acc[key] = decodeURIComponent(value || '');
+        }
+        return acc;
+    }, {});
+
+    return params;
+}
+
 

@@ -20,10 +20,10 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['update:filters']);
+
 const selectedFilters = (filters) => {
-  console.log("selectedFilters", filters)
-  const query = createQueryString(filters)
-  console.log("query", query)
+  emit("update:filters", filters)
 }
 
 

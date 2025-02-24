@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ActionsButtonsBar :config="configActionsBar"/>
+    <ActionsButtonsBar :config="configActionsBar" @update:filters="updateQuery"/>
     <TreeTable
         class="configurator-table"
         v-model:contextMenuSelection="selectedNode"
@@ -95,6 +95,10 @@ import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.
 import nodeBuilder from "@/services/builder/node-builder-service.js";
 import {login} from "@/services/api/auth-serivce.api.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
+import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
+import {useRoute} from "vue-router";
+
+const { updateQuery } = useQueryUpdater()
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -527,7 +531,11 @@ const saveFilters = async () => {
   }
 }
 
-const inputCodeValue = ref('')
+const route = useRoute()
+
+const getSearchQueryValue = computed(() => route.query && route.query.q ? route.query.q : "");
+
+const searchQuery = ref(getSearchQueryValue.value)
 
 const configActionsBar = ref({
   buttons: [
@@ -556,7 +564,8 @@ const configActionsBar = ref({
     {
       component: 'IconField',
       disablePropsBinding: false,
-      name: 'iconField',
+      name: 'q',
+      vModel: searchQuery,
       props: {},
       children: [
         {
@@ -568,8 +577,8 @@ const configActionsBar = ref({
         {
           component: 'InputText',
           props: {
-            vModel: inputCodeValue,
             placeholder: 'Enter the code, please.',
+            class: 'w-full',
             onInput: onSearch,
           },
         },

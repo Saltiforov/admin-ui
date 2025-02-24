@@ -4,7 +4,7 @@
         v-bind="props.config"
         v-model="selectedKeys"
         :options="computedOptions"
-        :maxSelectedLabels="4"
+        :maxSelectedLabels="5"
         display="chip"
         @change="prepareSelectedValue"
     />
@@ -16,6 +16,7 @@ import {ref, onMounted, useAttrs, computed} from 'vue';
 import nodeBuilder from '@/services/builder/node-builder-service.js';
 
 import app from '@/main';
+import {useRoute} from "vue-router";
 
 const props = defineProps({
   config: {
@@ -27,6 +28,8 @@ const props = defineProps({
     required: true,
   }
 });
+
+const route = useRoute()
 
 const selectedValue = ref([]);
 const nodes = ref([]);
@@ -83,6 +86,10 @@ const computedOptions = computed(() => {
   return attrs.options ? attrs.options : nodes.value;
 });
 
+console.log("ASYNC TREE SELECT", route.query);
+
+const filtersQuery = computed(() => route.query.filters ? route.query.filters : null);
+
 
 const extractValues = (items, field) => {
   return items?.map(item => item[field]);
@@ -93,7 +100,7 @@ const getSelectedKeys = (nodes, matchBy) => {
 
   const traverse = (items) => {
     for (const item of items) {
-      if (matchBy?.includes(item.id)) {
+      if (matchBy && matchBy?.includes(item.id)) {
         selected[item.key] = true;
       }
       if (item.children) {
@@ -108,7 +115,9 @@ const getSelectedKeys = (nodes, matchBy) => {
 
 const searchCriteria = computed(() => extractValues(props.filters, "_id"));
 
-const selectedKeys = computed(() => getSelectedKeys(nodes.value, searchCriteria.value));
+const activeFilters = computed(() => filtersQuery.value || searchCriteria.value);
+
+const selectedKeys = computed(() => getSelectedKeys(nodes.value, activeFilters.value));
 
 onMounted(() => {
   loadOptions();

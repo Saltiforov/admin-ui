@@ -4,11 +4,13 @@ const router = {
     products: '/api/products',
 }
 
-export async function getProductsList() {
+export async function getProductsList(query = {}) {
     try {
         const api = app.config.globalProperties.$api;
 
-        const response = await api.get(router.products);
+        const url =  `${router.products}${query}`;
+
+        const response = await api.get(url);
 
         if (response.status === 200) {
             return response.data;
