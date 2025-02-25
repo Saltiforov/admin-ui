@@ -6,6 +6,7 @@
         <FloatLabel>
           <component
               :is="field.component"
+              v-bind="field.props"
               v-model="formData[key]"
               :mask="field.mask"
               class="w-full"
@@ -85,6 +86,9 @@ const fieldsConfig = {
       type: String,
       required: true,
       label: "Password",
+      props: {
+        feedback: false,
+      },
       validators: [
         (value) => (value ? true : "Password is required"),
         (value) => (value.length >= 6 ? true : "Password must be at least 6 characters"),

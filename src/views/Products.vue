@@ -4,6 +4,7 @@
     <CustomDataTable
         title="Products"
         :config="dataTableConfig"
+        :total-records="totalRecords"
         :loading="isLoading"
     >
       <template #image="{ data }">
@@ -32,7 +33,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch, watchEffect} from 'vue';
+import {computed, ref, watch, watchEffect} from 'vue';
 import {deleteProductById, getProductsList} from "@/services/api/product-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
@@ -42,15 +43,17 @@ import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.
 import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {createQueryString} from "@/utils/index.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import createDebouncedService from "@/services/debounceService/debounceService.js";
+import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
+
+const route = useRoute()
 
 const confirm = useConfirm();
 const toast = useToast();
 
-const route = useRoute()
 const products = ref();
 
 const isLoading = ref(true);
@@ -90,11 +93,14 @@ const items = ref([
   },
 ]);
 
+const totalRecords = ref(0);
+
 
 const fetchProducts = async () => {
   isLoading.value = true;
   const res = await getProductsList(createQueryString(route.query));
   products.value = res.list
+  totalRecords.value = res.count
   timeoutService.setTimeout(() => {
     isLoading.value = false;
   }, 500)
@@ -173,15 +179,17 @@ const configActionsBar = ref({
   ],
 });
 
-const tableRows = ref(route.query.top ? parseInt(route.query.top) : 5);
+const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
 const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
+
 
 const dataTableConfig = ref({
   value: products.value,
   paginator: true,
   rows: tableRows.value,
   skip: tableSkip.value,
-  rowsPerPageOptions: [5, 10, 20, 50],
+  lazy: true,
+  rowsPerPageOptions: [10, 20, 30],
   tableStyle: "min-width: 50rem",
   class: "custom-table",
   columns: [
@@ -204,25 +212,21 @@ const dataTableConfig = ref({
   ],
 });
 
-// TODO перезатирается параметр skip при выборе
 watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
 
 watch(
     () => [dataTableConfig.value.rows, dataTableConfig.value.skip],
-    ([top, skip]) => {
-      updateQuery({top, skip});
+    ([limit, skip]) => {
+      updateQuery({limit, skip});
     },
     {immediate: false}
 );
-
-console.log("route.query", route.query)
 
 watchEffect(() => {
   dataTableConfig.value = {...dataTableConfig.value, value: products.value};
 });
 
 // const isLoading = computed(() => !products.value);
-
 timeoutService.setTimeout(() => {
   isLoading.value = false;
 }, 1000)

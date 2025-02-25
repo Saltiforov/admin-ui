@@ -4,9 +4,11 @@
         v-model:rows="config.rows"
         v-model:first="config.skip"
         :loading="loading"
+        :lazy="config.lazy"
         :value="loading ? placeholderRows : config.value"
         :paginator="config.paginator"
         :rows="config.rows"
+        :total-records="totalRecords"
         :rowsPerPageOptions="config.rowsPerPageOptions"
         :tableStyle="config.tableStyle"
         :class="config.class"
@@ -47,7 +49,11 @@ const props = defineProps({
   loading: {
     type: Boolean,
     required: true,
-  }
+  },
+  totalRecords: {
+    type: Number,
+    required: true,
+  },
 });
 
 const placeholderRows = computed(() => {
