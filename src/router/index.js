@@ -8,6 +8,7 @@ import Login from "@/views/Auth/Login.vue";
 import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 import Users from "@/views/Users.vue";
 import SignUp from "@/views/Auth/SignUp.vue";
+import Orders from "@/views/Orders.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -27,6 +28,23 @@ const routes = [
                 path: "products",
                 name: "Products",
                 component: Products,
+            },
+            {
+                path: "orders",
+                name: "Orders",
+                component: Orders,
+            },
+            {
+                path: "/orders/new",
+                meta: { pageType: 'orders' },
+                name: "OrderCreate",
+                component: DetailsPage,
+            },
+            {
+                path: "orders/:id",
+                meta: { pageType: 'orders' },
+                name: "OrderDetailsPage",
+                component: DetailsPage,
             },
             {
                 path: "/products/new", // Статический маршрут для создания нового продукта

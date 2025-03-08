@@ -10,6 +10,11 @@ import UserDetailsWrapper from "@/components/DetailsPage/Wrappers/UserDetailsWra
 import ProductDetailsWrapper from "@/components/DetailsPage/Wrappers/ProductDetailsWrapper.vue";
 
 import {getProductById} from "@/services/api/product-service.api.js";
+import OrderDetailsWrapper from "@/components/DetailsPage/Wrappers/OrderDetailsWrapper.vue";
+import {ordersFieldsBlock} from "@/services/factories/detailsPage/orders/fields-block.js";
+import {ordersFooterActions} from "@/services/factories/detailsPage/orders/footer-actions-block.js";
+import {getOrderById} from "@/services/api/orders-service.api.js";
+import {ordersRelatedTable} from "@/services/factories/detailsPage/orders/related-entities-table-block.js";
 
 
 const blocks = {
@@ -35,7 +40,17 @@ const blocks = {
             },
             source: DETAILS_PAGES.USERS,
             pageName: UserDetailsWrapper,
-
+        }
+    },
+    [PAGES.ORDERS]: {
+        [PAGES_TYPE.DETAILS_PAGE]: {
+            blockList: {
+                ...ordersFieldsBlock,
+                ...ordersFooterActions,
+                ...ordersRelatedTable,
+            },
+            source: DETAILS_PAGES.ORDERS,
+            pageName: OrderDetailsWrapper,
         }
     }
 }

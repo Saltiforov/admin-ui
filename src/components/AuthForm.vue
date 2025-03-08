@@ -141,7 +141,6 @@ const fieldsConfig = {
       label: "Last Name",
       validators: [(value) => (value ? true : "Last name is required")],
     },
-    //TODO NEED FIX THIS FIELD ERROR IN BROWSER CONSOLE
     phone: {
       component: InputMask,
       type: String,

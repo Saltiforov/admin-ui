@@ -8,7 +8,7 @@
             v-bind="filter.disablePropsBinding ? {} : (filter.props || {})"
             :config="filter.props"
             :class="filter.class"
-            :modelValue="filter.vModel"
+            :modelValue="route.query[filter.name]"
             @update:modelValue="updateFilter($event, filter.name)"
         >
           <component
@@ -16,7 +16,7 @@
               :key="childIndex"
               :is="child.component"
               v-bind="child.props"
-              :modelValue="filter.vModel"
+              :modelValue="route.query[filter.name]"
               @update:modelValue="updateFilter($event, filter.name)"
           />
         </component>
@@ -27,6 +27,9 @@
 
 <script setup>
 import {defineProps, ref} from 'vue';
+import {useRoute} from "vue-router";
+
+const route = useRoute()
 
 const emit = defineEmits(['update:filters']);
 const props = defineProps({

@@ -87,7 +87,7 @@
 <script setup>
 import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed} from 'vue';
 import eventBus from "../../../eventBus.js";
-import {deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
+import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
 import {createFilters, deleteFilters} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
@@ -345,16 +345,20 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
   ];
 };
 
+const parentFilterForNode = ref({});
+const popupType = ref(null);
+
 const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
   const title = isEditMode ? "Edit Filter" : "Add Filter";
 
-  console.log("handleOpenPopup", filter);
+  parentFilterForNode.value = filter;
+  popupType.value = eventType;
+
+  console.log("handleOpenPopup", parentFilterForNode.value);
 
   eventBus.emit("show-popup", {
     title,
-    parentFilter: filter,
-    eventType,
     fields: generatePopupFields(filter, isEditMode),
   })
 }
@@ -372,29 +376,26 @@ const updateExpandedKeys = (keys) => {
 };
 
 
-const onAddFilter = (options) => {
-  const {parent, newFilter, eventType} = options;
+const onAddFilter = (data) => {
 
-  console.log("NEW FIlter ", newFilter)
-  console.log("NEW FIlter parent", parent)
+  const newFilter = {...convertDottedFieldKeysToNested(data), id:  parentFilterForNode.value ? parentFilterForNode.value.id : null}
 
+  if (isInvalidParent(parentFilterForNode.value)) return;
 
-  if (isInvalidParent(parent)) return;
-
-  if (eventType === "edit") {
-    console.log("handleEditFilter")
-    handleEditFilter(parent, newFilter);
+  if (popupType.value === "edit") {
+    handleEditFilter(parentFilterForNode.value, newFilter);
     return;
   }
 
-  if (!parent) {
+  if (!parentFilterForNode.value) {
+    console.log("newFilter",newFilter);
     createNode(newFilter);
     show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['ru'])} added as a new node `)
     return;
   }
 
-  handleAddChildNode(parent, newFilter);
-  show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['name.ru'])} added to ${capitalizeFirstLetter(parent.data.name['uk'])} / ${capitalizeFirstLetter(parent.data.name['ru'])} `)
+  handleAddChildNode(parentFilterForNode.value, newFilter);
+  show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['name.ru'])} added to ${capitalizeFirstLetter(parentFilterForNode.value.data.name['uk'])} / ${capitalizeFirstLetter(parentFilterForNode.value.data.name['ru'])} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
@@ -498,11 +499,11 @@ const handleAddChildNode = (parent, newFilter) => {
 };
 
 onMounted(() => {
-  eventBus.on("add-filter", onAddFilter);
+  eventBus.on("handle-popup-data", onAddFilter);
 });
 
 onUnmounted(() => {
-  eventBus.off("add-filter", onAddFilter);
+  eventBus.off("handle-popup-data", onAddFilter);
 });
 
 const activeFilter = ref({});

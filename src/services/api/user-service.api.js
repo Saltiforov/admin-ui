@@ -1,13 +1,16 @@
 import app from '@/main';
 
-const routes = {
+const router = {
     userList: '/api/users'
 }
 
-export async function getUserList() {
+export async function getUserList(query = {}) {
     const api =  app.config.globalProperties.$api;
     try {
-        const res = await api.get(routes.userList)
+
+        const url =  `${router.userList}${query}`;
+
+        const res = await api.get(url)
         return res.data;
     } catch (error) {
         console.log(error);

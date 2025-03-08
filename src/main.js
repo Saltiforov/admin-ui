@@ -23,9 +23,16 @@ import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import AppState from './plugins/appState.js';
 
+import {createPinia} from "pinia";
+
+
 const app = createApp(App);
+const pinia = createPinia();
+
 import router from "./router";
 import InputIcon from "primevue/inputicon";
+
+app.use(pinia);
 app.use(AppState);
 app.use(fetchPlugin);
 app.use(ToastService);

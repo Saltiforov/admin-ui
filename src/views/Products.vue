@@ -63,10 +63,6 @@ const {debounceService} = createDebouncedService();
 
 const {updateQuery} = useQueryUpdater();
 
-const getSearchQueryValue = computed(() => route.query && route.query.q ? route.query.q : "");
-
-const searchQuery = ref(getSearchQueryValue.value);
-
 const productData = ref({});
 const toggle = (event, data) => {
   productData.value = data
@@ -143,7 +139,6 @@ const configActionsBar = ref({
       component: 'IconField',
       disablePropsBinding: false,
       name: 'q',
-      vModel: searchQuery,
       props: {},
       children: [
         {
@@ -213,14 +208,6 @@ const dataTableConfig = ref({
 });
 
 watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
-
-watch(
-    () => [dataTableConfig.value.rows, dataTableConfig.value.skip],
-    ([limit, skip]) => {
-      updateQuery({limit, skip});
-    },
-    {immediate: false}
-);
 
 watchEffect(() => {
   dataTableConfig.value = {...dataTableConfig.value, value: products.value};

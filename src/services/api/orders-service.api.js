@@ -1,16 +1,14 @@
 import app from '@/main'
 
 const router = {
-    products: '/api/products',
+    orders: '/api/orders',
 }
 
-export async function getProductsList(query = {}) {
+export async function getOrdersList() {
     try {
         const api = app.config.globalProperties.$api;
 
-        const url =  query.length ? `${router.products}${query}` : router.products;
-
-        const response = await api.get(url);
+        const response = await api.get(router.orders);
 
         if (response.status === 200) {
             return response.data;
@@ -22,11 +20,11 @@ export async function getProductsList(query = {}) {
     }
 }
 
-export async function getProductById(productId) {
+export async function getOrderById(id) {
     try {
         const api = app.config.globalProperties.$api;
 
-        const response = await api.get(`${router.products}/${productId}`);
+        const response = await api.get(`${router.orders}/${id}`);
 
         if (response.status === 200) {
             return response.data;
@@ -38,15 +36,15 @@ export async function getProductById(productId) {
     }
 }
 
-export async function updateProductById(productId, updatedProduct) {
+export async function updateOrderById(id, payload) {
     try {
         const api = app.config.globalProperties.$api;
 
-        return await api.put(`${router.products}/${productId}`, updatedProduct);
-        //
-        // if (response.status === 200) {
-        //     return response.data;
-        // }
+        const response = await api.put(`${router.orders}/${id}`, payload);
+
+        if (response.status === 200) {
+            return response.data;
+        }
 
     } catch (error) {
         console.error('Error in getFiltersList:', error);
@@ -54,27 +52,28 @@ export async function updateProductById(productId, updatedProduct) {
     }
 }
 
+export async function deleteOrderById(id) {
+    try {
+        const api = app.config.globalProperties.$api;
 
+        const response = await api.delete(`${router.orders}/${id}`);
 
-export async function deleteProductById(productId) {
+        if (response.status === 200) {
+            return response.data;
+        }
+
+    } catch (error) {
+        console.error('Error in getFiltersList:', error);
+        throw error;
+    }
+}
+
+export async function createOrder(payload) {
     const api = app.config.globalProperties.$api;
 
     try {
-        const response = await api.delete(`${router.products}/${productId}`);
-        if (response.status === 200) {
-            return response.data;
-        }
-    } catch (error) {
-        console.error('Error in deleteProductById:', error);
-    }
-}
 
-export async function createProduct(product) {
-    const api = app.config.globalProperties.$api;
-
-    try {
-
-        const response = await api.post(`${router.products}`, product);
+        const response = await api.post(`${router.orders}`, payload);
 
         return response;
 
@@ -83,3 +82,4 @@ export async function createProduct(product) {
         throw error;
     }
 }
+

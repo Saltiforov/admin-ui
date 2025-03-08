@@ -44,7 +44,6 @@
 <script setup>
 import {reactive, ref} from 'vue';
 import eventBus from '../../eventBus';
-import {convertDottedFieldKeysToNested} from "@/utils/index.js";
 
 const isVisible = ref(false);
 const iconPath = ref('');
@@ -56,6 +55,8 @@ const errors = reactive({});
 eventBus.on('show-popup', (config) => {
   isVisible.value = true;
   Object.assign(popupConfig, config);
+
+  console.log("eventBus.on", config);
 
   // Инициализируем значения формы
   config.fields.forEach((field) => {
@@ -102,12 +103,7 @@ const onFormSubmit = () => {
   });
 
   if (isValid) {
-    const newFilter = { ...convertDottedFieldKeysToNested(formValues), id: popupConfig.parentFilter.id }
-    eventBus.emit("add-filter", {
-      newFilter,
-      parent: popupConfig.parentFilter,
-      eventType: popupConfig.eventType,
-    });
+    eventBus.emit("handle-popup-data", formValues);
     iconPath.value = null
     closePopup();
   }
@@ -124,17 +120,21 @@ const closePopup = () => {
   width: 100%;
   max-width: 400px;
 }
+
 .image-wrapper {
   display: flex;
   justify-content: center;
 }
+
 .form-buttons {
   display: flex;
   justify-content: space-between;
 }
+
 .uploaded-image {
   width: 16rem;
 }
+
 .message-error {
   margin-bottom: 10px;
 }

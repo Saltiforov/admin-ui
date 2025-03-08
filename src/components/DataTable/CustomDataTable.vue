@@ -39,7 +39,11 @@
 
 <script setup>
 
-import {computed, defineProps} from 'vue';
+import {computed, defineProps, watch} from 'vue';
+import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
+
+const { updateQuery } = useQueryUpdater();
+
 
 const props = defineProps({
   config: {
@@ -61,6 +65,16 @@ const placeholderRows = computed(() => {
       Object.fromEntries(props.config.columns.map(col => [col.field, ""]))
   );
 });
+
+console.log("props DataTable", props);
+
+watch(
+    () => [props.config.rows, props.config.skip],
+    ([limit, skip]) => {
+      updateQuery({limit, skip});
+    },
+    {immediate: false}
+);
 
 </script>
 

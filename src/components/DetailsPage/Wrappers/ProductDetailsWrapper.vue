@@ -26,7 +26,7 @@
 
 <script setup>
 import {computed, defineProps, ref} from 'vue';
-import {createProduct, updateProductById} from "@/services/api/product-service.api.js";
+import {updateProductById} from "@/services/api/product-service.api.js";
 import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
@@ -62,6 +62,9 @@ const props = defineProps({
 const detailsPageData = computed(() => {
   return props.data[DETAILS_PAGES.PRODUCTS];
 });
+
+console.log("PRODUCT DETAILS WRAPPER ", detailsPageData.value);
+
 
 const isEditMode = computed(() => {
   return !!detailsPageData.value;
@@ -123,7 +126,7 @@ const createNewProduct = async (product) => {
 const handleProduct = async () => {
   props.startLoading()
 
-  // if ( !validateForm() ) return;
+  if ( !validateForm() ) return;
 
   if (!isEditMode.value) {
     await createNewProduct(allData.value);

@@ -109,7 +109,7 @@ export function mapObject(obj) {
     );
 }
 
-export function createQueryString (params)  {
+export function createQueryString(params) {
     const queryParams = [];
 
     // Проходим по объекту и добавляем каждый параметр в строку запроса
@@ -145,5 +145,22 @@ function getQueryParams(queryString) {
 
     return params;
 }
+
+export function extractFields(items, nestedKey) {
+    return items.map(item => {
+        const mappedItem = mapObject(item);
+
+        if (mappedItem[nestedKey] && typeof mappedItem[nestedKey] === "object") {
+            const {[nestedKey]: nestedData, ...rest} = mappedItem;
+            return {
+                ...rest,
+                ...mapObject(nestedData)
+            };
+        }
+
+        return mappedItem;
+    });
+};
+
 
 

@@ -7,8 +7,6 @@
         :class="action.class"
         @click="handleAction(action)"
     />
-
-
   </div>
 </template>
 

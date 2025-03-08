@@ -8,6 +8,10 @@
   display: none;
 }
 
+.p-dialog-content {
+  overflow-y: visible !important;
+}
+
 .p-datatable-table-container, .p-treetable-table-container{
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
