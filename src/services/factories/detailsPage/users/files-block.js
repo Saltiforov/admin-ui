@@ -4,9 +4,10 @@ export const usersFilesBlock = {
         fieldName: 'file',
         multiple: true,
         auto: false,
-        maxFileSize: 1000000,
+        maxFileSize: 10000000,
         customUpload: false,
         accordion: true,
         header: 'Upload Image:',
+        uploadMethod: () => {},
     }
 }

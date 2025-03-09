@@ -38,6 +38,17 @@ export async function getProductById(productId) {
     }
 }
 
+export async function uploadProductImages(productId, images, headers) {
+    try {
+        const api = app.config.globalProperties.$api;
+
+        return await api.post(`${router.products}/${productId}/images`, images, headers);
+    } catch (error) {
+        console.error('Error in getFiltersList:', error);
+        throw error;
+    }
+}
+
 export async function updateProductById(productId, updatedProduct) {
     try {
         const api = app.config.globalProperties.$api;

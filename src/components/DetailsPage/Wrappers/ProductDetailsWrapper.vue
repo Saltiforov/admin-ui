@@ -60,6 +60,7 @@ const props = defineProps({
 });
 
 const detailsPageData = computed(() => {
+  console.log('PAGE DATA', props.data);
   return props.data[DETAILS_PAGES.PRODUCTS];
 });
 
