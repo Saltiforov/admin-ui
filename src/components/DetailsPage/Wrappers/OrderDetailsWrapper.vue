@@ -9,7 +9,11 @@
     <RelatedEntitiesTableBlock
         :config="relatedConfig"
         :data="detailsPageData"
+        :total-records="totalRecords"
+        ref="relatedEntitiesBlockRef"
+        @handle-delete="deleteRelatedEntitiesItem"
     />
+
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
@@ -22,15 +26,11 @@
 import {computed, defineProps, onMounted, onUnmounted, reactive, ref} from 'vue';
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
-import {updateOrderById} from "@/services/api/orders-service.api.js";
+import {createOrder, updateOrderById} from "@/services/api/orders-service.api.js";
 import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEntitiesTableBlock.vue";
 import eventBus from "../../../../eventBus.js";
-import {getProductById, getProductsList} from "@/services/api/product-service.api.js";
-import AsyncMultiSelect from "@/components/UI/AsyncMultiSelect.vue";
-import {useProductsStore} from "@/stores/useProductsStore.js";
+import {useDataStore} from "@/stores/dataStore.js";
 import {storeToRefs} from "pinia";
-
-const selectedOptions = ref([])
 
 const props = defineProps({
   blockList: {
@@ -59,29 +59,30 @@ const props = defineProps({
   }
 });
 
+const dataStore = useDataStore();
+
+const totalRecords = computed(() => dataStore.getTotalCount)
+
 const relatedConfig = reactive({
   ...props.blockList?.relatedConfig,
   value: []
 });
 
-const store = useProductsStore();
-const { products, loading } = storeToRefs(store);
+const deleteRelatedEntitiesItem = (item) => {
+  const index = relatedConfig.value.findIndex(el => el._id === item._id);
+  if (index !== -1) {
+    relatedConfig.value.splice(index, 1);
+  }
+}
+
 
 onMounted(async () => {
-  await store.fetchProducts();
-
-  eventBus.on("handle-popup-data", async({ products }) => {
-
-    console.log("handle-popup-data", products)
-
+  eventBus.on("handle-popup-data", async ({products}) => {
     relatedConfig.value = products
         .map(product => product.code)
         .map(code => {
-          return store.getProductById(code)
+          return {...dataStore.getDataById(code), quantity: 1}
         });
-
-
-
   });
 });
 
@@ -91,48 +92,50 @@ onUnmounted(() => {
   });
 })
 
-const detailsPageData = computed(() => {
-  return props.data[DETAILS_PAGES.PRODUCTS];
-});
+const detailsPageData = computed(() => props.data[DETAILS_PAGES.ORDERS]);
 
-console.log("ORDER DETAILS WRAPPER ", detailsPageData.value);
-
-const isEditMode = computed(() => {
-  return !!detailsPageData.value;
-});
-
-const fieldsBlockRef = ref(null);
-const uploadFilesRef = ref(null);
-const dynamicAttrsRef = ref(null);
+const isEditMode = computed(() => !!detailsPageData.value);
 
 const orderId = computed(() => detailsPageData.value._id)
+
+
+
+const fieldsBlockRef = ref(null);
+const relatedEntitiesBlockRef = ref(null);
 
 const allData = ref({});
 
 function transformOrderData(inputData) {
   return {
-    user: "ObjectId", // Здесь должен быть реальный ObjectId пользователя
-    products: [], // Список товаров, пока пустой, так как их нет в входных данных
+    products: Object.values(inputData.products).map(p => {
+      const { quantity, ...productWithoutQuantity } = p;
+      return {
+        product: productWithoutQuantity,
+        quantity: quantity
+      };
+    }),
     shippingAddress: {
       street: inputData.street,
       city: inputData.city,
-      postalCode: String(inputData.postalCode), // Преобразуем в строку, если необходимо
+      postalCode: inputData.postalCode,
       country: inputData.country
     },
     totalAmount: inputData.totalAmount,
-    discount: inputData.discount,
-    tax: inputData.tax,
-    orderStatus: inputData.orderStatus[0]?.value || "pending", // Достаём значение статуса
-    orderNumber: Math.floor(Math.random() * 1000000) // Генерируем случайный номер заказа
+    discount: inputData.discount || 0, // Если нет скидки, ставим 0
+    tax: inputData.tax || 0, // Если нет налога, ставим 0
+    orderStatus: inputData.orderStatus || 'pending', // Если нет статуса, ставим 'pending'
+    orderNumber: inputData.orderNumber
   };
 }
 
-const collectDataFromComponents = (e) => {
+const collectDataFromComponents = async (e) => {
   allData.value = {
     ...fieldsBlockRef.value.getData(),
+    products: {...relatedEntitiesBlockRef.value.getData()},
   };
-  handleOrder()
-  console.log("collectDataFromComponents", transformOrderData(allData.value));
+  // handleOrder()
+  await createOrder(transformOrderData(allData.value))
+  console.log("collectDataFromComponents", );
 };
 
 const fieldsErrors = ref(null);

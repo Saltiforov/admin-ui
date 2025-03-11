@@ -100,7 +100,7 @@ export default defineComponent({
         });
 
         if (Array.isArray(response.data.images)) {
-          uploadedImages.value.push(...response.data.images);
+          uploadedImages.value = response.data.images;
         } else if (response.data.path) {
           uploadedImages.value.push(response.data.path);
         }
@@ -148,7 +148,9 @@ export default defineComponent({
   margin-top: 1rem;
 }
 .uploaded-image img {
-  max-width: 100px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 5px;

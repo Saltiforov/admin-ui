@@ -3,11 +3,12 @@ export const ordersRelatedTable = {
         paginator: true,
         rows: 10,
         skip: 0,
-        lazy: true,
+        lazy: false,
         rowsPerPageOptions: [10, 20, 30],
         tableStyle: "min-width: 50rem",
         class: "custom-table",
         columns: [
+            {field: 'quantity', header: 'Quantity', slotName: 'quantity'},
             {field: 'name', header: 'Name'},
             {
                 field: 'image',
@@ -15,14 +16,14 @@ export const ordersRelatedTable = {
                 slotName: 'image',
             },
             {field: 'price', header: 'Price',},
-            {field: 'description', header: 'Description'},
+            {field: 'description', header: 'Description',  style: 'width: 30%'},
             {field: 'category', header: 'Category'},
             {field: 'availability', header: 'Availability', slotName: 'availability'},
             {
                 field: 'actions',
                 header: '',
                 slotName: 'actions',
-                style: 'width: 10%',
+                style: 'width: 5%',
             },
         ],
     }

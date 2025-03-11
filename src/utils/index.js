@@ -95,19 +95,24 @@ export function mapObject(obj) {
                 return [key, "---"];
             }
 
-            // Преобразование строки с датой в форматированную дату
-            if (typeof value === "string" && !isNaN(Date.parse(value))) {
-                return [key, new Date(value).toLocaleDateString("ru-RU", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
-                })];
+            // Проверяем, является ли значение строкой и корректной датой
+            if (typeof value === "string") {
+                const date = new Date(value);
+                if (!isNaN(date.getTime()) && value.includes("-")) {
+                    return [key, date.toLocaleDateString("ru-RU", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric"
+                    })];
+                }
             }
 
             return [key, value];
         })
     );
 }
+
+
 
 export function createQueryString(params) {
     const queryParams = [];
@@ -149,6 +154,7 @@ function getQueryParams(queryString) {
 export function extractFields(items, nestedKey) {
     return items.map(item => {
         const mappedItem = mapObject(item);
+        console.log("mappedItem", mappedItem)
 
         if (mappedItem[nestedKey] && typeof mappedItem[nestedKey] === "object") {
             const {[nestedKey]: nestedData, ...rest} = mappedItem;
@@ -158,6 +164,7 @@ export function extractFields(items, nestedKey) {
             };
         }
 
+        console.log("mappedItem", mappedItem)
         return mappedItem;
     });
 };

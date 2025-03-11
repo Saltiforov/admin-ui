@@ -81,8 +81,6 @@ const toggle = (event, data) => {
 
 const deleteOrder = async (id) => {
   ordersList.value = ordersList.value.filter((item) => item._id !== id);
-  console.log("deleteOrder", ordersList.value)
-  console.log("deleteOrder",id)
 }
 
 const route = useRoute()
@@ -168,7 +166,7 @@ const dataTableConfig = ref({
       field: 'actions',
       header: '',
       slotName: 'actions',
-      style: 'width: 10%',
+      style: 'width: 5%',
     },
   ]
 });
@@ -216,6 +214,9 @@ const isLoading = ref(true);
 timeoutService.setTimeout(() => {
   isLoading.value = false
 }, 1000);
+
+console.log("mappedOrders", extractFields(ordersList.value, "shippingAddress"))
+console.log("mappedOrders",  ordersList.value)
 
 watchEffect(() => {
   dataTableConfig.value = {...dataTableConfig.value, value: mappedOrders.value};

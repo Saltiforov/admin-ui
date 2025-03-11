@@ -83,8 +83,7 @@
 
 <script setup>
 import {ref, computed, onMounted, onUnmounted, watch, defineProps} from 'vue';
-import app from '@/main';
-
+import { useDataStore } from "@/stores/dataStore.js";
 // Props
 const props = defineProps({
   options: {
@@ -144,13 +143,30 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 // Reactive variables
-const isOpen = ref(false);
 const searchQuery = ref('');
 const selectedOptions = ref([]);
-const options = ref([]); // Use the options prop directly
 const loading = ref(false);
-const page = ref(1);
-const optionsCache = ref([]);
+
+const dataStore = useDataStore()
+
+const params = computed(() => {
+  return {
+    skip: props.skip + (dataStore.getCurrentPage - 1) * props.itemsPerPage,
+    limit: props.itemsPerPage,
+  }
+})
+
+const options = computed(() => {
+  return dataStore.getData.map(option => ({
+    label: option.name,
+    code: option._id
+  }))
+});
+
+const optionsCache = computed(() => dataStore.getSelectedData || []);
+
+const isOpen = ref(!!optionsCache.value.length);
+
 
 const multiselectRef = ref(null);
 
@@ -175,13 +191,12 @@ const toggleSelection = (option) => {
   emit('update:modelValue', selectedOptions.value);
 };
 
-const totalCount = ref(0);
-const hasMoreData = computed(() => options.value.length < totalCount.value)
+const hasMoreData = computed(() => options.value.length < dataStore.totalCount)
 
 const handleScroll = (event) => {
   const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
   if (bottom && !loading.value && hasMoreData.value) {
-    loadOptions();
+    dataStore.loadMoreData(props.restOptionsUrl, params.value)
   }
 };
 
@@ -194,37 +209,13 @@ const displaySelectedOptions = computed(() => {
 });
 
 const loadOptions = async () => {
+  if (options.value.length) return;
+
   if (props.restOptionsUrl && !loading.value) {
     loading.value = true;
     try {
-      const api = app.config.globalProperties.$api;
-      const params = {
-        skip: props.skip + (page.value - 1) * props.itemsPerPage,
-        limit: props.itemsPerPage,
-      };
 
-      const response = await api.get(props.restOptionsUrl, params);
-
-      totalCount.value = response.data.count;
-
-      if (page.value === 1) {
-        options.value = response.data.list.map(option => ({
-          label: option.name,
-          code: option._id
-        }));
-      } else {
-        options.value = [...options.value, ...response.data.list.map(option => ({
-          label: option.name,
-          code: option._id
-        }))];
-      }
-
-      optionsCache.value = [...options.value];
-      console.log("optionsCache.value", optionsCache.value)
-
-      if (options.value.length < totalCount.value) {
-        page.value++;
-      }
+      await dataStore.fetchData(props.restOptionsUrl, params.value);
 
     } catch (error) {
       console.error('Error loading options:', error);
@@ -252,8 +243,13 @@ const allSelected = computed(() => {
   return options.value.length > 0 && options.value.every(option => selectedOptions.value.some(o => o.code === option.code));
 });
 
+
+
 // Lifecycle hooks
 onMounted(() => {
+  if (optionsCache.value.length > 0) {
+    selectedOptions.value = optionsCache.value;
+  }
   loadOptions(); // Initial load of options
   document.addEventListener('click', closeDropdown);
 });
@@ -262,12 +258,10 @@ onUnmounted(() => {
   document.removeEventListener('click', closeDropdown);
 });
 
-// Watchers
-watch(searchQuery, () => {
-  options.value = [];
-  page.value = 1;
-  loadOptions();
-});
+watch(selectedOptions, (newValue) => {
+  dataStore.setSelectedData(newValue);
+}, { deep: true });
+
 </script>
 
 <style scoped>

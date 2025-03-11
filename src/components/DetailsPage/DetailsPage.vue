@@ -24,6 +24,8 @@ const route = useRoute();
 const pageType = route.meta.pageType;
 const id = route.params.id;
 
+console.log("route.params.id", route.params.id)
+
 const {
   blockList,
   data,
@@ -33,6 +35,9 @@ const {
   startLoading,
   useFetch
 } = usePagesConfig(pageType, { id });
+
+console.log("usePagesConfig", data, blockList);
+
 </script>
 
 <style scoped>

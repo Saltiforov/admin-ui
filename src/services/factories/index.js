@@ -51,6 +51,7 @@ const blocks = {
             },
             source: DETAILS_PAGES.ORDERS,
             pageName: OrderDetailsWrapper,
+            fetchData: ({ id }) => getOrderById(id),
         }
     }
 }

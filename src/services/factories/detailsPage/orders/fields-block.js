@@ -115,7 +115,8 @@ export const ordersFieldsBlock = {
                 props: {
                     type: 'number',
                     placeholder: 'Enter postal code',
-                    required: true
+                    required: true,
+                    useGrouping: false,
                 }
             },
             {

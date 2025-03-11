@@ -525,7 +525,7 @@ const saveFilters = async () => {
   }
 
   if (nodes.value.length > 0) {
-    console.log("mapFiltersForSubmit", mapFiltersForSubmit(nodes.value))
+    console.log("mapFiltersForSubmit", mapFiltersForSubmit(nodes.value[0]))
     await createFilters(mapFiltersForSubmit(nodes.value));
     addedNodes.value = 0;
     // emit('filters-updated');
