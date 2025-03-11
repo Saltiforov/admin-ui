@@ -105,12 +105,14 @@ const onFormSubmit = () => {
   if (isValid) {
     eventBus.emit("handle-popup-data", formValues);
     iconPath.value = null
-    closePopup();
+    setTimeout(() => {
+      closePopup();
+    })
   }
 };
 
-// Закрытие попапа
 const closePopup = () => {
+  console.log('closePopup')
   isVisible.value = false;
 };
 </script>

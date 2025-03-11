@@ -59,8 +59,8 @@ const routes = [
                 component: DetailsPage, // Компонент для страницы продукта
             },
             {
-                path: "filters",
-                name: "Filters",
+                path: "filters-configuration",
+                name: "Filters-configuration",
                 component: Filters,
             },
             {

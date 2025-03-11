@@ -1,7 +1,10 @@
 import app from '@/main';
 
 const routes = {
-    filters: '/api/filters'
+    filters: '/api/filters',
+    filters_configuration: '/api/filters-configuration',
+    child_filters_configuration: '/api/filter-child-configuration',
+    update_node: '/filters-configuration/:id'
 }
 
 export async function deleteFilter(id) {
@@ -17,6 +20,7 @@ export async function deleteFilter(id) {
         console.error(`Ошибка при удалении фильтра с id ${id}:`, error);
     }
 }
+
 export async function deleteFilters(ids) {
     try {
         const api = app.config.globalProperties.$api;
@@ -78,6 +82,31 @@ export async function createFilters(payload) {
         console.error('Error in createFilters:', error);
         throw error;
     }
+}
+
+export async function createNewFilterNode(payload) {
+    const api = app.config.globalProperties.$api;
+    const parsedPayload = Array.isArray(payload) ? payload : [payload];
+
+    const response = await api.post(routes.filters_configuration, { filters: parsedPayload })
+
+    return response.data;
+}
+
+export async function createNewFilterChildNode(payload) {
+    const api = app.config.globalProperties.$api;
+
+    const response = await api.put(routes.child_filters_configuration, payload)
+
+    return response.data;
+}
+
+export async function updateExistedNode(id, payload) {
+    const api = app.config.globalProperties.$api;
+
+    const response = await api.put(`/api/filters-configuration/${id}`, payload)
+
+    return response.data;
 }
 
 export async function getFiltersList() {

@@ -59,7 +59,7 @@ const menuItems = [
   {
     label: "Navigation",
     items: [
-      {label: "Filters", icon: "pi pi-filter", command: () => router.push("/filters")},
+      {label: "Filters", icon: "pi pi-filter", command: () => router.push("/filters-configuration")},
       {label: "Products", icon: "pi pi-shopping-cart", command: () => router.push("/products")},
       {label: "Users", icon: "pi pi-user", command: () => router.push("/users")},
       {label: "Orders", icon: "pi pi-clipboard", command: () => router.push("/orders")},

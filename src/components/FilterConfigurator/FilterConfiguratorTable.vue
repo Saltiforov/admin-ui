@@ -26,9 +26,9 @@
         <template #body="{ node }">
             <Skeleton v-if="loading" width="80%" height="1rem"/>
           <div class="flex" v-else>
-            <div>{{ capitalizeFirstLetter(node.data.name['uk']) || '' }}</div>
+            <div>{{ capitalizeNodeName(node, 'uk') || '' }}</div>
             /
-            <div>{{ capitalizeFirstLetter(node.data.name['ru']) || '' }}</div>
+            <div>{{ capitalizeNodeName(node, 'ru') || '' }}</div>
           </div>
         </template>
       </Column>
@@ -36,7 +36,7 @@
       <Column field="code" header="Code" style="width: 15%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="50%" height="1rem"/>
-          <span v-else>{{ node.data.code }}</span>
+          <span v-else>{{ getNodeFieldValue(node, 'code') }}</span>
         </template>
       </Column>
 
@@ -44,8 +44,8 @@
         <template #body="{ node }">
           <Skeleton v-if="loading" width="30px" height="30px"/>
           <img
-              v-else-if="node.data.icon"
-              :src="pathBuilder(node.data.icon)"
+              v-else-if="getNodeFieldValue(node, 'icon')"
+              :src="pathBuilder(getNodeFieldValue(node, 'icon'))"
               alt="icon"
               style="width: 30px; height: 30px; object-fit: contain;"
           />
@@ -56,7 +56,7 @@
       <Column field="description" header="Description" style="width: 33%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="90%" height="1rem"/>
-          <span v-else>{{ node.data.description }}</span>
+          <span v-else>{{ getNodeFieldValue(node, 'description') }}</span>
         </template>
       </Column>
 
@@ -76,7 +76,6 @@
         </template>
       </Column>
     </TreeTable>
-
     <ContextMenu ref="cm" :model="menuModel" @hide="selectedNode = null"/>
     <ConfirmDialog/>
     <Toast/>
@@ -88,7 +87,11 @@
 import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
-import {createFilters, deleteFilters} from "@/services/api/filters-service.api.js";
+import {
+  createFilters, createNewFilterChildNode,
+  createNewFilterNode,
+  deleteFilters, updateExistedNode
+} from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
@@ -109,9 +112,31 @@ const selectedNode = ref();
 const cm = ref();
 const loading = ref(true);
 
+onMounted(() => {
+  if (props.filters && props.filters.length) {
+    const nodesCopy = ref(deepClone(props.filters));
+    nodes.value = mapFilters(nodesCopy.value);
+    originalNodes.value = [...nodes.value];
+  }
+  eventBus.on("handle-popup-data", onAddFilter);
+
+});
+
+onUnmounted(() => {
+  eventBus.off("handle-popup-data", onAddFilter);
+});
+
+
 timeoutService.setTimeout(() => {
   loading.value = false;
 }, 1000)
+
+const props = defineProps({
+  filters: {
+    type: Array,
+    required: true,
+  }
+})
 
 const skeletonNodes = ref(
     Array.from({ length: 5 }).map((_, i) => ({
@@ -150,24 +175,16 @@ const show = (message) => {
   toast.add({severity: 'info', summary: 'Info', detail: message, life: 3000});
 };
 
-const props = defineProps({
-  filters: {
-    type: Array,
-    required: true,
-  }
-})
-
-
 const deleteItems = ref([]);
 
 const deleteNodeRecursive = (nodesArray, nodeId, nodeCode) => {
   return nodesArray
       .filter((node) => {
         if (node.id && node.id === nodeId) {
-          collectDeletedIds(node); // Рекурсивно собираем ID всех вложенных элементов
-          return false; // Удаляем текущий узел
+          collectDeletedIds(node);
+          return false;
         }
-        return node.data.code !== nodeCode; // Удаляем по code без записи в deleteItems
+        return node.data.code !== nodeCode;
       })
       .map((node) => ({
         ...node,
@@ -175,11 +192,10 @@ const deleteNodeRecursive = (nodesArray, nodeId, nodeCode) => {
       }));
 };
 
-// Функция для сбора всех ID удаляемых элементов
 const collectDeletedIds = (node) => {
-  deleteItems.value.push(node.id); // Записываем текущий ID
+  deleteItems.value.push(node.id);
   if (node.children && node.children.length > 0) {
-    node.children.forEach((child) => collectDeletedIds(child)); // Рекурсивно записываем ID всех потомков
+    node.children.forEach((child) => collectDeletedIds(child));
   }
 };
 
@@ -224,6 +240,7 @@ const confirmDelete = (node) => {
 const onNodeSelect = (node) => {
   expandedKeys.value = {...expandedKeys.value, [node.key]: true};
 };
+
 const onNodeUnselect = (node) => {
   if (node.key in expandedKeys.value) {
     delete expandedKeys.value[node.key]; // Удаляем ноду из expandedKeys
@@ -249,20 +266,6 @@ const onNodeCollapse = (node) => {
   updatedKeys[node.key] = false;
   selectedKeys.value = updatedKeys;
 };
-
-
-watch(() => selectedKeys.value, () => {
-  console.log("selectedKeys.value", selectedKeys.value);
-});
-
-
-onMounted(() => {
-  if (props.filters && props.filters.length) {
-    const nodesCopy = ref(deepClone(props.filters));
-    nodes.value = mapFilters(nodesCopy.value);
-    originalNodes.value = [...nodes.value];
-  }
-});
 
 watch(
     () => props.filters,
@@ -348,14 +351,21 @@ const generatePopupFields = (filter = null, isEditMode = false) => {
 const parentFilterForNode = ref({});
 const popupType = ref(null);
 
+const getNodeFieldValue = (node, field, formatter) => {
+  if (!node) return '';
+  let value = node[field] !== undefined && node[field] !== null ? node[field] : '';
+  if (!value && node.data) {
+    value = node.data[field];
+  }
+  return (formatter && typeof formatter === 'function') ? formatter(value) : (value || '');
+}
+
 const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
   const title = isEditMode ? "Edit Filter" : "Add Filter";
 
   parentFilterForNode.value = filter;
   popupType.value = eventType;
-
-  console.log("handleOpenPopup", parentFilterForNode.value);
 
   eventBus.emit("show-popup", {
     title,
@@ -376,8 +386,7 @@ const updateExpandedKeys = (keys) => {
 };
 
 
-const onAddFilter = (data) => {
-
+const onAddFilter = async (data) => {
   const newFilter = {...convertDottedFieldKeysToNested(data), id:  parentFilterForNode.value ? parentFilterForNode.value.id : null}
 
   if (isInvalidParent(parentFilterForNode.value)) return;
@@ -388,20 +397,21 @@ const onAddFilter = (data) => {
   }
 
   if (!parentFilterForNode.value) {
-    console.log("newFilter",newFilter);
-    createNode(newFilter);
-    show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['ru'])} added as a new node `)
+    console.log('newFilter', newFilter);
+    await createNode(newFilter)
+        .then(() => {
+      show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added as a new node `)
+    })
     return;
   }
 
-  handleAddChildNode(parentFilterForNode.value, newFilter);
-  show(`${capitalizeFirstLetter(newFilter.name['uk'])} / ${capitalizeFirstLetter(newFilter.name['name.ru'])} added to ${capitalizeFirstLetter(parentFilterForNode.value.data.name['uk'])} / ${capitalizeFirstLetter(parentFilterForNode.value.data.name['ru'])} `)
+  await handleAddChildNode(parentFilterForNode.value, newFilter);
+  show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added to ${capitalizeNodeName(parentFilterForNode, 'uk')} / ${capitalizeNodeName(parentFilterForNode, 'ru')} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
 
 const getBasicEntityFilledModel = (item) => {
-  console.log("getBasicEntityFilledModel", item);
   return {
     id: item?.data?.id || item?.id,
     name: item?.data?.name || item?.name,
@@ -411,7 +421,7 @@ const getBasicEntityFilledModel = (item) => {
   }
 }
 
-const handleEditFilter = (parent, newFilter) => {
+const handleEditFilter = async (parent, newFilter) => {
   const activeFilter = deepSearchByCode(nodes.value, parent?.key);
 
   if (!activeFilter) return;
@@ -420,11 +430,42 @@ const handleEditFilter = (parent, newFilter) => {
     ...activeFilter.data,
     ...getBasicEntityFilledModel(newFilter),
   }
-  console.log("handleEditFilter activeFilter", activeFilter.data)
-  console.log("getBasicEntityFilledModel(newFilter)", getBasicEntityFilledModel(newFilter))
+
+  await updateExistedNode(newFilter.id, prepareSaveData(newFilter));
 };
 
-const createNode = (newFilter, parent = null) => {
+const handleAddChildNode = async (parent, newFilter) => {
+  await createChildNode(newFilter, parent)
+};
+
+const prepareSaveData = (node) => {
+  return {
+    ...getBasicEntityFilledModel(node),
+    children: [],
+  }
+}
+
+const prepareChildSaveData = (node, parent) => {
+  const activeFilter = deepSearchByCode(nodes.value, parent.key);
+  const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
+  const basicChildNode = {
+    ...getBasicEntityFilledModel(node),
+    children: [],
+  }
+
+  activeFilter.children.push({
+    key: newKey,
+    ...basicChildNode
+  });
+  expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
+
+  return {
+    parent: parent.data.code,
+    node: basicChildNode,
+  };
+}
+
+const createNode = async (newFilter, parent = null) => {
   const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
 
   const node = {
@@ -433,38 +474,26 @@ const createNode = (newFilter, parent = null) => {
     children: [],
   }
 
-  if (parent) {
-    return node
-  } else {
-    addedNodes.value++
-    nodes.value.push(node);
-  }
+  addedNodes.value++
+  nodes.value.push(node);
+
+  const saveData = prepareSaveData(node);
+  await createNewFilterNode(saveData)
+}
+
+const createChildNode = async (node, parent) => {
+  const saveData = prepareChildSaveData(node, parent)
+  await createNewFilterChildNode(saveData)
 }
 
 const addedNodes = ref(0)
-
-const mapFiltersForSubmit = (data) => {
-  const mapChildren = (children) => {
-    return children.map(child => ({
-      ...getBasicEntityFilledModel(child),
-      children: mapChildren(child.children)
-    }));
-  };
-
-  return {
-    filters: data.map(item => ({
-      ...getBasicEntityFilledModel(item),
-      children: mapChildren(item.children)
-    }))
-  };
-};
 
 function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
     const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
 
     return {
-      key: key, // Теперь ключ создается правильно
+      key: key,
       id: item._id,
       data: {
         name: {
@@ -476,35 +505,13 @@ function mapFilters(inputArray) {
         description: item.description || "Нет описания",
       },
       children: item.children && item.children.length
-          ? item.children.map((child, childIdx) => mapNode(child, childIdx, key)) // Передаем текущий key как parentKey
+          ? item.children.map((child, childIdx) => mapNode(child, childIdx, key))
           : [],
     };
   };
 
   return inputArray.map((item, idx) => mapNode(item, idx));
 }
-
-const handleAddChildNode = (parent, newFilter) => {
-  const activeFilter = deepSearchByCode(nodes.value, parent.key);
-
-  if (!activeFilter) {
-    console.error("Active filter not found for parent key:", parent.key);
-    return;
-  }
-
-  const childNode = createNode(newFilter, parent);
-  activeFilter.children.push(childNode);
-
-  expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
-};
-
-onMounted(() => {
-  eventBus.on("handle-popup-data", onAddFilter);
-});
-
-onUnmounted(() => {
-  eventBus.off("handle-popup-data", onAddFilter);
-});
 
 const activeFilter = ref({});
 
@@ -513,24 +520,16 @@ const toggle = (event, node, level) => {
   menu.value.toggle(event);
 };
 
-const capitalizeFirstLetter = (value) => {
-  if (!value) return '';
-  return value.charAt(0).toUpperCase() + value.slice(1);
+const capitalizeNodeName = (node, lang = 'uk') => {
+  if (!node) return '';
+
+  const name =
+      node?.name?.[lang] ||
+      node?.data?.name?.[lang] ||
+      '';
+
+  return name ? name.charAt(0).toUpperCase() + name.slice(1) : '';
 };
-
-const saveFilters = async () => {
-  if (deleteItems.value.length > 0 && addedNodes.value === 0) {
-    await deleteFilters(deleteItems.value);
-    return;
-  }
-
-  if (nodes.value.length > 0) {
-    console.log("mapFiltersForSubmit", mapFiltersForSubmit(nodes.value[0]))
-    await createFilters(mapFiltersForSubmit(nodes.value));
-    addedNodes.value = 0;
-    // emit('filters-updated');
-  }
-}
 
 const route = useRoute()
 
@@ -549,17 +548,6 @@ const configActionsBar = ref({
       },
       onClick: addNewFilter,
     },
-    {
-      component: 'Button',
-      props: {
-        label: 'Submit',
-        class: 'filter-button',
-        style: {margin: '0 10px'},
-        icon: 'pi pi-check',
-      },
-      onClick: saveFilters,
-    },
-
   ],
   filters: [
     {
