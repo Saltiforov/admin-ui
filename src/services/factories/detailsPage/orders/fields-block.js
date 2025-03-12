@@ -53,7 +53,7 @@ export const ordersFieldsBlock = {
                 name: 'orderStatus',
                 code: 'orderStatus',
                 label: 'Order Status',
-                type: 'MultiSelect',
+                type: 'Select',
                 props: {
                     options: [
                         {label: 'Pending', value: 'pending'},
@@ -72,7 +72,7 @@ export const ordersFieldsBlock = {
                 name: 'paymentMethod',
                 code: 'paymentMethod',
                 label: 'Payment Method',
-                type: 'MultiSelect',
+                type: 'Select',
                 props: {
                     options: [
                         {label: 'Card', value: 'card'},

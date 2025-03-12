@@ -144,10 +144,3 @@ defineExpose({
 
 
 </script>
-
-<style scoped>
-.entity-button {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
