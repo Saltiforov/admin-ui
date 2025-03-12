@@ -2,13 +2,13 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Products from "@/views/Products.vue";
-import Filters from "@/views/Filters.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/views/Auth/Login.vue";
 import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 import Users from "@/views/Users.vue";
 import SignUp from "@/views/Auth/SignUp.vue";
 import Orders from "@/views/Orders.vue";
+import FiltersConfiguration from "@/views/FiltersConfiguration.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -61,7 +61,7 @@ const routes = [
             {
                 path: "filters-configuration",
                 name: "Filters-configuration",
-                component: Filters,
+                component: FiltersConfiguration,
             },
             {
                 path: "users",

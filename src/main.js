@@ -44,6 +44,7 @@ app.component('IconField', IconField);
 app.component('InputIcon', InputIcon);
 app.component('Checkbox', Checkbox);
 app.component('MultiSelect', MultiSelect);
+app.component('Select', Select);
 app.component('TreeSelect', TreeSelect);
 app.component('AsyncTreeSelect', AsyncTreeSelect);
 app.component('Button', Button);
@@ -51,7 +52,6 @@ app.component('Tag', Tag);
 app.component('TextArea', TextArea);
 app.component('FileUpload', FileUpload);
 app.component('RadioButton', RadioButton);
-app.component('Select', Select);
 app.component('Rating', Rating);
 app.use(router);
 app.use(PrimeVue, {

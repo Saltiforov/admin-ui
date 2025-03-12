@@ -32,7 +32,7 @@ const isEditMode = computed(() => {
 const actions = computed(() => {
   if (!props.config) {
     return [
-      { label: 'Cancel1', type: 'cancel', actionEventName: 'cancel' },
+      { label: 'Cancel', type: 'cancel', actionEventName: 'cancel' },
       { label: 'Save', type: 'save', actionEventName: 'submit' }
     ];
   }

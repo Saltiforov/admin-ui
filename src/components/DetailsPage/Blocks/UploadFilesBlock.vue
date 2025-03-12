@@ -1,35 +1,35 @@
 <template>
   <div>
-    <Accordion v-if="config.accordion || hasEntityImages">
-      <AccordionTab :header="config.header || 'Загрузка файлов'">
-        <div class="upload-files-block mb-12">
-          <FileUpload
-              ref="uploadRef"
-              :mode="'advanced'"
-              :name="config.fieldName"
-              :multiple="config.multiple"
-              :maxFileSize="config.maxFileSize"
-              :customUpload="true"
-              @uploader="onCustomUpload"
-              @select="onSelect"
-          >
-            <template #empty>
-              <div v-if="uploadedImages.length" class="uploaded-images">
-                <div
-                    v-for="(img, index) in fullImageUrls"
-                    :key="index"
-                    class="uploaded-image"
-                >
-                  <img :src="img" alt="Uploaded image" />
+    <Accordion v-if="config.accordion || hasEntityImages" v-model:value="isAccordionOpen">
+      <AccordionPanel value="0">
+        <AccordionHeader>{{ config.header || "Загрузка файлов" }}</AccordionHeader>
+        <AccordionContent>
+          <div class="upload-files-block mb-12">
+            <FileUpload
+                ref="uploadRef"
+                mode="advanced"
+                :name="config.fieldName"
+                :multiple="config.multiple"
+                :maxFileSize="config.maxFileSize"
+                :customUpload="true"
+                @uploader="onCustomUpload"
+                @select="onSelect"
+            >
+              <template #empty>
+                <div v-if="uploadedImages.length" class="uploaded-images">
+                  <div v-for="(img, index) in fullImageUrls" :key="index" class="uploaded-image">
+                    <img :src="img" alt="Uploaded image" />
+                    <button class="delete-btn" @click="removeImage(index)">✖</button>
+                  </div>
                 </div>
-              </div>
-            </template>
-          </FileUpload>
-          <div v-if="!hasUploadedFiles && !uploadedImages.length" class="p-3 text-center text-gray-500">
-            Drag and drop files to here to upload.
+              </template>
+            </FileUpload>
+            <div v-if="!hasUploadedFiles && !uploadedImages.length" class="p-3 text-center text-gray-500">
+              Drag and drop files to here to upload.
+            </div>
           </div>
-        </div>
-      </AccordionTab>
+        </AccordionContent>
+      </AccordionPanel>
     </Accordion>
     <div v-else class="upload-files-block mb-12">
       <div v-if="config?.header" class="mb-4 header-default">
@@ -39,100 +39,89 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref, computed, onMounted, watch} from 'vue';
-import FileUpload from 'primevue/fileupload';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-import {useRoute} from "vue-router";
+<script setup>
+import { ref, computed, watchEffect } from "vue";
+import { useRoute } from "vue-router";
+import FileUpload from "primevue/fileupload";
+import Accordion from "primevue/accordion";
+import AccordionPanel from "primevue/accordionpanel";
+import AccordionHeader from "primevue/accordionheader";
+import AccordionContent from "primevue/accordioncontent";
 
-export default defineComponent({
-  name: 'FileUploadBlock',
-  components: {
-    FileUpload,
-    Accordion,
-    AccordionTab
+const props = defineProps({
+  config: {
+    type: Object,
+    required: true,
   },
-  props: {
-    config: {
-      type: Object,
-      required: true
-    },
-    data: {
-      type: Object,
-      required: true
-    }
+  data: {
+    type: Object,
+    required: true,
   },
-  setup(props) {
-    const route = useRoute()
-    const uploadRef = ref(null);
-    const hasEntityImages = ref(false);
-    const selectedFiles = ref<any[]>([]);
-    const uploadedImages = ref<string[]>([]);
+});
 
-    const fullImageUrls = computed(() => {
-      return uploadedImages.value.map(url => {
-        if (/^https?:\/\//.test(url)) {
-          return url;
-        }
-        return 'http://localhost:3000' + url;
-      });
+const route = useRoute();
+const uploadRef = ref(null);
+const isAccordionOpen = ref("0"); // Управляем аккордеоном вручную
+const hasEntityImages = ref(false);
+const selectedFiles = ref([]);
+const uploadedImages = ref([]);
+
+const fullImageUrls = computed(() =>
+    uploadedImages.value.map((url) =>
+        /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
+    )
+);
+
+const hasUploadedFiles = computed(() => selectedFiles.value.length > 0);
+
+function onSelect(event) {
+  selectedFiles.value = event.files;
+  console.log("Selected files:", selectedFiles.value);
+}
+
+async function onCustomUpload(event) {
+  try {
+    console.log("onCustomUpload triggered", event);
+    const formData = new FormData();
+    event.files.forEach((file) => {
+      formData.append("images", file, file.name);
     });
 
-    const hasUploadedFiles = computed(() => selectedFiles.value.length > 0);
+    console.log("onCustomUpload triggered", event.files);
 
-    function onSelect(event: any) {
-      selectedFiles.value = event.files;
-      console.log('Selected files:', selectedFiles.value);
+    const entityId = route.params.id;
+
+    const response = await props.config.uploadMethod(entityId, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (Array.isArray(response.data.images)) {
+      uploadedImages.value = response.data.images;
+    } else if (response.data.path) {
+      uploadedImages.value.push(response.data.path);
     }
 
-    async function onCustomUpload(event: any) {
-      try {
-        console.log('onCustomUpload triggered', event);
-        const formData = new FormData();
-        event.files.forEach((file: File) => {
-          formData.append('images', file, file.name);
-        });
-
-        const entityId = route.params.id;
-        const response = await props.config.uploadMethod(entityId, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-
-        if (Array.isArray(response.data.images)) {
-          uploadedImages.value = response.data.images;
-        } else if (response.data.path) {
-          uploadedImages.value.push(response.data.path);
-        }
-
-        selectedFiles.value = [];
-        if (uploadRef.value?.clear) {
-          uploadRef.value.clear();
-        }
-      } catch (error: any) {
-        console.error('Upload error:', error);
-        event.options.error('Upload failed');
-      }
+    selectedFiles.value = [];
+    if (uploadRef.value?.clear) {
+      uploadRef.value.clear();
     }
+  } catch (error) {
+    console.error("Upload error:", error);
+    event.options.error("Upload failed");
+  }
+}
 
-    watch(() => props.data, (newData) => {
-      console.log('props.data', newData?.images);
-      if (newData?.images) {
-        uploadedImages.value = [...newData.images];
-        hasEntityImages.value = true;
-      }
-    }, { deep: true, immediate: true });
+const removeImage = (index) => {
+  uploadedImages.value.splice(index, 1);
+};
 
-    return {
-      uploadRef,
-      selectedFiles,
-      uploadedImages,
-      hasUploadedFiles,
-      hasEntityImages,
-      onSelect,
-      onCustomUpload,
-      fullImageUrls
-    };
+watchEffect(() => {
+  if (props.data?.images) {
+    isAccordionOpen.value = '0'
+    uploadedImages.value = [...props.data.images];
+    hasEntityImages.value = true;
+  } else {
+    isAccordionOpen.value = '1'
   }
 });
 </script>
@@ -145,14 +134,35 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 1rem;
+}
+.uploaded-image {
+  position: relative;
+  display: inline-block;
 }
 .uploaded-image img {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 18px;
   padding: 5px;
+}
+.delete-btn {
+  outline: none;
+  position: absolute;
+  border-radius: 50%;
+  top: 10px;
+  right: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  width: 20px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+button:hover {
+  border-color: white;
 }
 </style>

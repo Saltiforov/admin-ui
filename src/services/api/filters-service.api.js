@@ -112,7 +112,7 @@ export async function updateExistedNode(id, payload) {
 export async function getFiltersList() {
     const api = app.config.globalProperties.$api;
     try {
-        const res = await api.get(routes.filters); // Дожидаемся ответа от API
+        const res = await api.get(routes.filters_configuration); // Дожидаемся ответа от API
         return res.data; // Возвращаем данные
     } catch (error) {
         console.error('Error in getFiltersList:', error);
