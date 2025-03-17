@@ -15,6 +15,9 @@ import {ordersFieldsBlock} from "@/services/factories/detailsPage/orders/fields-
 import {ordersFooterActions} from "@/services/factories/detailsPage/orders/footer-actions-block.js";
 import {getOrderById} from "@/services/api/orders-service.api.js";
 import {ordersRelatedTable} from "@/services/factories/detailsPage/orders/related-entities-table-block.js";
+import {ordersPopups} from "@/services/factories/detailsPage/orders/popup-handler.js";
+import {POPUP_TYPE} from "@/constants/popups.enum.js";
+import {filtersPopups} from "@/services/factories/detailsPage/filters/popup-handler.js";
 
 
 const blocks = {
@@ -54,6 +57,23 @@ const blocks = {
             fetchData: ({ id }) => getOrderById(id),
         }
     }
+}
+
+const popupHandlers = {
+    [PAGES.ORDERS]: {
+        [POPUP_TYPE.ORDERS_POPUPS]: {
+                ...ordersPopups
+        }
+    },
+    [PAGES.FILTERS]: {
+        [POPUP_TYPE.FILTERS_POPUPS]: {
+                ...filtersPopups
+        }
+    },
+}
+
+export function getPopupConfig(pageName, popupType) {
+    return popupHandlers[pageName]?.[popupType] || null;
 }
 
 export function getPageConfig(pageName, pageType, options = {}) {

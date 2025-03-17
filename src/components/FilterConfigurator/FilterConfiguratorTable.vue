@@ -100,6 +100,7 @@ import {login} from "@/services/api/auth-serivce.api.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import {useRoute} from "vue-router";
+import {getPopupConfig} from "@/services/factories/index.js";
 
 const { updateQuery } = useQueryUpdater()
 
@@ -299,53 +300,19 @@ const items = ref([
   },
 ]);
 
-const generatePopupFields = (filter = null, isEditMode = false) => {
-  return [
-    {
-      code: "name.uk",
-      component: "InputText",
-      props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px"},
-      defaultValue: isEditMode && filter ? filter.data.name.uk : "",
-      validators: [(value) => (value ? true : "Name (UA) is required")],
-    },
-    {
-      code: "name.ru",
-      component: "InputText",
-      props: {type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px"},
-      defaultValue: isEditMode && filter ? filter.data.name.ru : "",
-      validators: [(value) => (value ? true : "Name (RU) is required")],
-    },
-    {
-      code: "code",
-      component: "InputText",
-      props: {type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px"},
-      defaultValue: isEditMode && filter ? filter.data.code : "",
-      validators: [
-        (value) => (value ? true : "Code is required"),
-        (value) => /^[a-zA-Z0-9-_]+$/.test(value) || "Code can only contain English letters",
-      ],
-    },
-    {
-      code: "description",
-      component: "TextArea",
-      props: {type: "text", placeholder: "Description", style: "width: 100%; margin-bottom: 15px"},
-      defaultValue: isEditMode && filter ? filter.data.description : "",
-      validators: [
-        (value) => (value ? true : "Description is required"),
-      ],
-    },
-    {
-      code: "icon",
-      component: "FileUpload",
-      props: {
-        accept: "image/svg+xml",
-        placeholder: "Upload SVG File",
-        style: "width: 100%; margin-bottom: 15px",
-        mode: "basic",
-      },
-      defaultValue: null
-    },
-  ];
+const { filterConfiguratorTablePopup } = getPopupConfig('filters', 'filters-popups')
+
+console.log("filterConfiguratorTablePopup", filterConfiguratorTablePopup)
+
+const getNestedValue = (obj, path, defaultValue = "") => {
+  return path.split(".").reduce((acc, key) => acc && acc[key] !== undefined ? acc[key] : defaultValue, obj);
+};
+
+const updatePopupFields = (filter = null, isEditMode = false) => {
+  return filterConfiguratorTablePopup['fields'].map(field => ({
+    ...field,
+    defaultValue: isEditMode && filter ? getNestedValue(filter.data, field.code, "") : "",
+  }));
 };
 
 const parentFilterForNode = ref({});
@@ -369,7 +336,7 @@ const handleOpenPopup = (filter = null, eventType = "add") => {
 
   eventBus.emit("show-popup", {
     title,
-    fields: generatePopupFields(filter, isEditMode),
+    fields: updatePopupFields(filter, isEditMode),
   })
 }
 

@@ -18,7 +18,7 @@
         <span v-else class="p-placeholder">{{ placeholder }}</span>
       </div>
     </div>
-    <div class="p-multiselect-dropdown">
+    <div class="p-multiselect-dropdown" @click="toggleDropdown">
       <svg
           width="14"
           height="14"
@@ -83,9 +83,13 @@
 
 <script setup>
 import {ref, computed, onMounted, onUnmounted, watch, defineProps} from 'vue';
-import { useDataStore } from "@/stores/dataStore.js";
+import {useDataStore} from "@/stores/dataStore.js";
 // Props
 const props = defineProps({
+  selectId: {
+    type: String,
+    required: true
+  },
   options: {
     type: Array,
     required: true
@@ -138,7 +142,12 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  useEditMode: {
+    type: Boolean,
+    default: true
+  }
 });
+
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -151,22 +160,23 @@ const dataStore = useDataStore()
 
 const params = computed(() => {
   return {
-    skip: props.skip + (dataStore.getCurrentPage - 1) * props.itemsPerPage,
+    skip: props.skip + (dataStore.getCurrentPage(props.selectId) - 1) * props.itemsPerPage,
     limit: props.itemsPerPage,
   }
 })
 
+const useEditMode = computed(() => props.useEditMode)
+
 const options = computed(() => {
-  return dataStore.getData.map(option => ({
+  return dataStore.getOptions(props.selectId).map(option => ({
     label: option.name,
     code: option._id
   }))
 });
 
-const optionsCache = computed(() => dataStore.getSelectedData || []);
+const optionsCache = computed(() => dataStore.getSelectedData(props.selectId) || []);
 
 const isOpen = ref(!!optionsCache.value.length);
-
 
 const multiselectRef = ref(null);
 
@@ -191,12 +201,12 @@ const toggleSelection = (option) => {
   emit('update:modelValue', selectedOptions.value);
 };
 
-const hasMoreData = computed(() => options.value.length < dataStore.totalCount)
+const hasMoreData = computed(() => options.value.length < dataStore.getTotalCount(props.selectId))
 
 const handleScroll = (event) => {
   const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
   if (bottom && !loading.value && hasMoreData.value) {
-    dataStore.loadMoreData(props.restOptionsUrl, params.value)
+    dataStore.loadMoreData(props.selectId, props.restOptionsUrl, params.value)
   }
 };
 
@@ -215,7 +225,7 @@ const loadOptions = async () => {
     loading.value = true;
     try {
 
-      await dataStore.fetchData(props.restOptionsUrl, params.value);
+      await dataStore.fetchData(props.selectId, props.restOptionsUrl, params.value);
 
     } catch (error) {
       console.error('Error loading options:', error);
@@ -244,10 +254,9 @@ const allSelected = computed(() => {
 });
 
 
-
 // Lifecycle hooks
 onMounted(() => {
-  if (optionsCache.value.length > 0) {
+  if (optionsCache.value.length > 0 && useEditMode.value) {
     selectedOptions.value = optionsCache.value;
   }
   loadOptions(); // Initial load of options
@@ -259,8 +268,8 @@ onUnmounted(() => {
 });
 
 watch(selectedOptions, (newValue) => {
-  dataStore.setSelectedData(newValue);
-}, { deep: true });
+  dataStore.setSelectedData(props.selectId, newValue);
+}, {deep: true});
 
 </script>
 
@@ -274,9 +283,6 @@ watch(selectedOptions, (newValue) => {
   cursor: pointer;
 }
 
-.p-multiselect-panel-container {
-}
-
 .p-multiselect-search-list {
   max-height: 200px;
   overflow-y: auto;
@@ -284,10 +290,12 @@ watch(selectedOptions, (newValue) => {
 }
 
 .p-multiselect-label-container {
+  padding: 7px 10.5px;
   flex: 1;
 }
 
 .p-multiselect-dropdown {
+  padding: 7px;
   display: flex;
   align-items: center;
 }
@@ -367,7 +375,6 @@ watch(selectedOptions, (newValue) => {
   border: solid white;
   border-width: 0px 1px 1px 0;
   transform: rotate(45deg);
-  transition: transform 0.2sease;
 }
 
 .p-checkbox-input:checked {

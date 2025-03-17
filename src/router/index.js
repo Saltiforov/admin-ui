@@ -22,7 +22,7 @@ const routes = [
         children: [
             {
                 path: "",
-                redirect: "/filters",
+                redirect: "/filters-configuration",
             },
             {
                 path: "products",

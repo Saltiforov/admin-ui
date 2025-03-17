@@ -11,6 +11,7 @@
                 :name="config.fieldName"
                 :multiple="config.multiple"
                 :maxFileSize="config.maxFileSize"
+                :show-upload-button="useEditMode"
                 :customUpload="true"
                 @uploader="onCustomUpload"
                 @select="onSelect"
@@ -73,6 +74,8 @@ const fullImageUrls = computed(() =>
 );
 
 const hasUploadedFiles = computed(() => selectedFiles.value.length > 0);
+
+const useEditMode = computed(() => !!props.data)
 
 function onSelect(event) {
   selectedFiles.value = event.files;

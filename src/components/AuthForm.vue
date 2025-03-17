@@ -241,7 +241,7 @@ const onFormSubmit = async () => {
         : await login(formData.value);
 
     if (response.token) {
-      router.push('/filters');
+      router.push('/filters-configuration');
     }
   } catch (error) {
     console.error("Authentication error:", error);

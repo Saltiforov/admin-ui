@@ -44,13 +44,14 @@
 </template>
 
 <script setup>
-import {ref, computed, watchEffect, watch} from "vue";
+import {ref, computed} from "vue";
 import defaultProductImage from "@/assets/icons/shopping-bag.svg";
 import Button from "primevue/button";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
 import eventBus from "../../../../eventBus.js";
-import AsyncMultiSelect from "@/components/UI/AsyncMultiSelect.vue";
 import {pathBuilder} from "@/utils/index.js";
+import {useRoute} from "vue-router";
+import {getPopupConfig} from "@/services/factories/index.js";
 
 const props = defineProps({
   data: {
@@ -71,34 +72,34 @@ const props = defineProps({
   }
 });
 
-const handlePopup = () => {
-  eventBus.emit("show-popup", {
-    fields: [
-      {
-        code: "products",
-        component: AsyncMultiSelect,
-        props: {
-          filter: true,
-          filterPlaceholder: "Search...",
-          maxSelectedLabels: 3,
-          placeholder: "Select a value",
-          optionLabel: "name",
-          itemsPerPage: 10,
-          skip: 0,
-          display: "chip",
-          restOptionsUrl: 'api/products',
-          loading: false,
-          selectClass: "w-full",
-          style: "margin-bottom: 15px",
-        },
-      },
-    ]
-  })
-}
+const isUpdateMode = computed(() => !!props.data)
+
+const route = useRoute()
+
+const menu = ref();
 
 const currentTarget = ref({});
 
 const emit = defineEmits(['handleDelete'])
+
+const pageType = route.meta.pageType;
+
+const {relatedEntitiesTablePopup} = getPopupConfig(pageType, 'orders-popups')
+
+const updatedRelatedEntitiesTablePopup = computed(() => ({
+  ...relatedEntitiesTablePopup,
+  fields: relatedEntitiesTablePopup.fields.map(field => ({
+    ...field,
+    props: {
+      ...field.props,
+      useEditMode: isUpdateMode.value
+    }
+  }))
+}));
+
+const handlePopup = () => {
+  eventBus.emit("show-popup", updatedRelatedEntitiesTablePopup.value)
+}
 
 const toggle = (event, data) => {
   currentTarget.value = data
@@ -108,7 +109,6 @@ const toggle = (event, data) => {
 
 const deleteItem = () => emit("handleDelete", currentTarget.value);
 
-const menu = ref();
 const items = ref([
   {
     label: 'Operations',
@@ -124,19 +124,10 @@ const items = ref([
 
 // TODO OBSERVEBEL
 
-const formData = ref({});
-
-const isEditMode = computed(() => !!props.data)
 
 const getData = () => {
-  return {...formData.value};
+  return {...props.config.value};
 };
-
-watchEffect(() => {
-  formData.value = {...props.data}
-});
-
-watch(() => props.config.value, (val) => formData.value = val)
 
 defineExpose({
   getData

@@ -127,7 +127,7 @@ const createNewProduct = async (product) => {
 const handleProduct = async () => {
   props.startLoading()
 
-  if ( !validateForm() ) return;
+  // if ( !validateForm() ) return;
 
   if (!isEditMode.value) {
     await createNewProduct(allData.value);

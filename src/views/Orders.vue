@@ -26,7 +26,7 @@
 <script setup>
 
 import {computed, ref, watch, watchEffect} from "vue";
-import {getOrdersList} from "@/services/api/orders-service.api.js";
+import {deleteOrderById, getOrdersList} from "@/services/api/orders-service.api.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import router from "@/router/index.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
@@ -81,6 +81,7 @@ const toggle = (event, data) => {
 
 const deleteOrder = async (id) => {
   ordersList.value = ordersList.value.filter((item) => item._id !== id);
+  await deleteOrderById(id)
 }
 
 const route = useRoute()

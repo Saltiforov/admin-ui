@@ -31,9 +31,6 @@ import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEn
 import eventBus from "../../../../eventBus.js";
 import {useDataStore} from "@/stores/dataStore.js";
 
-
-
-
 const props = defineProps({
   blockList: {
     type: Object,
@@ -63,14 +60,17 @@ const props = defineProps({
 
 const dataStore = useDataStore();
 
-const totalRecords = computed(() => dataStore.getTotalCount)
+const selectId = 'relatedEntitiesSelect'
+
+const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
 const getStatusLabel = (status) => {
   const statusMap = {
     pending: "Pending",
     completed: "Completed",
     canceled: "Canceled",
-    shipped: "Shipped"
+    shipped: "Shipped",
+    delivered: "Delivered",
   };
   return statusMap[status] || "Unknown";
 };
@@ -82,7 +82,7 @@ const detailsPageData = computed(() => {
     return undefined;
   }
 
-  const { shippingAddress, orderStatus, ...rest } = data;
+  const {shippingAddress, orderStatus, ...rest} = data;
 
   return {
     ...rest,
@@ -110,7 +110,7 @@ watch(() => detailsPageData.value, (value) => {
       code: item.product._id
     }
   })
-  dataStore.setSelectedData(selectedData)
+  dataStore.setSelectedData(selectId,selectedData)
 })
 
 const relatedConfig = reactive({
@@ -127,11 +127,16 @@ const deleteRelatedEntitiesItem = (item) => {
 
 onMounted(async () => {
   eventBus.on("handle-popup-data", async ({products}) => {
-    relatedConfig.value = products
-        .map(product => product.code)
-        .map(code => {
-          return {...dataStore.getDataById(code), quantity: 1}
-        });
+    const existingProducts = relatedConfig.value
+    const existingCodes = existingProducts.map(p => p._id)
+    const newProducts = products.filter(item => !existingCodes.includes(item.code));
+    relatedConfig.value = [
+      ...existingProducts, // Оставляем старые
+      ...newProducts.map(product => ({
+        ...dataStore.getDataById(selectId,product.code),
+        quantity: 1
+      }))
+    ];
   });
 });
 
@@ -194,12 +199,12 @@ const handleOrder = async () => {
     return;
   }
 
-  updateOrderById(orderId.value, allData.value)
+  console.log("updateOrderById transformOrderData", transformOrderData(allData.value))
+
+  updateOrderById(orderId.value, transformOrderData(allData.value))
       .then((res) => {
         if (res.status === 200) {
-          setTimeout(() => {
             props.stopLoading()
-          }, 1000)
         }
       })
 };

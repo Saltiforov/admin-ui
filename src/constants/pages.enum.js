@@ -2,6 +2,7 @@ export const PAGES = {
     PRODUCTS: 'products',
     USERS: 'users',
     ORDERS: 'orders',
+    FILTERS: 'filters',
 }
 
 export const DETAILS_PAGES = {
