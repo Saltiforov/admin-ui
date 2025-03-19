@@ -19,18 +19,21 @@
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
-        @click="collectDataFromComponents"
+        @submit="collectDataFromComponents"
+        @cancel="router.go(-1)"
     />
   </div>
 </template>
 
 <script setup>
 import {computed, defineProps, ref} from 'vue';
-import {updateProductById} from "@/services/api/product-service.api.js";
+import {updateProductById, createProduct} from "@/services/api/product-service.api.js";
 import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
+import {useRouter} from "vue-router";
+import eventBus from "../../../../eventBus.js";
 
 const props = defineProps({
   blockList: {
@@ -66,6 +69,7 @@ const detailsPageData = computed(() => {
 
 console.log("PRODUCT DETAILS WRAPPER ", detailsPageData.value);
 
+const router = useRouter()
 
 const isEditMode = computed(() => {
   return !!detailsPageData.value;
@@ -114,14 +118,17 @@ const validateForm = () => {
 
 
 const createNewProduct = async (product) => {
-  console.log("createNewProduct", product);
-  // props.startLoading()
-  // try {
-  //   const res = await createProduct(product)
-  //   if (res.status === 201 || res.status === 200) props.stopLoading()
-  // } catch (error) {
-  //   console.error('Error in createProduct:', error);
-  // }
+  props.startLoading()
+  try {
+    await createProduct(product).then(res => {
+      if (res.status === 201 || res.status === 200) props.stopLoading()
+      const {data} = res
+      eventBus.emit("handleImageUpload" , data._id)
+      router.go(-1);
+    })
+  } catch (error) {
+    console.error('Error in createProduct:', error);
+  }
 }
 
 const handleProduct = async () => {

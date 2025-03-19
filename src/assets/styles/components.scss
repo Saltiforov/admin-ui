@@ -73,5 +73,6 @@
 .table-image {
   width: var(--image-table-width);
   height: var(--image-table-height);
-  object-fit: contain; /* Чтобы изображение сохраняло пропорции */
+  border-radius: var(--image-table-border-radius);
+  object-fit: cover; /* Чтобы изображение сохраняло пропорции */
 }

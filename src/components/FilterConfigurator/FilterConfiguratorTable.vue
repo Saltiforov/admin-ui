@@ -442,7 +442,7 @@ const createNode = async (newFilter, parent = null) => {
   }
 
   addedNodes.value++
-  nodes.value.push(node);
+  nodes.value.unshift(node);
 
   const saveData = prepareSaveData(node);
   await createNewFilterNode(saveData)

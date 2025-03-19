@@ -19,7 +19,7 @@
               <template #empty>
                 <div v-if="uploadedImages.length" class="uploaded-images">
                   <div v-for="(img, index) in fullImageUrls" :key="index" class="uploaded-image">
-                    <img :src="img" alt="Uploaded image" />
+                    <img :src="img" alt="Uploaded image"/>
                     <button class="delete-btn" @click="removeImage(index)">✖</button>
                   </div>
                 </div>
@@ -41,13 +41,15 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import {ref, computed, watchEffect, onMounted} from "vue";
+import {useRoute} from "vue-router";
 import FileUpload from "primevue/fileupload";
 import Accordion from "primevue/accordion";
 import AccordionPanel from "primevue/accordionpanel";
 import AccordionHeader from "primevue/accordionheader";
 import AccordionContent from "primevue/accordioncontent";
+import eventBus from "../../../../eventBus.js";
+import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
 const props = defineProps({
   config: {
@@ -82,20 +84,13 @@ function onSelect(event) {
   console.log("Selected files:", selectedFiles.value);
 }
 
-async function onCustomUpload(event) {
+const entityId = computed(() => route.params.id || '');
+
+const uploadFiles = async (files, id) => {
   try {
-    console.log("onCustomUpload triggered", event);
-    const formData = new FormData();
-    event.files.forEach((file) => {
-      formData.append("images", file, file.name);
-    });
 
-    console.log("onCustomUpload triggered", event.files);
-
-    const entityId = route.params.id;
-
-    const response = await props.config.uploadMethod(entityId, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+    const response = await props.config.uploadMethod(id, files, {
+      headers: {"Content-Type": "multipart/form-data"},
     });
 
     if (Array.isArray(response.data.images)) {
@@ -108,8 +103,22 @@ async function onCustomUpload(event) {
     if (uploadRef.value?.clear) {
       uploadRef.value.clear();
     }
+
   } catch (error) {
     console.error("Upload error:", error);
+  }
+}
+
+function onCustomUpload(event) {
+  try {
+    const formData = new FormData();
+    event.files.forEach((file) => {
+      formData.append("images", file, file.name);
+    });
+
+    uploadFiles(formData, entityId.value);
+
+  } catch (error) {
     event.options.error("Upload failed");
   }
 }
@@ -117,6 +126,17 @@ async function onCustomUpload(event) {
 const removeImage = (index) => {
   uploadedImages.value.splice(index, 1);
 };
+
+onMounted(() => {
+  eventBus.on("handleImageUpload", (id) => {
+    const formData = new FormData();
+    selectedFiles.value.forEach((file) => {
+      formData.append("images", file, file.name);
+    });
+    uploadFiles(formData, id);
+  });
+})
+
 
 watchEffect(() => {
   if (props.data?.images) {
@@ -133,15 +153,18 @@ watchEffect(() => {
 .upload-files-block {
   margin-bottom: 1rem;
 }
+
 .uploaded-images {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
+
 .uploaded-image {
   position: relative;
   display: inline-block;
 }
+
 .uploaded-image img {
   width: 200px;
   height: 200px;
@@ -149,6 +172,7 @@ watchEffect(() => {
   border-radius: 18px;
   padding: 5px;
 }
+
 .delete-btn {
   outline: none;
   position: absolute;
@@ -165,6 +189,7 @@ watchEffect(() => {
   justify-content: center;
   font-size: 14px;
 }
+
 button:hover {
   border-color: white;
 }

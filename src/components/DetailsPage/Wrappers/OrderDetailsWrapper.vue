@@ -17,7 +17,8 @@
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
-        @click="collectDataFromComponents"
+        @submit="collectDataFromComponents"
+        @cancel="router.go(-1)"
     />
   </div>
 </template>
@@ -30,6 +31,7 @@ import {createOrder, updateOrderById} from "@/services/api/orders-service.api.js
 import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEntitiesTableBlock.vue";
 import eventBus from "../../../../eventBus.js";
 import {useDataStore} from "@/stores/dataStore.js";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   blockList: {
@@ -59,6 +61,8 @@ const props = defineProps({
 });
 
 const dataStore = useDataStore();
+
+const router = useRouter()
 
 const selectId = 'relatedEntitiesSelect'
 
@@ -198,8 +202,6 @@ const handleOrder = async () => {
     await createOrder(transformOrderData(allData.value))
     return;
   }
-
-  console.log("updateOrderById transformOrderData", transformOrderData(allData.value))
 
   updateOrderById(orderId.value, transformOrderData(allData.value))
       .then((res) => {

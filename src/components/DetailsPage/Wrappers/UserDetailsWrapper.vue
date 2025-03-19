@@ -13,6 +13,7 @@
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="data"
+        @cancel="router.go(-1)"
     />
 
     <!-- Лоадер, который отображается поверх содержимого при загрузке -->
@@ -26,6 +27,7 @@
 <script setup>
 import ProgressSpinner from "primevue/progressspinner";
 import {defineProps} from "vue";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   // SEPARETE FROM blockList add dynamic render for every key in blockList
@@ -42,6 +44,8 @@ const props = defineProps({
     default: false,
   }
 });
+
+const router = useRouter()
 
 </script>
 
