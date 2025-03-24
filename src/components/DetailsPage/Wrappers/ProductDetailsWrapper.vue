@@ -34,6 +34,9 @@ import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
 import {useRouter} from "vue-router";
 import eventBus from "../../../../eventBus.js";
+import {useFormHandler} from "@/composables/useFormHandler.js";
+import {mappedFieldsForValidation} from "@/utils/index.js";
+import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
 const props = defineProps({
   blockList: {
@@ -63,19 +66,16 @@ const props = defineProps({
 });
 
 const detailsPageData = computed(() => {
-  console.log('PAGE DATA', props.data);
   return props.data[DETAILS_PAGES.PRODUCTS];
 });
-
-console.log("PRODUCT DETAILS WRAPPER ", detailsPageData.value);
-
-const router = useRouter()
 
 const isEditMode = computed(() => {
   return !!detailsPageData.value;
 });
 
 const productId = computed(() => detailsPageData.value._id)
+
+const router = useRouter()
 
 const fieldsBlockRef = ref(null);
 const uploadFilesRef = ref(null);
@@ -84,7 +84,6 @@ const dynamicAttrsRef = ref(null);
 const allData = ref({});
 
 const collectDataFromComponents = (e) => {
-  console.log("collectDataFromComponents", e)
   allData.value = {
     ...fieldsBlockRef.value.getData(),
     ...dynamicAttrsRef.value.getData(),
@@ -92,38 +91,12 @@ const collectDataFromComponents = (e) => {
   handleProduct()
 };
 
-const fieldsErrors = ref(null);
-
-const validateForm = () => {
-  if (isEditMode && !allData.value) {
-    return;
-  }
-  const requiredFields = props.blockList.fields.items.filter(field => field.props?.required);
-
-  const invalidFields = requiredFields.filter(field => {
-    const value = allData.value?.[field.name];
-    return value === undefined || value === null || value === "";
-  });
-
-  if (invalidFields.length) {
-    fieldsErrors.value = invalidFields.reduce((acc, field) => {
-      acc[field.code] = `${field.label || field.code} is required`;
-      return acc;
-    }, {});
-    return false;
-  }
-  fieldsErrors.value = {}
-  return true;
-};
-
 
 const createNewProduct = async (product) => {
-  props.startLoading()
   try {
     await createProduct(product).then(res => {
-      if (res.status === 201 || res.status === 200) props.stopLoading()
       const {data} = res
-      eventBus.emit("handleImageUpload" , data._id)
+      eventBus.emit("handleImageUpload", data._id)
       router.go(-1);
     })
   } catch (error) {
@@ -131,24 +104,28 @@ const createNewProduct = async (product) => {
   }
 }
 
+const {handleSubmit, fieldsErrors} = useFormHandler(
+    () => mappedFieldsForValidation(props.blockList?.fields.items),
+    () => allData.value
+);
+
+const action = computed(() => {
+  return !isEditMode.value
+      ? () => createNewProduct
+      : (data) => updateProductById(productId.value, data)
+})
+
 const handleProduct = async () => {
   props.startLoading()
-
-  // if ( !validateForm() ) return;
-
-  if (!isEditMode.value) {
-    await createNewProduct(allData.value);
-    return;
+  try {
+    await handleSubmit(action.value)
+  } catch (error) {
+    console.error('Error during product processing:', error);
+  } finally {
+    timeoutService.setTimeout(() => {
+      props.stopLoading()
+    }, 1000)
   }
-
-  updateProductById(productId.value, allData.value)
-      .then((res) => {
-        if (res.status === 200) {
-          setTimeout(() => {
-            props.stopLoading()
-          }, 1000)
-        }
-      })
 };
 </script>
 

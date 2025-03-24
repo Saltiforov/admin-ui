@@ -85,11 +85,13 @@ const routes = [
             {
                 path: "login",
                 name: "Login",
+                meta: { pageType: 'login' },
                 component: Login,
             },
             {
                 path: "signup",
                 name: "Signup",
+                meta: { pageType: 'signup' },
                 component: SignUp,
             },
         ],

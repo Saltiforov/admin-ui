@@ -10,7 +10,7 @@ export const ordersPopups = {
                     selectId: 'relatedEntitiesSelect',
                     filter: true,
                     filterPlaceholder: "Search...",
-                    maxSelectedLabels: 3,
+                    maxSelectedLabels: 5,
                     placeholder: "Select a value",
                     optionLabel: "name",
                     storeId: 'relatedEntitiesSelect',

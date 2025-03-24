@@ -18,6 +18,7 @@ import Tag from 'primevue/tag';
 import MultiSelect from 'primevue/multiselect';
 import TreeSelect from 'primevue/treeselect';
 import Checkbox from 'primevue/checkbox';
+import Password from 'primevue/password';
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -39,6 +40,7 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.component('InputText', InputText);
+app.component('Password', Password);
 app.component('InputNumber', InputNumber);
 app.component('IconField', IconField);
 app.component('InputIcon', InputIcon);

@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, inject, watchEffect} from "vue";
+import {ref, computed, onMounted, inject, watchEffect, watch} from "vue";
 
 const props = defineProps({
   data: {
@@ -126,7 +126,6 @@ onMounted(() => {
 
 
 const baseFields = computed(() => {
-  console.log('props.config', props);
   return props.config.items.filter(f => {
     return !["Checkbox", "Rating", "TextArea"].includes(f.type) && !f.props.fullWidth
   });

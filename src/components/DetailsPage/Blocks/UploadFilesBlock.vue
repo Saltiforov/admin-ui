@@ -18,7 +18,7 @@
             >
               <template #empty>
                 <div v-if="uploadedImages.length" class="uploaded-images">
-                  <div v-for="(img, index) in fullImageUrls" :key="index" class="uploaded-image">
+                  <div v-for="(img, index) in fullImageUrls(uploadedImages)" :key="index" class="uploaded-image">
                     <img :src="img" alt="Uploaded image"/>
                     <button class="delete-btn" @click="removeImage(index)">✖</button>
                   </div>
@@ -49,7 +49,7 @@ import AccordionPanel from "primevue/accordionpanel";
 import AccordionHeader from "primevue/accordionheader";
 import AccordionContent from "primevue/accordioncontent";
 import eventBus from "../../../../eventBus.js";
-import {timeoutService} from "@/services/timeoutService/timeoutService.js";
+import {fullImageUrls} from "@/utils/index.js";
 
 const props = defineProps({
   config: {
@@ -69,19 +69,12 @@ const hasEntityImages = ref(false);
 const selectedFiles = ref([]);
 const uploadedImages = ref([]);
 
-const fullImageUrls = computed(() =>
-    uploadedImages.value.map((url) =>
-        /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
-    )
-);
-
 const hasUploadedFiles = computed(() => selectedFiles.value.length > 0);
 
 const useEditMode = computed(() => !!props.data)
 
 function onSelect(event) {
   selectedFiles.value = event.files;
-  console.log("Selected files:", selectedFiles.value);
 }
 
 const entityId = computed(() => route.params.id || '');
@@ -110,17 +103,12 @@ const uploadFiles = async (files, id) => {
 }
 
 function onCustomUpload(event) {
-  try {
-    const formData = new FormData();
-    event.files.forEach((file) => {
-      formData.append("images", file, file.name);
-    });
+  const formData = new FormData();
+  event.files.forEach((file) => {
+    formData.append("images", file, file.name);
+  });
 
-    uploadFiles(formData, entityId.value);
-
-  } catch (error) {
-    event.options.error("Upload failed");
-  }
+  uploadFiles(formData, entityId.value);
 }
 
 const removeImage = (index) => {

@@ -34,7 +34,17 @@
         />
       </svg>
     </div>
-    <div v-if="isOpen" class="p-multiselect-panel" @scroll="handleScroll">
+    <div v-if="true" class="p-multiselect-panel" @scroll="handleScroll">
+      <div v-if="display === 'chip'" class="selected-chips">
+        <div class="chips-wrapper">
+            <span v-for="selected in chipsedSelectedOptions">
+          {{ selected.label }},
+        </span>
+          <div @click="showMoreSelectedOptions" class="flex justify-end">
+            show more
+          </div>
+        </div>
+      </div>
       <div class="p-multiselect-panel-container">
         <div class="p-multiselect-search-wrapper">
           <div class="p-multiselect-select-all">
@@ -145,13 +155,16 @@ const props = defineProps({
   useEditMode: {
     type: Boolean,
     default: true
-  }
+  },
+  chips: {
+    type: Boolean,
+    default: true
+  },
 });
 
 
 const emit = defineEmits(['update:modelValue']);
 
-// Reactive variables
 const searchQuery = ref('');
 const selectedOptions = ref([]);
 const loading = ref(false);
@@ -235,7 +248,6 @@ const loadOptions = async () => {
   }
 };
 
-
 const toggleSelectAll = () => {
   if (allSelected.value) {
     selectedOptions.value = []; // Сбрасываем все выбранные элементы
@@ -253,13 +265,23 @@ const allSelected = computed(() => {
   return options.value.length > 0 && options.value.every(option => selectedOptions.value.some(o => o.code === option.code));
 });
 
+const chipsedSelectedOptions = computed(() => {
+  return isShowMore.value
+      ? [...selectedOptions.value]
+      : [...selectedOptions.value].splice(0, 6)
+})
 
-// Lifecycle hooks
+const isShowMore = ref(false)
+
+const showMoreSelectedOptions = () => {
+  isShowMore.value = !isShowMore.value;
+}
+
 onMounted(() => {
   if (optionsCache.value.length > 0 && useEditMode.value) {
     selectedOptions.value = optionsCache.value;
   }
-  loadOptions(); // Initial load of options
+  loadOptions();
   document.addEventListener('click', closeDropdown);
 });
 
@@ -384,6 +406,10 @@ watch(selectedOptions, (newValue) => {
 
 .p-checkbox-input:focus {
   outline: none;
+}
+
+.chips-wrapper {
+  padding: 10px;
 }
 
 .loading-spinner {

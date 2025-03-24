@@ -1,3 +1,5 @@
+import {computed} from "vue";
+
 export function deepClone(obj) {
     if (Array.isArray(obj)) {
         return obj.map(deepClone);
@@ -113,7 +115,6 @@ export function mapObject(obj) {
 }
 
 
-
 export function createQueryString(params) {
     const queryParams = [];
 
@@ -130,25 +131,6 @@ export function createQueryString(params) {
 
     // Собираем все параметры в одну строку
     return queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-}
-
-function getQueryParams(queryString) {
-    // Убираем символ "?" из начала строки, если он есть
-    const query = queryString.startsWith('?') ? queryString.slice(1) : queryString;
-
-    // Разбиваем строку на параметры по символу "&"
-    const pairs = query.split('&');
-
-    // Преобразуем массив пар в объект
-    const params = pairs.reduce((acc, pair) => {
-        const [key, value] = pair.split('=');
-        if (key) {
-            acc[key] = decodeURIComponent(value || '');
-        }
-        return acc;
-    }, {});
-
-    return params;
 }
 
 export function extractFields(items, nestedKey) {
@@ -169,5 +151,57 @@ export function extractFields(items, nestedKey) {
     });
 };
 
+export function validateFormFields(fields, formValues) {
+    let isValid = true;
+    const errors = {};
+
+    fields.forEach((field) => {
+        errors[field.code] = null;
+
+        if (field.validators) {
+            for (const validator of field.validators) {
+                const validationResult = validator(formValues[field.code]);
+                if (validationResult !== true) {
+                    errors[field.code] = validationResult;
+                    isValid = false;
+                    break;
+                }
+            }
+        }
+    });
+
+    return {isValid, errors};
+}
+
+export function mappedFieldsForValidation(fields) {
+    return fields.reduce((acc, field) => {
+        acc[field.code] = field;
+        return acc;
+    }, {});
+}
+
+export async function handleRequest(validFunc, isValid, action, data, onSuccess) {
+    validFunc();
+
+    if (!isValid.value) return;
+
+    props.startLoading();
+
+    try {
+        const response = await action(data);
+        if (response?.status === 200 && onSuccess) {
+            onSuccess(response);
+        }
+    } finally {
+        setTimeout(() => {
+            props.stopLoading();
+        }, 1000);
+    }
+}
 
 
+export function fullImageUrls(imagesRef) {
+    return imagesRef.map((url) =>
+        /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
+    )
+}

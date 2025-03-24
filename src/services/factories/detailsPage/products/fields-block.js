@@ -11,7 +11,8 @@ export const productsFieldsBlock = {
                     class: 'product-input',
                     placeholder: 'Enter product name',
                     required: true
-                }
+                },
+                validators: [(value) => (value ? true : "Name is required")],
             },
             {
                 name: 'price',
@@ -26,7 +27,8 @@ export const productsFieldsBlock = {
                     fluid: true,
                     placeholder: 'Enter price',
                     required: true
-                }
+                },
+                validators: [(value) => (value ? true : "Price is required")],
             },
             {
                 name: 'filters',

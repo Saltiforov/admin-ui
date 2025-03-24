@@ -11,9 +11,9 @@ export const ordersFieldsBlock = {
                     placeholder: 'Enter user name',
                     required: true
                 },
-                validators: [
-                    (value) => (value ? true : "Username is required"),
-                ],
+                // validators: [
+                //     (value) => (value ? true : "Username is required"),
+                // ],
             },
             {
                 name: 'totalAmount',
@@ -24,7 +24,10 @@ export const ordersFieldsBlock = {
                     type: 'number',
                     placeholder: 'Enter total amount',
                     required: true
-                }
+                },
+                validators: [
+                    (value) => (value !== null && value !== undefined ? true : "Total Amount is required"),
+                ],
             },
             {
                 name: 'discount',
@@ -34,7 +37,7 @@ export const ordersFieldsBlock = {
                 props: {
                     type: 'number',
                     placeholder: 'Enter discount',
-                    required: true
+                    required: false
                 }
             },
             {
@@ -45,10 +48,9 @@ export const ordersFieldsBlock = {
                 props: {
                     type: 'number',
                     placeholder: 'Enter tax',
-                    required: true
+                    required: false
                 }
             },
-
             {
                 name: 'orderStatus',
                 code: 'orderStatus',
@@ -84,7 +86,6 @@ export const ordersFieldsBlock = {
                     required: false
                 }
             },
-
             {
                 name: 'street',
                 code: 'street',
@@ -94,7 +95,10 @@ export const ordersFieldsBlock = {
                     type: 'text',
                     placeholder: 'Enter street',
                     required: true
-                }
+                },
+                validators: [
+                    (value) => (value ? true : "Street is required"),
+                ],
             },
             {
                 name: 'city',
@@ -105,7 +109,10 @@ export const ordersFieldsBlock = {
                     type: 'text',
                     placeholder: 'Enter city',
                     required: true
-                }
+                },
+                validators: [
+                    (value) => (value ? true : "City is required"),
+                ],
             },
             {
                 name: 'postalCode',
@@ -117,7 +124,10 @@ export const ordersFieldsBlock = {
                     placeholder: 'Enter postal code',
                     required: true,
                     useGrouping: false,
-                }
+                },
+                validators: [
+                    (value) => (value ? true : "Postal Code is required"),
+                ],
             },
             {
                 name: 'country',
@@ -128,10 +138,12 @@ export const ordersFieldsBlock = {
                     type: 'text',
                     placeholder: 'Enter country',
                     required: true
-                }
+                },
+                validators: [
+                    (value) => (value ? true : "Country is required"),
+                ],
             },
-
         ],
         header: 'Fill order information:',
     }
-}
+};

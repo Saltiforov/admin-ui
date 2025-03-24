@@ -43,7 +43,7 @@ export async function updateOrderById(id, payload) {
         const response = await api.put(`${router.orders}/${id}`, payload);
 
         if (response.status === 200) {
-            return response.data;
+            return response;
         }
 
     } catch (error) {

@@ -3,7 +3,7 @@
     <FieldsBlock
         :config="blockList.fields"
         :data="detailsPageData"
-        :errors="errors"
+        :errors="fieldsErrors"
         ref="fieldsBlockRef"
     />
     <RelatedEntitiesTableBlock
@@ -32,6 +32,9 @@ import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEn
 import eventBus from "../../../../eventBus.js";
 import {useDataStore} from "@/stores/dataStore.js";
 import {useRouter} from "vue-router";
+import {mappedFieldsForValidation} from "@/utils/index.js";
+import {useFormHandler} from "@/composables/useFormHandler.js";
+import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
 const props = defineProps({
   blockList: {
@@ -114,7 +117,7 @@ watch(() => detailsPageData.value, (value) => {
       code: item.product._id
     }
   })
-  dataStore.setSelectedData(selectId,selectedData)
+  dataStore.setSelectedData(selectId, selectedData)
 })
 
 const relatedConfig = reactive({
@@ -135,9 +138,9 @@ onMounted(async () => {
     const existingCodes = existingProducts.map(p => p._id)
     const newProducts = products.filter(item => !existingCodes.includes(item.code));
     relatedConfig.value = [
-      ...existingProducts, // Оставляем старые
+      ...existingProducts,
       ...newProducts.map(product => ({
-        ...dataStore.getDataById(selectId,product.code),
+        ...dataStore.getDataById(selectId, product.code),
         quantity: 1
       }))
     ];
@@ -160,7 +163,7 @@ const relatedEntitiesBlockRef = ref(null);
 
 const allData = ref({});
 
-function transformOrderData(inputData) {
+function prepareDataForSubmit(inputData) {
   return {
     products: Object.values(inputData.products).map(p => {
       const {quantity, ...productWithoutQuantity} = p;
@@ -178,7 +181,7 @@ function transformOrderData(inputData) {
     totalAmount: inputData.totalAmount,
     discount: inputData.discount || 0, // Если нет скидки, ставим 0
     tax: inputData.tax || 0, // Если нет налога, ставим 0
-    orderStatus: inputData.orderStatus['value'] || 'pending', // Если нет статуса, ставим 'pending'
+    orderStatus: inputData.orderStatus?.value || 'pending', // Если нет статуса, ставим 'pending'
     orderNumber: inputData.orderNumber
   };
 }
@@ -189,26 +192,32 @@ const collectDataFromComponents = (e) => {
     products: {...relatedEntitiesBlockRef.value.getData()},
   };
   handleOrder()
-  console.log("collectDataFromComponents",);
 };
 
-const fieldsErrors = ref(null);
+const transformedData = computed(() => prepareDataForSubmit(allData.value))
 
+const {
+  handleSubmit,
+  fieldsErrors,
+} = useFormHandler(() => mappedFieldsForValidation(props.blockList?.fields.items), () => allData.value)
+
+const action = computed(() => {
+  return !isEditMode.value
+      ? () => createOrder(transformedData.value)
+      : () => updateOrderById(orderId.value, transformedData.value)
+})
 
 const handleOrder = async () => {
-  props.startLoading()
-
-  if (!isEditMode.value) {
-    await createOrder(transformOrderData(allData.value))
-    return;
+  try {
+    await handleSubmit(action.value)
+    props.startLoading()
+  } catch (error) {
+    console.error('Error during order processing:', error);
+  } finally {
+    timeoutService.setTimeout(() => {
+      props.stopLoading()
+    }, 1000)
   }
-
-  updateOrderById(orderId.value, transformOrderData(allData.value))
-      .then((res) => {
-        if (res.status === 200) {
-            props.stopLoading()
-        }
-      })
 };
 
 
