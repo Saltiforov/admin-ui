@@ -47,6 +47,21 @@ export const productsFieldsBlock = {
                 }
             },
             {
+                name: 'description',
+                code: 'description',
+                label: 'Description',
+                type: 'TextArea',
+                disablePropsBinding: false,
+                props: {
+                    placeholder: 'Write a description ',
+                    class: 'w-full product-input md:w-56',
+                    required: false,
+                    showClear: true,
+                    fullWidth: true,
+                    rows: "5"
+                }
+            },
+            {
                 name: 'discount',
                 code: 'discount',
                 label: 'Discount (%)',

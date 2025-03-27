@@ -2,9 +2,14 @@ import {ref, computed, onMounted} from 'vue';
 import {getPageConfig} from "@/services/factories/index.js";
 import {PAGES_TYPE} from "@/constants/pages.enum.js";
 
-export function usePagesConfig(pageType, options = {}) {
+export function usePagesConfig(pageType, options = {}, isDataRequired) {
+    const needToLoadData = computed(() => !!options.id)
+
     const data = ref({});
-    const loading = ref(true);
+    const loading = ref(needToLoadData.value);
+
+
+    console.log("usePagesConfig", needToLoadData.value)
 
     const config = getPageConfig(pageType, PAGES_TYPE.DETAILS_PAGE);
     console.log('config', config);
@@ -23,8 +28,8 @@ export function usePagesConfig(pageType, options = {}) {
 
             const promises = fetchEntries.map(([key, fetchDataFn]) =>
                 fetchDataFn(options)
-                    .then(result => ({ key, result }))
-                    .catch(error => ({ key, error }))
+                    .then(result => ({key, result}))
+                    .catch(error => ({key, error}))
             );
 
             const results = await Promise.allSettled(promises);
@@ -51,7 +56,9 @@ export function usePagesConfig(pageType, options = {}) {
         loading.value = false;
     }
 
-    useFetch().catch(console.error);
+    if (needToLoadData.value) {
+        useFetch().catch(console.error);
+    }
 
 
     return {

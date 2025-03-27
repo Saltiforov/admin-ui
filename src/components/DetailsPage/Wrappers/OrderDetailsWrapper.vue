@@ -78,6 +78,7 @@ const getStatusLabel = (status) => {
     canceled: "Canceled",
     shipped: "Shipped",
     delivered: "Delivered",
+    confirmed: "Confirmed",
   };
   return statusMap[status] || "Unknown";
 };
@@ -203,7 +204,10 @@ const {
 
 const action = computed(() => {
   return !isEditMode.value
-      ? () => createOrder(transformedData.value)
+      ? () => {
+        createOrder(transformedData.value)
+        router.go(-1)
+      }
       : () => updateOrderById(orderId.value, transformedData.value)
 })
 

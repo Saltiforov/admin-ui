@@ -16,7 +16,7 @@ export const ordersRelatedTable = {
                 slotName: 'image',
             },
             {field: 'price', header: 'Price',},
-            {field: 'description', header: 'Description',  style: 'width: 30%'},
+            {field: 'description', header: 'Description',  style: 'width: 30%', class: 'multiline-truncate'},
             {field: 'category', header: 'Category'},
             {field: 'availability', header: 'Availability', slotName: 'availability'},
             {

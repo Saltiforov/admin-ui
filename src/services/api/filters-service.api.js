@@ -48,7 +48,7 @@ export async function createFilters(payload) {
 
                 for (const [key, value] of Object.entries(filter)) {
                     if (key === 'icon' && value && value instanceof File) {
-                        console.log('VALUE', value);
+                        console.log('createFilters', value);
                         // Если это иконка (файл), добавляем её напрямую
                         formData.append(`${filterKey}[${key}]`, value);
                     } else if (key === 'children' && Array.isArray(value)) {

@@ -19,11 +19,12 @@
             :field="col.field"
             :header="col.header"
             :style="col.style"
+
             :sortable="col.sortable"
         >
 
           <template v-slot:body="slotProps">
-            <div class="fixed-row">
+            <div class="fixed-row" :class="col.class">
               <Skeleton v-if="loading" width="80%" height="16px" />
               <slot v-else-if="col.slotName" :name="col.slotName" :data="slotProps.data"></slot>
               <span v-else>{{ slotProps.data[col.field] }}</span>

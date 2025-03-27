@@ -24,7 +24,7 @@
     >
       <Column field="name" header="Name" :expander="true" style="width: 34%">
         <template #body="{ node }">
-            <Skeleton v-if="loading" width="80%" height="1rem"/>
+          <Skeleton v-if="loading" width="80%" height="1rem"/>
           <div class="flex" v-else>
             <div>{{ capitalizeNodeName(node, 'uk') || '' }}</div>
             /
@@ -56,7 +56,7 @@
       <Column field="description" header="Description" style="width: 33%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="90%" height="1rem"/>
-          <span v-else>{{ getNodeFieldValue(node, 'description') }}</span>
+          <span class="multiline-truncate" v-else>1{{ getNodeFieldValue(node, 'description') }}</span>
         </template>
       </Column>
 
@@ -89,20 +89,19 @@ import eventBus from "../../../eventBus.js";
 import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
 import {
   createFilters, createNewFilterChildNode,
-  createNewFilterNode,
+  createNewFilterNode, deleteFilter,
   deleteFilters, updateExistedNode
 } from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import nodeBuilder from "@/services/builder/node-builder-service.js";
-import {login} from "@/services/api/auth-serivce.api.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
 
-const { updateQuery } = useQueryUpdater()
+const {updateQuery} = useQueryUpdater()
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -140,10 +139,10 @@ const props = defineProps({
 })
 
 const skeletonNodes = ref(
-    Array.from({ length: 5 }).map((_, i) => ({
+    Array.from({length: 5}).map((_, i) => ({
       key: `skeleton-${i}`,
       data: {
-        name: { uk: "", ru: "", },
+        name: {uk: "", ru: "",},
         code: "",
         icon: "",
         description: "",
@@ -207,6 +206,7 @@ const onSearch = (event) => {
 
 const deleteNode = async (node) => {
   nodes.value = deleteNodeRecursive(nodes.value, node.id, node.data.code);
+  await deleteFilter(node.id)
 };
 
 const confirmDelete = (node) => {
@@ -300,7 +300,7 @@ const items = ref([
   },
 ]);
 
-const { filterConfiguratorTablePopup } = getPopupConfig('filters', 'filters-popups')
+const {filterConfiguratorTablePopup} = getPopupConfig('filters', 'filters-popups')
 
 console.log("filterConfiguratorTablePopup", filterConfiguratorTablePopup)
 
@@ -354,12 +354,15 @@ const updateExpandedKeys = (keys) => {
 
 
 const onAddFilter = async (data) => {
-  const newFilter = {...convertDottedFieldKeysToNested(data), id:  parentFilterForNode.value ? parentFilterForNode.value.id : null}
+  const newFilter = {
+    ...convertDottedFieldKeysToNested(data),
+    id: parentFilterForNode.value ? parentFilterForNode.value.id : null
+  }
 
   if (isInvalidParent(parentFilterForNode.value)) return;
 
   if (popupType.value === "edit") {
-    handleEditFilter(parentFilterForNode.value, newFilter);
+    await handleEditFilter(parentFilterForNode.value, newFilter);
     return;
   }
 
@@ -367,8 +370,8 @@ const onAddFilter = async (data) => {
     console.log('newFilter', newFilter);
     await createNode(newFilter)
         .then(() => {
-      show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added as a new node `)
-    })
+          show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added as a new node `)
+        })
     return;
   }
 
@@ -383,7 +386,7 @@ const getBasicEntityFilledModel = (item) => {
     id: item?.data?.id || item?.id,
     name: item?.data?.name || item?.name,
     code: item?.data?.code || item?.code,
-    icon: item?.data?.icon || item?.icon || '',
+    icon: item?.data?.icon || item?.icon?.objectURL || '',
     description: item?.data?.description || item?.description,
   }
 }

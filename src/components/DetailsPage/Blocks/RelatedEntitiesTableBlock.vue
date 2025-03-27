@@ -21,6 +21,9 @@
           <img :src="data.images ? pathBuilder(data.images[0]) : defaultProductImage" alt="image"
                class="table-image h-auto rounded object-contain"/>
         </template>
+        <template #description="{ data }">
+          <p>dsadsada</p>
+        </template>
         <template #availability="{ data }">
           <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
           <span v-else>---</span>

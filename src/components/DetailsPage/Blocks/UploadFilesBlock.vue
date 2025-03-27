@@ -86,6 +86,8 @@ const uploadFiles = async (files, id) => {
       headers: {"Content-Type": "multipart/form-data"},
     });
 
+    eventBus.emit("uploadImages", response)
+
     if (Array.isArray(response.data.images)) {
       uploadedImages.value = response.data.images;
     } else if (response.data.path) {

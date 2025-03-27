@@ -34,17 +34,21 @@
         />
       </svg>
     </div>
-    <div v-if="true" class="p-multiselect-panel" @scroll="handleScroll">
-      <div v-if="display === 'chip'" class="selected-chips">
+    <div v-if="isOpen" class="p-multiselect-panel">
+      <div v-if="display === 'chip'" :style="{ height: isShowMore ? '72px' : '44px' }" class="selected-chips">
         <div class="chips-wrapper">
-            <span v-for="selected in chipsedSelectedOptions">
+            <span v-if="selectedOptions.length" v-for="selected in chipsedSelectedOptions">
           {{ selected.label }},
         </span>
-          <div @click="showMoreSelectedOptions" class="flex justify-end">
-            show more
-          </div>
+          <span v-else>Values not selected...</span>
         </div>
       </div>
+      <div @click="showMoreSelectedOptions" class="flex p-1 justify-end">
+        show more
+      </div>
+    </div>
+    <div v-if="isOpen" :style="{ top: isShowMore ? '390%' : '310%' }" class="p-multiselect-panel"
+         @scroll="handleScroll">
       <div class="p-multiselect-panel-container">
         <div class="p-multiselect-search-wrapper">
           <div class="p-multiselect-select-all">
@@ -193,7 +197,6 @@ const isOpen = ref(!!optionsCache.value.length);
 
 const multiselectRef = ref(null);
 
-// Methods
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
 };
@@ -250,9 +253,9 @@ const loadOptions = async () => {
 
 const toggleSelectAll = () => {
   if (allSelected.value) {
-    selectedOptions.value = []; // Сбрасываем все выбранные элементы
+    selectedOptions.value = [];
   } else {
-    selectedOptions.value = [...options.value]; // Выбираем все отображаемые элементы
+    selectedOptions.value = [...options.value];
   }
   emit('update:modelValue', selectedOptions.value);
 };
@@ -268,7 +271,7 @@ const allSelected = computed(() => {
 const chipsedSelectedOptions = computed(() => {
   return isShowMore.value
       ? [...selectedOptions.value]
-      : [...selectedOptions.value].splice(0, 6)
+      : [...selectedOptions.value].splice(0, 4)
 })
 
 const isShowMore = ref(false)
@@ -291,6 +294,9 @@ onUnmounted(() => {
 
 watch(selectedOptions, (newValue) => {
   dataStore.setSelectedData(props.selectId, newValue);
+  if (newValue.length === 0) {
+    isShowMore.value = false
+  }
 }, {deep: true});
 
 </script>
@@ -333,6 +339,7 @@ watch(selectedOptions, (newValue) => {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 10;
   margin-top: 5px;
+  transition: transform 0.3s ease;
 }
 
 .p-multiselect-option {
@@ -410,6 +417,11 @@ watch(selectedOptions, (newValue) => {
 
 .chips-wrapper {
   padding: 10px;
+}
+
+.selected-chips {
+  overflow: scroll;
+  overflow-x: hidden;
 }
 
 .loading-spinner {

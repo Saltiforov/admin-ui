@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import {computed, defineProps, ref} from 'vue';
+import {computed, defineProps, onMounted, onUnmounted, ref} from 'vue';
 import {updateProductById, createProduct} from "@/services/api/product-service.api.js";
 import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.vue";
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
@@ -104,15 +104,24 @@ const createNewProduct = async (product) => {
   }
 }
 
+const mergeImages = (originalData, newImages) => {
+  return Object.assign({}, originalData, {images: newImages.length ? newImages : originalData.images});
+};
+
+
 const {handleSubmit, fieldsErrors} = useFormHandler(
     () => mappedFieldsForValidation(props.blockList?.fields.items),
     () => allData.value
 );
 
+const uploadedImages = ref([])
+
 const action = computed(() => {
   return !isEditMode.value
-      ? () => createNewProduct
-      : (data) => updateProductById(productId.value, data)
+      ? (data) => createNewProduct(data)
+      : (data) => {
+        updateProductById(productId.value, mergeImages(data, uploadedImages.value))
+      }
 })
 
 const handleProduct = async () => {
@@ -127,6 +136,17 @@ const handleProduct = async () => {
     }, 1000)
   }
 };
+
+
+onMounted(() => {
+  eventBus.on("uploadImages", (response) => {
+    uploadedImages.value = response.data.images;
+  })
+})
+
+onUnmounted(() => {
+  eventBus.off("uploadImages")
+})
 </script>
 
 <style scoped>

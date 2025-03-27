@@ -8,7 +8,7 @@
       <div class="form-content grid grid-cols-2 gap-6">
         <template v-for="field in baseFields" :key="field.name">
           <div   class="form-group">
-            <p class="form__title">{{ field.label }}:</p>
+            <p class="form__title mb-1">{{ field.label }}:</p>
             <component
                 class="w-full"
                 :is="field.type"
@@ -43,16 +43,20 @@
 
         <template v-for="field in textAreaFields" :key="field.name">
           <div class="form-group col-span-2">
-            <p class="form__title">{{ field.label }}:</p>
-            <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
+            <p class="form__title ">{{ field.label }}:</p>
+            <component class="w-full"
+                       :is="field.type"
+                       v-bind="field.props"
+                       v-model="formData[field.name]"
                        />
           </div>
         </template>
+
       </div>
       <div class="mt-4">
         <template v-if="baseFieldsWithFullWidth" v-for="fieldFullWidth in baseFieldsWithFullWidth">
-          <div   class="form-group">
-            <p class="form__title">{{ fieldFullWidth.label }}:</p>
+          <div   class="form-group mb-3">
+            <p class="form__title mb-1">{{ fieldFullWidth.label }}:</p>
             <component
                 class="w-full"
                 :is="fieldFullWidth.type"
@@ -157,6 +161,6 @@ const optionFieldGroups = computed(() => {
 });
 
 const textAreaFields = computed(() => {
-  return props.config.items.filter(f => f.type === "TextArea");
+  return props.config.items.filter(f => f.type === "TextArea" && !f.props.fullWidth);
 });
 </script>
