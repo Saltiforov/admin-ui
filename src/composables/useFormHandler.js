@@ -1,4 +1,4 @@
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useValidation} from "@/composables/useValidation";
 
 export function useFormHandler(getFields, getData) {
@@ -9,6 +9,8 @@ export function useFormHandler(getFields, getData) {
             getFields(),
             getData()
         );
+
+        fieldsErrors.value = errors.value; // Обновляем ошибки
 
         validateFields();
 

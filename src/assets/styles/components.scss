@@ -79,8 +79,11 @@
 
 
 .multiline-truncate {
-  white-space: nowrap; /* Запрещаем перенос строк */
-  overflow: hidden; /* Скрываем лишний текст */
-  text-overflow: ellipsis; /* Добавляем "..." */
-  width: 200px; /* Ограничиваем ширину блока */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Обрезает текст после 2 строк */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 20px; /* Высота строки */
+  text-align: left; /* Выравнивание по левому краю */
 }

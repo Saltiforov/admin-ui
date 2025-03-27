@@ -26,9 +26,9 @@
         <template #body="{ node }">
           <Skeleton v-if="loading" width="80%" height="1rem"/>
           <div class="flex" v-else>
-            <div>{{ capitalizeNodeName(node, 'uk') || '' }}</div>
+            <div class="multiline-truncate">{{ capitalizeNodeName(node, 'uk') || '' }}</div>
             /
-            <div>{{ capitalizeNodeName(node, 'ru') || '' }}</div>
+            <div class="multiline-truncate">{{ capitalizeNodeName(node, 'ru') || '' }}</div>
           </div>
         </template>
       </Column>
@@ -56,7 +56,7 @@
       <Column field="description" header="Description" style="width: 33%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="90%" height="1rem"/>
-          <span class="multiline-truncate" v-else>1{{ getNodeFieldValue(node, 'description') }}</span>
+          <span class="multiline-truncate" v-else>{{ getNodeFieldValue(node, 'description') }}</span>
         </template>
       </Column>
 
@@ -512,7 +512,7 @@ const configActionsBar = ref({
     {
       component: 'Button',
       props: {
-        label: 'Add',
+        label: 'Add new filter',
         class: 'filter-button',
         icon: 'pi pi-check',
       },

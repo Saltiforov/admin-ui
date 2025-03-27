@@ -151,6 +151,7 @@ const dataTableConfig = ref({
   rowsPerPageOptions: [10, 20, 30, 50],
   tableStyle: 'max-width: 100%; overflow-x: auto; border-radius: 20px',
   class: "custom-table",
+  size: 'null',
   columns: [
     {field: 'discount', header: 'Discount'},
     {field: 'orderNumber', header: 'Order Number'},
@@ -159,10 +160,10 @@ const dataTableConfig = ref({
     {field: 'totalAmount', header: 'Total Amount'},
     {field: 'createdAt', header: 'Created At'},
     {field: 'updatedAt', header: 'Updated At'},
-    {field: 'street', header: 'Street'},
-    {field: 'city', header: 'City'},
-    {field: 'postalCode', header: 'Postal Code'},
-    {field: 'country', header: 'Country'},
+    {field: 'street', header: 'Street', class: 'multiline-truncate'},
+    {field: 'city', header: 'City', class: 'multiline-truncate'},
+    {field: 'postalCode', header: 'Postal Code', class: 'multiline-truncate'},
+    {field: 'country', header: 'Country', class: 'multiline-truncate'},
     {
       field: 'actions',
       header: '',

@@ -9,7 +9,7 @@ export const ordersRelatedTable = {
         class: "custom-table",
         columns: [
             {field: 'quantity', header: 'Quantity', slotName: 'quantity'},
-            {field: 'name', header: 'Name'},
+            {field: 'name', header: 'Name', class: 'multiline-truncate'},
             {
                 field: 'image',
                 header: 'Image',
@@ -17,7 +17,7 @@ export const ordersRelatedTable = {
             },
             {field: 'price', header: 'Price',},
             {field: 'description', header: 'Description',  style: 'width: 30%', class: 'multiline-truncate'},
-            {field: 'category', header: 'Category'},
+            {field: 'category', header: 'Category', class: 'multiline-truncate'},
             {field: 'availability', header: 'Availability', slotName: 'availability'},
             {
                 field: 'actions',

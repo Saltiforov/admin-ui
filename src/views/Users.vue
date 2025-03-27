@@ -42,23 +42,24 @@ const dataTableConfig = ref({
   rows: 10,
   skip: 0,
   scrollable: true,
+  size: 'null',
   rowsPerPageOptions: [10, 20, 30, 50],
   tableStyle: 'max-width: 100%; overflow-x: auto; border-radius: 20px',
   class: "custom-table",
   columns: [
-    {field: 'username', header: 'Username'},
-    {field: 'firstName', header: 'First Name'},
-    {field: 'lastName', header: 'Last Name'},
-    {field: 'email', header: 'Email'},
-    {field: 'phone', header: 'Phone'},
+    {field: 'username', header: 'Username', class: 'multiline-truncate'},
+    {field: 'firstName', header: 'First Name', style: 'width: 15%',},
+    {field: 'lastName', header: 'Last Name', style: 'width: 15%'},
+    {field: 'email', header: 'Email', class: 'multiline-truncate'},
+    {field: 'phone', header: 'Phone', class: 'multiline-truncate'},
     {field: 'roles', header: 'Roles',},
     {field: 'last_interaction', header: 'Last Interaction'},
     {field: 'createdAt', header: 'Created At'},
     {field: 'updatedAt', header: 'Updated At'},
-    {field: 'street', header: 'Street'},
-    {field: 'city', header: 'City'},
-    {field: 'postalCode', header: 'Postal Code'},
-    {field: 'country', header: 'Country'}
+    {field: 'street', header: 'Street', class: 'multiline-truncate'},
+    {field: 'city', header: 'City', class: 'multiline-truncate'},
+    {field: 'postalCode', header: 'Postal Code', class: 'multiline-truncate'},
+    {field: 'country', header: 'Country', class: 'multiline-truncate'}
   ]
 });
 

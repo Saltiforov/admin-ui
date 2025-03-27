@@ -187,8 +187,9 @@ const dataTableConfig = ref({
   rowsPerPageOptions: [10, 20, 30],
   tableStyle: "min-width: 50rem",
   class: "custom-table",
+  size: 'null',
   columns: [
-    {field: 'name', header: 'Name'},
+    {field: 'name', header: 'Name', class: 'multiline-truncate'},
     {
       field: 'image',
       header: 'Image',

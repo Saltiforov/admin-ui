@@ -1,10 +1,14 @@
-import { reactive, toRefs } from 'vue';
+import {reactive, toRefs, watch} from 'vue';
 
 export function useValidation(fieldsConfig, formData) {
     const state = reactive({
         errors: {},
         isValid: true,
     });
+
+    watch(formData, (newValue) => {
+        console.log("useValidation", newValue);
+    })
 
     const validateFields = () => {
         state.isValid = true;

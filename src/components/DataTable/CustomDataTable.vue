@@ -13,6 +13,7 @@
         :tableStyle="config.tableStyle"
         :class="config.class"
         :scrollable="config.scrollable"
+        :size="config.size"
     >
       <template v-for="col in config.columns" :key="col.field">
         <Column
@@ -80,7 +81,7 @@ watch(
 </script>
 
 <style scoped>
-.fixed-row {
+.fixed-ro {
   height: 40px;
   display: flex;
   align-items: center;
