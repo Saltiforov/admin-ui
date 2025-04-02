@@ -9,6 +9,7 @@ import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 import Users from "@/views/Users.vue";
 import SignUp from "@/views/Auth/SignUp.vue";
 import Orders from "@/views/Orders.vue";
+import AboutUser from "@/views/AboutUser.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -23,6 +24,11 @@ const routes = [
             {
                 path: "",
                 redirect: "/filters-configuration",
+            },
+            {
+              path: "about-user",
+              name: "User",
+              component: AboutUser,
             },
             {
                 path: "products",

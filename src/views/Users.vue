@@ -21,6 +21,7 @@ import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import {useRoute} from "vue-router";
 import createDebouncedService from "@/services/debounceService/debounceService.js";
+import {useI18n} from "vue-i18n";
 
 const {updateQuery} = useQueryUpdater();
 
@@ -47,76 +48,80 @@ const dataTableConfig = ref({
   tableStyle: 'max-width: 100%; overflow-x: auto; border-radius: 20px',
   class: "custom-table",
   columns: [
-    {field: 'username', header: 'Username', class: 'multiline-truncate'},
-    {field: 'firstName', header: 'First Name', style: 'width: 15%',},
-    {field: 'lastName', header: 'Last Name', style: 'width: 15%'},
-    {field: 'email', header: 'Email', class: 'multiline-truncate'},
-    {field: 'phone', header: 'Phone', class: 'multiline-truncate'},
-    {field: 'roles', header: 'Roles',},
-    {field: 'last_interaction', header: 'Last Interaction'},
-    {field: 'createdAt', header: 'Created At'},
-    {field: 'updatedAt', header: 'Updated At'},
-    {field: 'street', header: 'Street', class: 'multiline-truncate'},
-    {field: 'city', header: 'City', class: 'multiline-truncate'},
-    {field: 'postalCode', header: 'Postal Code', class: 'multiline-truncate'},
-    {field: 'country', header: 'Country', class: 'multiline-truncate'}
+    {field: 'username', header: computed(() => t('table_header_username')), class: 'multiline-truncate'},
+    {field: 'firstName', header: computed(() => t('table_header_first_name')), style: 'width: 15%',},
+    {field: 'lastName', header: computed(() => t('table_header_last_name')), style: 'width: 15%'},
+    {field: 'email', header: computed(() => t('table_header_email')), class: 'multiline-truncate'},
+    {field: 'phone', header: computed(() => t('table_header_phone')), class: 'multiline-truncate'},
+    {field: 'roles', header: computed(() => t('table_header_roles')),},
+    {field: 'last_interaction', header: computed(() => t('table_header_last_interaction'))},
+    {field: 'createdAt', header: computed(() => t('table_header_created_at'))},
+    {field: 'updatedAt', header: computed(() => t('table_header_updated_at'))},
+    {field: 'street', header: computed(() => t('table_header_street')), class: 'multiline-truncate'},
+    {field: 'city', header: computed(() => t('table_header_city')), class: 'multiline-truncate'},
+    {field: 'postalCode', header: computed(() => t('table_header_postal_code')), class: 'multiline-truncate'},
+    {field: 'country', header: computed(() => t('table_header_country')), class: 'multiline-truncate'}
   ]
 });
 
-const configActionsBar = ref({
-  buttons: [
-    {
-      component: 'Button',
-      props: {
-        label: 'Add new user',
-        class: 'filter-button',
-        icon: 'pi pi-user-plus',
+const {t} = useI18n();
+
+const configActionsBar = computed(() => {
+  return {
+    buttons: [
+      {
+        component: 'Button',
+        props: {
+          label: t('button_new_users'),
+          class: 'filter-button',
+          icon: 'pi pi-user-plus',
+        },
+        onClick: () => router.push({
+          name: 'UserCreate',
+        }),
       },
-      onClick: () => router.push({
-        name: 'UserCreate',
-      }),
-    },
-  ],
-  filters: [
-    {
-      component: 'IconField',
-      disablePropsBinding: false,
-      name: 'q',
-      props: {},
-      children: [
-        {
-          component: 'InputIcon',
-          props: {
-            class: 'pi pi-search',
+    ],
+    filters: [
+      {
+        component: 'IconField',
+        disablePropsBinding: false,
+        name: 'q',
+        props: {},
+        children: [
+          {
+            component: 'InputIcon',
+            props: {
+              class: 'pi pi-search',
 
+            },
           },
-        },
-        {
-          component: 'InputText',
-          props: {
-            placeholder: 'Enter the code, please.',
-            class: 'w-full',
+          {
+            component: 'InputText',
+            props: {
+              placeholder: t('placeholder_code_search'),
+              class: 'w-full',
+            },
           },
-        },
-      ],
-    },
-    {
-      component: 'AsyncTreeSelect',
-      disablePropsBinding: true,
-      name: 'filters',
-      props: {
-        restOptionsUrl: 'api/filters',
-        placeholder: 'Select filters, please',
-        selectionMode: 'multiple',
-        class: 'w-full product-input md:w-56',
-        required: false,
-        showClear: true,
-        fullWidth: true,
-      }
-    },
-  ],
+        ],
+      },
+      {
+        component: 'AsyncTreeSelect',
+        disablePropsBinding: true,
+        name: 'filters',
+        props: {
+          restOptionsUrl: 'api/filters',
+          placeholder: t('placeholder_filters_select'),
+          selectionMode: 'multiple',
+          class: 'w-full product-input md:w-56',
+          required: false,
+          showClear: true,
+          fullWidth: true,
+        }
+      },
+    ],
 
-});
+  }
+})
 
 const mappedUsers = computed(() => extractFields(users.value, "address"));
 

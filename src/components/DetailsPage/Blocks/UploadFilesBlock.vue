@@ -11,6 +11,7 @@
                 :name="config.fieldName"
                 :multiple="config.multiple"
                 :maxFileSize="config.maxFileSize"
+                v-bind="config.props"
                 :show-upload-button="useEditMode"
                 :customUpload="true"
                 @uploader="onCustomUpload"
@@ -103,6 +104,14 @@ const uploadFiles = async (files, id) => {
     console.error("Upload error:", error);
   }
 }
+
+const getData = () => {
+  return [...uploadedImages.value];
+};
+
+defineExpose({
+  getData
+});
 
 function onCustomUpload(event) {
   const formData = new FormData();

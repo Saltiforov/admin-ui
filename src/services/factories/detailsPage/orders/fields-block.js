@@ -1,14 +1,18 @@
+import { t } from '@/i18n';
+import {computed} from "vue";
+import {capitalizeFirstLetter} from "@/utils/index.js";
+
 export const ordersFieldsBlock = {
     fields: {
         items: [
             {
                 name: 'userName',
                 code: 'userName',
-                label: 'User Name',
+                label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_order_gen")) })),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter user name',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_order_gen") })),
                     required: true
                 },
                 // validators: [
@@ -18,11 +22,11 @@ export const ordersFieldsBlock = {
             {
                 name: 'totalAmount',
                 code: 'totalAmount',
-                label: 'Total Amount',
+                label: computed(() => t("label_total_amount")),
                 type: 'InputNumber',
                 props: {
                     type: 'number',
-                    placeholder: 'Enter total amount',
+                    placeholder: computed(() => t("placeholder_enter_total_amount")),
                     required: true
                 },
                 validators: [
@@ -32,29 +36,29 @@ export const ordersFieldsBlock = {
             {
                 name: 'discount',
                 code: 'discount',
-                label: 'Discount',
+                label: computed(() => t("label_discount")),
                 type: 'InputNumber',
                 props: {
                     type: 'number',
-                    placeholder: 'Enter discount',
+                    placeholder: computed(() => t("placeholder_enter_discount")),
                     required: false
                 }
             },
             {
                 name: 'tax',
                 code: 'tax',
-                label: 'Tax',
+                label: computed(() => t("label_tax")),
                 type: 'InputNumber',
                 props: {
                     type: 'number',
-                    placeholder: 'Enter tax',
+                    placeholder: computed(() => t("placeholder_enter_tax")),
                     required: false
                 }
             },
             {
                 name: 'orderStatus',
                 code: 'orderStatus',
-                label: 'Order Status',
+                label: computed(() => t("label_order_status")),
                 type: 'Select',
                 props: {
                     options: [
@@ -65,7 +69,7 @@ export const ordersFieldsBlock = {
                         {label: 'Cancelled', value: 'cancelled'},
                     ],
                     optionLabel: 'label',
-                    placeholder: 'Select order status',
+                    placeholder: computed(() => t("placeholder_select_status", { entity: t("entity_order_gen") })),
                     class: 'w-full md:w-56',
                     required: false
                 }
@@ -73,7 +77,7 @@ export const ordersFieldsBlock = {
             {
                 name: 'paymentMethod',
                 code: 'paymentMethod',
-                label: 'Payment Method',
+                label: computed(() => t("label_payment_method")),
                 type: 'Select',
                 props: {
                     options: [
@@ -81,7 +85,7 @@ export const ordersFieldsBlock = {
                         {label: 'Cash', value: 'cash'},
                     ],
                     optionLabel: 'label',
-                    placeholder: 'Select payment method',
+                    placeholder: computed(() => t("placeholder_select_payment_method")),
                     class: 'w-full md:w-56',
                     required: false
                 }
@@ -89,11 +93,11 @@ export const ordersFieldsBlock = {
             {
                 name: 'street',
                 code: 'street',
-                label: 'Street',
+                label: computed(() => t("label_street")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter street',
+                    placeholder: computed(() => t("placeholder_enter_street_address")),
                     required: true
                 },
                 validators: [
@@ -103,11 +107,11 @@ export const ordersFieldsBlock = {
             {
                 name: 'city',
                 code: 'city',
-                label: 'City',
+                label: computed(() => t("label_city")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter city',
+                    placeholder: computed(() => t("placeholder_enter_city")),
                     required: true
                 },
                 validators: [
@@ -117,11 +121,11 @@ export const ordersFieldsBlock = {
             {
                 name: 'postalCode',
                 code: 'postalCode',
-                label: 'Postal Code',
+                label: computed(() => t("label_postal_code")),
                 type: 'InputNumber',
                 props: {
                     type: 'number',
-                    placeholder: 'Enter postal code',
+                    placeholder: computed(() => t("placeholder_enter_postal_code")),
                     required: true,
                     useGrouping: false,
                 },
@@ -132,11 +136,11 @@ export const ordersFieldsBlock = {
             {
                 name: 'country',
                 code: 'country',
-                label: 'Country',
+                label: computed(() => t("label_country")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter country',
+                    placeholder: computed(() => t("placeholder_enter_country")),
                     required: true
                 },
                 validators: [
@@ -144,6 +148,6 @@ export const ordersFieldsBlock = {
                 ],
             },
         ],
-        header: 'Fill order information:',
+        header: computed(() => t("title_edit_page", { pageName: t("entity_order_prep") })),
     }
 };

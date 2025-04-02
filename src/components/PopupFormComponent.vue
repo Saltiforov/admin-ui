@@ -34,8 +34,8 @@
              style="filter: grayscale(100%)"/>
       </div>
       <div class="form-buttons">
-        <Button label="Cancel" icon="pi pi-times" @click="closePopup"/>
-        <Button label="Submit" icon="pi pi-check" type="submit"/>
+        <Button :label="t('button_text_cancel')" icon="pi pi-times" @click="closePopup"/>
+        <Button :label="t('button_text_submit')" icon="pi pi-check" type="submit"/>
       </div>
     </form>
   </Dialog>
@@ -44,12 +44,15 @@
 <script setup>
 import {reactive, ref} from 'vue';
 import eventBus from '../../eventBus';
+import {useI18n} from "vue-i18n";
 
 const isVisible = ref(false);
 const iconPath = ref('');
 const popupConfig = reactive({});
 const formValues = reactive({});
 const errors = reactive({});
+
+const {t} = useI18n();
 
 // Слушаем событие шины
 eventBus.on('show-popup', (config) => {
@@ -92,9 +95,10 @@ const onFormSubmit = () => {
 
     if (field.validators) {
       for (const validator of field.validators) {
-        const validationResult = validator(formValues[field.code]);
+        const validationResult = validator(formValues[field.code]).value;
         if (validationResult !== true) {
           errors[field.code] = validationResult;
+
           isValid = false;
           break;
         }

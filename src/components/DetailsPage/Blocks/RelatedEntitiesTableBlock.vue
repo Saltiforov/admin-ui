@@ -5,7 +5,7 @@
         <Button
             type="button"
             icon="pi pi-ellipsis-v"
-            label="Add New Entity"
+            :label="t('button_text_new_entity')"
             @click="handlePopup"
         />
       </div>
@@ -55,6 +55,7 @@ import eventBus from "../../../../eventBus.js";
 import {pathBuilder} from "@/utils/index.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
+import { t } from "@/i18n"
 
 const props = defineProps({
   data: {
@@ -107,26 +108,22 @@ const handlePopup = () => {
 const toggle = (event, data) => {
   currentTarget.value = data
   menu.value.toggle(event);
-  console.log("currentTarget", currentTarget.value);
 };
 
 const deleteItem = () => emit("handleDelete", currentTarget.value);
 
 const items = ref([
   {
-    label: 'Operations',
+    label: computed(() => t("menu_popup_title")),
     items: [
       {
-        label: "Delete",
+        label: computed(() => t("menu_popup_operation_delete")),
         icon: "pi pi-trash",
         command: () => deleteItem(),
       },
     ],
   },
 ]);
-
-// TODO OBSERVEBEL
-
 
 const getData = () => {
   return {...props.config.value};

@@ -1,14 +1,18 @@
+import {computed} from "vue";
+import {t} from "@/i18n/index.js";
+import {capitalizeFirstLetter} from "@/utils/index.js";
+
 export const usersFieldsBlock = {
     fields: {
         items: [
             {
                 name: 'userName',
                 code: 'userName',
-                label: 'User Name',
+                label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_user_gen")) })),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter user name',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_user_gen") })),
                     required: true
                 },
                 validators: [
@@ -18,11 +22,11 @@ export const usersFieldsBlock = {
             {
                 name: 'firstName',
                 code: 'firstName',
-                label: 'First Name',
+                label: computed(() => t("label_first_name")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter first name',
+                    placeholder: computed(() => t("placeholder_enter_first_name")),
                     required: true
                 },
                 validators: [
@@ -32,11 +36,11 @@ export const usersFieldsBlock = {
             {
                 name: 'lastName',
                 code: 'lastName',
-                label: 'Last Name',
+                label: computed(() => t("label_last_name")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter last name',
+                    placeholder: computed(() => t("placeholder_enter_last_name")),
                     required: true
                 },
                 validators: [
@@ -46,11 +50,11 @@ export const usersFieldsBlock = {
             {
                 name: 'email',
                 code: 'email',
-                label: 'Email',
+                label: computed(() => t("label_email")),
                 type: 'InputText',
                 props: {
                     type: 'email',
-                    placeholder: 'Enter email',
+                    placeholder: computed(() => t("placeholder_enter_email")),
                     required: true
                 },
                 validators: [
@@ -60,11 +64,11 @@ export const usersFieldsBlock = {
             {
                 name: 'password',
                 code: 'password',
-                label: 'Password',
+                label: computed(() => t("label_password")),
                 type: 'Password',
                 props: {
                     type: 'password',
-                    placeholder: 'Enter password',
+                    placeholder: computed(() => t("placeholder_enter_password")),
                     required: true,
                     feedback: false,
                 },
@@ -75,7 +79,7 @@ export const usersFieldsBlock = {
             {
                 name: 'roles',
                 code: 'roles',
-                label: 'Roles',
+                label: computed(() => t("label_roles")),
                 type: 'MultiSelect',
                 props: {
                     options: [
@@ -83,7 +87,7 @@ export const usersFieldsBlock = {
                         { label: 'SuperAdmin', value: 'superAdmin' },
                     ],
                     optionLabel: 'label',
-                    placeholder: 'Select roles',
+                    placeholder: computed(() => t("placeholder_select_roles")),
                     class: 'w-full md:w-56',
                     required: false
                 }
@@ -91,59 +95,59 @@ export const usersFieldsBlock = {
             {
                 name: 'phone',
                 code: 'phone',
-                label: 'Phone',
+                label: computed(() => t("label_phone")),
                 type: 'InputText',
                 props: {
                     type: 'tel',
-                    placeholder: 'Enter phone number',
+                    placeholder: computed(() => t("placeholder_enter_phone")),
                     required: false
                 }
             },
             {
                 name: 'address.street',
                 code: 'address.street',
-                label: 'Street',
+                label: computed(() => t("label_street")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter street address',
+                    placeholder: computed(() => t("placeholder_enter_street_address")),
                     required: false
                 }
             },
             {
                 name: 'address.city',
                 code: 'address.city',
-                label: 'City',
+                label: computed(() => t("label_city")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter city',
+                    placeholder: computed(() => t("placeholder_enter_city")),
                     required: false
                 }
             },
             {
                 name: 'address.postalCode',
                 code: 'address.postalCode',
-                label: 'Postal Code',
+                label: computed(() => t("label_postal_code")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter postal code',
+                    placeholder: computed(() => t("placeholder_enter_postal_code")),
                     required: false
                 }
             },
             {
                 name: 'address.country',
                 code: 'address.country',
-                label: 'Country',
+                label: computed(() => t("label_country")),
                 type: 'InputText',
                 props: {
                     type: 'text',
-                    placeholder: 'Enter country',
+                    placeholder: computed(() => t("placeholder_enter_country")),
                     required: false
                 }
             }
         ],
-        header: 'Fill user information:'
+        header: computed(() => t("title_edit_page", { pageName: t("entity_user_gen") })),
     }
 }

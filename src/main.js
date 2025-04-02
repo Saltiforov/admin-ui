@@ -19,6 +19,7 @@ import MultiSelect from 'primevue/multiselect';
 import TreeSelect from 'primevue/treeselect';
 import Checkbox from 'primevue/checkbox';
 import Password from 'primevue/password';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -32,13 +33,17 @@ const pinia = createPinia();
 
 import router from "./router";
 import InputIcon from "primevue/inputicon";
+import i18n from "@/i18n/index.js";
 
 app.use(pinia);
+app.use(i18n);
 app.use(AppState);
 app.use(fetchPlugin);
 app.use(ToastService);
 app.use(ConfirmationService);
 
+
+app.component('ToggleSwitch', ToggleSwitch);
 app.component('InputText', InputText);
 app.component('Password', Password);
 app.component('InputNumber', InputNumber);

@@ -1,3 +1,6 @@
+import {computed} from "vue";
+import {t} from "@/i18n/index.js";
+
 export const usersFilesBlock = {
     files: {
         uploadUrl: `${import.meta.env.VITE_BASIC_API_URL}/api/upload`,
@@ -7,7 +10,7 @@ export const usersFilesBlock = {
         maxFileSize: 10000000,
         customUpload: false,
         accordion: true,
-        header: 'Upload Image:',
+        header: computed(() => t("label_upload_image")),
         uploadMethod: () => {},
     }
 }

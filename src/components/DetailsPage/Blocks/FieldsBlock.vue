@@ -129,6 +129,7 @@ onMounted(() => {
 });
 
 
+
 const baseFields = computed(() => {
   return props.config.items.filter(f => {
     return !["Checkbox", "Rating", "TextArea"].includes(f.type) && !f.props.fullWidth

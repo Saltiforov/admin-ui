@@ -22,7 +22,7 @@
         @nodeSelect="onNodeSelect"
         @nodeUnselect="onNodeUnselect"
     >
-      <Column field="name" header="Name" :expander="true" style="width: 34%">
+      <Column field="name" :header="t('table_header_name')" :expander="true" style="width: 34%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="80%" height="1rem"/>
           <div class="flex" v-else>
@@ -33,14 +33,14 @@
         </template>
       </Column>
 
-      <Column field="code" header="Code" style="width: 15%">
+      <Column field="code" :header="t('table_header_code')" style="width: 15%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="50%" height="1rem"/>
           <span v-else>{{ getNodeFieldValue(node, 'code') }}</span>
         </template>
       </Column>
 
-      <Column field="icon" header="Icon" style="width: 15%">
+      <Column field="icon" :header="t('table_header_icon')" style="width: 15%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="30px" height="30px"/>
           <img
@@ -53,7 +53,7 @@
         </template>
       </Column>
 
-      <Column field="description" header="Description" style="width: 33%">
+      <Column field="description" :header="t('table_header_description')" style="width: 33%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="90%" height="1rem"/>
           <span class="multiline-truncate" v-else>{{ getNodeFieldValue(node, 'description') }}</span>
@@ -101,11 +101,15 @@ import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
 
+import {useI18n} from 'vue-i18n';
+
 const {updateQuery} = useQueryUpdater()
 
 const toast = useToast();
 const confirm = useConfirm();
 const emit = defineEmits(['filters-updated'])
+
+const {t} = useI18n();
 
 const noResultsMessage = ref('');
 const selectedNode = ref();
@@ -151,15 +155,13 @@ const skeletonNodes = ref(
     }))
 );
 
-const menuModel = ref(
-    [
-      {
-        label: 'Delete', icon: 'pi pi-fw pi-times', command: () => {
-          confirmDelete(activeNode.value)
-        }
-      }
-    ]
-);
+const menuModel = computed(() => [
+  {
+    label: t("menu_popup_operation_delete"), icon: 'pi pi-fw pi-times', command: () => {
+      confirmDelete(activeNode.value)
+    }
+  }
+])
 
 const nodes = ref([])
 const originalNodes = ref(null);
@@ -282,27 +284,26 @@ watch(
 
 
 const menu = ref();
-const items = ref([
+
+const items = computed(() => [
   {
-    label: 'Operations',
+    label: t("menu_popup_title"),
     items: [
       {
-        label: "Add",
+        label: t("menu_popup_operation_add"),
         icon: "pi pi-plus",
         command: () => handleOpenPopup(activeFilter.value, "add"),
       },
       {
-        label: "Edit",
+        label: t("menu_popup_operation_edit"),
         icon: "pi pi-pencil",
         command: () => handleOpenPopup(activeFilter.value, "edit"),
       },
     ],
   },
-]);
+])
 
 const {filterConfiguratorTablePopup} = getPopupConfig('filters', 'filters-popups')
-
-console.log("filterConfiguratorTablePopup", filterConfiguratorTablePopup)
 
 const getNestedValue = (obj, path, defaultValue = "") => {
   return path.split(".").reduce((acc, key) => acc && acc[key] !== undefined ? acc[key] : defaultValue, obj);
@@ -329,10 +330,12 @@ const getNodeFieldValue = (node, field, formatter) => {
 
 const handleOpenPopup = (filter = null, eventType = "add") => {
   const isEditMode = eventType === "edit";
-  const title = isEditMode ? "Edit Filter" : "Add Filter";
+  const title = isEditMode ? t("edit_filter_popup_title") : t("create_filter_popup_title");
 
   parentFilterForNode.value = filter;
   popupType.value = eventType;
+
+  console.log("updatePopupFields(filter, isEditMode)", updatePopupFields(filter, isEditMode))
 
   eventBus.emit("show-popup", {
     title,
@@ -354,6 +357,9 @@ const updateExpandedKeys = (keys) => {
 
 
 const onAddFilter = async (data) => {
+
+
+
   const newFilter = {
     ...convertDottedFieldKeysToNested(data),
     id: parentFilterForNode.value ? parentFilterForNode.value.id : null
@@ -401,17 +407,19 @@ const handleEditFilter = async (parent, newFilter) => {
     ...getBasicEntityFilledModel(newFilter),
   }
 
-  await updateExistedNode(newFilter.id, prepareSaveData(newFilter));
+  const children = parent.children?.map(child => child.id) ?? [];
+
+  await updateExistedNode(newFilter.id, prepareSaveData(newFilter, children));
 };
 
 const handleAddChildNode = async (parent, newFilter) => {
   await createChildNode(newFilter, parent)
 };
 
-const prepareSaveData = (node) => {
+const prepareSaveData = (node, ids) => {
   return {
     ...getBasicEntityFilledModel(node),
-    children: [],
+    children: ids,
   }
 }
 
@@ -462,6 +470,8 @@ function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
     const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
 
+    console.log("mapFilters", item)
+
     return {
       key: key,
       id: item._id,
@@ -507,48 +517,51 @@ const getSearchQueryValue = computed(() => route.query && route.query.q ? route.
 
 const searchQuery = ref(getSearchQueryValue.value)
 
-const configActionsBar = ref({
-  buttons: [
-    {
-      component: 'Button',
-      props: {
-        label: 'Add new filter',
-        class: 'filter-button',
-        icon: 'pi pi-check',
+
+const configActionsBar = computed(() => {
+  return {
+    buttons: [
+      {
+        component: 'Button',
+        props: {
+          label: t('button_new_filters'),
+          class: 'filter-button',
+          icon: 'pi pi-check',
+        },
+        onClick: addNewFilter,
       },
-      onClick: addNewFilter,
-    },
-  ],
-  filters: [
-    {
-      component: 'IconField',
-      disablePropsBinding: false,
-      name: 'q',
-      vModel: searchQuery,
-      props: {},
-      children: [
-        {
-          component: 'InputIcon',
-          props: {
-            class: 'pi pi-search',
+    ],
+    filters: [
+      {
+        component: 'IconField',
+        disablePropsBinding: false,
+        name: 'q',
+        vModel: searchQuery,
+        props: {},
+        children: [
+          {
+            component: 'InputIcon',
+            props: {
+              class: 'pi pi-search',
+            },
           },
-        },
-        {
-          component: 'InputText',
-          props: {
-            placeholder: 'Enter the code, please.',
-            class: 'w-full',
-            onInput: onSearch,
+          {
+            component: 'InputText',
+            props: {
+              placeholder: t('placeholder_code_search'),
+              class: 'w-full',
+              onInput: onSearch,
+            },
           },
-        },
-      ],
-    },
-  ]
-});
+        ],
+      },
+    ]
+  }
+})
+
 
 const searchByCodeTopLevel = (searchCode) => {
   if (searchCode.trim().length >= 3) {
-    console.log("originalNodes", originalNodes.value);
 
     nodes.value = originalNodes.value.filter((node) =>
         node.data.code.toLowerCase().includes(searchCode.toLowerCase())

@@ -36,6 +36,7 @@ import {useRoute} from "vue-router";
 import Button from "primevue/button";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
+import {useI18n} from "vue-i18n";
 
 const {updateQuery} = useQueryUpdater();
 const {debounceService} = createDebouncedService();
@@ -46,15 +47,15 @@ const ordersList = ref([])
 const menu = ref();
 const items = ref([
   {
-    label: 'Operations',
+    label: computed(() => t("menu_popup_title")),
     items: [
       {
-        label: "Edit",
+        label: computed(() => t("menu_popup_operation_edit")),
         icon: "pi pi-pencil",
         command: () => editOrder(orderData.value._id),
       },
       {
-        label: "Delete",
+        label: computed(() => t("menu_popup_operation_delete")),
         icon: "pi pi-trash",
         command: () => confirmDelete(orderData.value),
       },
@@ -86,61 +87,65 @@ const deleteOrder = async (id) => {
 
 const route = useRoute()
 
-const configActionsBar = ref({
-  buttons: [
-    {
-      component: 'Button',
-      props: {
-        label: 'Add new order',
-        class: 'filter-button',
-        icon: 'pi pi-check',
-      },
-      onClick: () => {
-        router.push({
-          name: 'OrderCreate',
-        });
-      }
-    },
-  ],
-  filters: [
-    {
-      component: 'IconField',
-      disablePropsBinding: false,
-      name: 'q',
-      props: {},
-      children: [
-        {
-          component: 'InputIcon',
-          props: {
-            class: 'pi pi-search',
+const {t} = useI18n();
 
-          },
+const configActionsBar = computed(() => {
+  return {
+    buttons: [
+      {
+        component: 'Button',
+        props: {
+          label: t('button_new_orders'),
+          class: 'filter-button',
+          icon: 'pi pi-check',
         },
-        {
-          component: 'InputText',
-          props: {
-            placeholder: 'Enter the code, please.',
-            class: 'w-full',
+        onClick: () => {
+          router.push({
+            name: 'OrderCreate',
+          });
+        }
+      },
+    ],
+    filters: [
+      {
+        component: 'IconField',
+        disablePropsBinding: false,
+        name: 'q',
+        props: {},
+        children: [
+          {
+            component: 'InputIcon',
+            props: {
+              class: 'pi pi-search',
+
+            },
           },
-        },
-      ],
-    },
-    {
-      component: 'AsyncTreeSelect',
-      disablePropsBinding: true,
-      name: 'filters',
-      props: {
-        restOptionsUrl: 'api/filters',
-        placeholder: 'Select filters, please',
-        selectionMode: 'multiple',
-        class: 'w-full product-input md:w-56',
-        required: false,
-        showClear: true,
-        fullWidth: true,
-      }
-    },
-  ],
-});
+          {
+            component: 'InputText',
+            props: {
+              placeholder: t('placeholder_code_search'),
+              class: 'w-full',
+            },
+          },
+        ],
+      },
+      {
+        component: 'AsyncTreeSelect',
+        disablePropsBinding: true,
+        name: 'filters',
+        props: {
+          restOptionsUrl: 'api/filters',
+          placeholder: t('placeholder_filters_select'),
+          selectionMode: 'multiple',
+          class: 'w-full product-input md:w-56',
+          required: false,
+          showClear: true,
+          fullWidth: true,
+        }
+      },
+    ],
+  }
+})
 
 const dataTableConfig = ref({
   value: ordersList.value,
@@ -153,17 +158,17 @@ const dataTableConfig = ref({
   class: "custom-table",
   size: 'null',
   columns: [
-    {field: 'discount', header: 'Discount'},
-    {field: 'orderNumber', header: 'Order Number'},
-    {field: 'orderStatus', header: 'Order Status'},
-    {field: 'tax', header: 'Tax'},
-    {field: 'totalAmount', header: 'Total Amount'},
-    {field: 'createdAt', header: 'Created At'},
-    {field: 'updatedAt', header: 'Updated At'},
-    {field: 'street', header: 'Street', class: 'multiline-truncate'},
-    {field: 'city', header: 'City', class: 'multiline-truncate'},
-    {field: 'postalCode', header: 'Postal Code', class: 'multiline-truncate'},
-    {field: 'country', header: 'Country', class: 'multiline-truncate'},
+    {field: 'discount', header: computed(() => t('table_header_discount')),},
+    {field: 'orderNumber', header: computed(() => t('table_header_order_number')),},
+    {field: 'orderStatus', header: computed(() => t('table_header_order_status')),},
+    {field: 'tax', header: computed(() => t('table_header_tax')),},
+    {field: 'totalAmount', header: computed(() => t('table_header_total_amount')),},
+    {field: 'createdAt', header: computed(() => t('table_header_created_at')),},
+    {field: 'updatedAt', header: computed(() => t('table_header_updated_at')),},
+    {field: 'street', header: computed(() => t('table_header_street')), class: 'multiline-truncate'},
+    {field: 'city', header: computed(() => t('table_header_city')), class: 'multiline-truncate'},
+    {field: 'postalCode', header: computed(() => t('table_header_postal_code')), class: 'multiline-truncate'},
+    {field: 'country', header: computed(() => t('table_header_country')), class: 'multiline-truncate'},
     {
       field: 'actions',
       header: '',
@@ -216,9 +221,6 @@ const isLoading = ref(true);
 timeoutService.setTimeout(() => {
   isLoading.value = false
 }, 1000);
-
-console.log("mappedOrders", extractFields(ordersList.value, "shippingAddress"))
-console.log("mappedOrders",  ordersList.value)
 
 watchEffect(() => {
   dataTableConfig.value = {...dataTableConfig.value, value: mappedOrders.value};

@@ -1,33 +1,61 @@
+import {t} from '@/i18n';
+import {computed} from "vue";
+
 export const filtersPopups = {
     filterConfiguratorTablePopup: {
         fields: [
             {
                 code: "name.uk",
                 component: "InputText",
-                props: {type: "text", placeholder: "Name (UA)", style: "width: 100%; margin-bottom: 15px"},
-                validators: [(value) => (value ? true : "Name (UA) is required")],
+                props: {
+                    type: "text",
+                    placeholder: computed(() => t("placeholder_filter_popup_name_ua")),
+                    style: "width: 100%; margin-bottom: 15px"
+                },
+                validators: [
+                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_filter_popup_name_ua")}))),
+                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("placeholder_filter_popup_name_ua"), max: 100 }))
+                ],
+
             },
             {
                 code: "name.ru",
                 component: "InputText",
-                props: {type: "text", placeholder: "Name (RU)", style: "width: 100%; margin-bottom: 15px"},
-                validators: [(value) => (value ? true : "Name (RU) is required")],
+                props: {
+                    type: "text",
+                    placeholder: computed(() => t("placeholder_filter_popup_name_ru")),
+                    style: "width: 100%; margin-bottom: 15px"
+                },
+                validators: [
+                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_filter_popup_name_ru")}))),
+                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("placeholder_filter_popup_name_ru"), max: 100 }))
+                ],
             },
             {
                 code: "code",
                 component: "InputText",
-                props: {type: "text", placeholder: "Unique Code", style: "width: 100%; margin-bottom: 15px"},
+                props: {
+                    type: "text",
+                    placeholder: computed(() => t("placeholder_filter_popup_unique_code")),
+                    style: "width: 100%; margin-bottom: 15px"
+                },
                 validators: [
-                    (value) => (value ? true : "Code is required"),
-                    (value) => /^[a-zA-Z0-9-_]+$/.test(value) || "Code can only contain English letters",
+                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_filter_popup_unique_code")}))),
+                    (value) => value.length <= 50 || computed(() => t("validation_max_length", { field: t("placeholder_filter_popup_unique_code"), max: 50 })),
+                    (value) => /^[a-zA-Z0-9-_]+$/.test(value) || computed(() => t("validation_only_english_letters", { field: t("placeholder_filter_popup_unique_code") })),
                 ],
             },
             {
                 code: "description",
                 component: "TextArea",
-                props: {type: "text", placeholder: "Description", style: "width: 100%; margin-bottom: 15px"},
+                props: {
+                    type: "text",
+                    placeholder: computed(() => t("placeholder_description")),
+                    style: "width: 100%; margin-bottom: 15px"
+                },
                 validators: [
-                    (value) => (value ? true : "Description is required"),
+                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_description")}))),
+                    (value) => value.length <= 500 || computed(() => t("validation_max_length", { field: t("placeholder_description"), max: 500 })),
                 ],
             },
             {
@@ -35,7 +63,7 @@ export const filtersPopups = {
                 component: "FileUpload",
                 props: {
                     accept: "image/svg+xml",
-                    placeholder: "Upload SVG File",
+                    chooseLabel: computed(() => t("filter_popup_button_text_upload")),
                     style: "width: 100%; margin-bottom: 15px",
                     mode: "basic",
                 },

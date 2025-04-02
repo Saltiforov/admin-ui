@@ -1,3 +1,6 @@
+import {computed} from "vue";
+import {t} from "@/i18n/index.js";
+
 export const productsDynamicAttrsBlock = {
     dynamicAttrs: {
         relationCode: 'attributes',
@@ -12,7 +15,7 @@ export const productsDynamicAttrsBlock = {
             value: 'Value'
         },
         buttonLabel: '+',
-        header: 'Specification:',
+        header: computed(() => t("label_specification")),
         accordion: true,
     }
 }

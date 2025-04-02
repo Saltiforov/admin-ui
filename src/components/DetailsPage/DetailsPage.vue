@@ -5,7 +5,7 @@
     </div>
     <component
         :is="pageName"
-        :blockList="blockList"
+        :blockList="extractComputedPlaceholders(blockList)"
         :data="data"
         :isLoading="isLoading"
         :startLoading="startLoading"
@@ -19,6 +19,7 @@
 import { useRoute } from 'vue-router';
 import { usePagesConfig } from "@/composables/usePagesConfig.js";
 import ProgressSpinner from 'primevue/progressspinner';
+import {isRef, unref} from "vue";
 
 const route = useRoute();
 const pageType = route.meta.pageType;
@@ -36,7 +37,35 @@ const {
   useFetch
 } = usePagesConfig(pageType, { id });
 
-console.log("usePagesConfig", data, blockList);
+function extractComputedPlaceholders(config) {
+  if (!config?.fields?.items) return config;
+
+  return {
+    ...config,
+    fields: {
+      ...config.fields,
+      items: config.fields.items.map(item => {
+        if (item?.props?.placeholder && isRef(item.props.placeholder)) {
+          return {
+            ...item,
+            props: {
+              ...item.props,
+              placeholder: unref(item.props.placeholder),
+            },
+          };
+        }
+        return item;
+      }),
+    },
+  };
+}
+
+console.log("blockList", extractComputedPlaceholders(blockList.value))
+// console.log("blockList", blockList.value)
+
+// console.log("localizeDetailsPage localizeDetailsPage", blockList.value)
+
+// console.log("localizeDetailsPage",localizeDetailsPage(blockList.value))
 
 </script>
 
@@ -44,5 +73,8 @@ console.log("usePagesConfig", data, blockList);
 .loader-spinner {
   width: 50px;
   height: 50px;
+}
+.color {
+  color: black;
 }
 </style>

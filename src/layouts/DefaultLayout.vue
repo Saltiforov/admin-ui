@@ -3,7 +3,7 @@
     <!-- Боковое меню -->
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <img class="sidebrar-logo__img" src="../assets/logo/sp-balkan-logo.png" alt="">
+        <img class="sidebar-logo__img" src="../assets/logo/sp-balkan-logo.png" alt="">
       </div>
       <ul class="menu">
         <li
@@ -19,7 +19,6 @@
     </aside>
 
     <div class="main-container">
-      <!-- Верхний бар -->
       <header class="topbar">
         <h2 class="title-text">{{ activeTab }}</h2>
         <div class="topbar__actions">
@@ -27,13 +26,15 @@
             <Button icon="pi pi-cog" class="settings-btn"/>
           </div>
           <div class="action__item">
-            <OverlayBadge value="2" >
+            <OverlayBadge value="2">
               <i class="pi pi-bell" style="font-size: 1.7rem"/>
             </OverlayBadge>
           </div>
-          <div class="action__item">
-            <Avatar label="V" class="mr-2" size="large" style="background-color: #ece9fc; color: #2a1261" shape="circle"/>
+          <div class="action__item pointer">
+            <Avatar image="https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png" @click="router.push('about-user')" class="mr-2" size="large" style="background-color: #ece9fc; color: #2a1261"
+                    shape="circle"/>
           </div>
+          <LocaleSwitch></LocaleSwitch>
         </div>
       </header>
 
@@ -48,33 +49,35 @@
 
 <script setup>
 import {useRouter, useRoute} from "vue-router";
-import InputIcon from "primevue/inputicon";
-import IconField from "primevue/iconfield";
 import {computed} from "vue";
+import LocaleSwitch from "@/components/UI/LocaleSwitch.vue";
 
 const router = useRouter();
 const route = useRoute();
 
-const menuItems = [
+import {useI18n} from 'vue-i18n';
+
+const {t} = useI18n();
+
+const menuItems = computed(() => [
   {
     label: "Navigation",
     items: [
-      {label: "Filters", icon: "pi pi-filter", command: () => router.push("/filters-configuration")},
-      {label: "Products", icon: "pi pi-shopping-cart", command: () => router.push("/products")},
-      {label: "Users", icon: "pi pi-user", command: () => router.push("/users")},
-      {label: "Orders", icon: "pi pi-clipboard", command: () => router.push("/orders")},
+      { label: t("title_filters"), icon: "pi pi-filter", command: () => router.push("/filters-configuration") },
+      { label: t("title_products"), icon: "pi pi-shopping-cart", command: () => router.push("/products") },
+      { label: t("title_users"), icon: "pi pi-user", command: () => router.push("/users") },
+      { label: t("title_orders"), icon: "pi pi-clipboard", command: () => router.push("/orders") },
     ],
   },
-];
+])
 
-// Определяем активный маршрут
 const isActiveRoute = (command) => {
-  const routePath = command.toString().match(/\/[a-z]+/i)?.[0]; // Получаем маршрут из функции
-  return route.path.startsWith(routePath); // Проверяем, начинается ли текущий путь с routePath
+  const routePath = command.toString().match(/\/[a-z]+/i)?.[0];
+  return route.path.startsWith(routePath);
 };
 
 const activeTab = computed(() => {
-  const activeItem = menuItems[0].items.find(item => isActiveRoute(item.command));
+  const activeItem = menuItems.value[0].items.find(item => isActiveRoute(item.command));
   return activeItem ? activeItem.label : "";
 });
 
@@ -120,9 +123,6 @@ const activeTab = computed(() => {
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
-}
-
-.sidebrar-logo__img {
 }
 
 /* Контент */

@@ -1,15 +1,19 @@
+import {computed} from "vue";
+import {t} from "@/i18n/index.js";
+import {capitalizeFirstLetter} from "@/utils/index.js";
+
 export const productsFieldsBlock = {
     fields: {
         items: [
             {
                 name: 'name',
                 code: 'name',
-                label: 'Product Name',
+                label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
                 type: 'InputText',
                 props: {
                     type: 'text',
                     class: 'product-input',
-                    placeholder: 'Enter product name',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
                     required: true
                 },
                 validators: [(value) => (value ? true : "Name is required")],
@@ -17,7 +21,7 @@ export const productsFieldsBlock = {
             {
                 name: 'price',
                 code: 'price',
-                label: 'Product Price',
+                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
                 type: 'InputNumber',
                 props: {
                     inputId: 'currency-us',
@@ -25,7 +29,7 @@ export const productsFieldsBlock = {
                     currency: 'USD',
                     locale: 'en-US',
                     fluid: true,
-                    placeholder: 'Enter price',
+                    placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
                     required: true
                 },
                 validators: [(value) => (value ? true : "Price is required")],
@@ -33,12 +37,12 @@ export const productsFieldsBlock = {
             {
                 name: 'filters',
                 code: 'filters',
-                label: 'Related Filters',
+                label: computed(() => t("label_related_filters")),
                 type: 'AsyncTreeSelect',
                 disablePropsBinding: true,
                 props: {
                     restOptionsUrl: 'api/filters',
-                    placeholder: 'Select tags',
+                    placeholder: computed(() => t("placeholder_enter_filters")),
                     selectionMode: 'multiple',
                     class: 'w-full product-input md:w-56',
                     required: false,
@@ -49,11 +53,11 @@ export const productsFieldsBlock = {
             {
                 name: 'description',
                 code: 'description',
-                label: 'Description',
+                label: computed(() => t("label_description")),
                 type: 'TextArea',
                 disablePropsBinding: false,
                 props: {
-                    placeholder: 'Write a description ',
+                    placeholder: computed(() => t("placeholder_enter_description")),
                     class: 'w-full product-input md:w-56',
                     required: false,
                     showClear: true,
@@ -64,30 +68,30 @@ export const productsFieldsBlock = {
             {
                 name: 'discount',
                 code: 'discount',
-                label: 'Discount (%)',
+                label: computed(() => t("label_discount")),
                 type: 'InputNumber',
                 props: {
                     inputId: 'discount',
                     suffix: '%',
                     min: 0,
                     max: 100,
-                    placeholder: 'Enter discount',
+                    placeholder: computed(() => t("placeholder_enter_discount")),
                     required: false
                 }
             },
             {
                 name: 'category',
                 code: 'category',
-                label: 'Category',
+                label: computed(() => t("label_category")),
                 type: 'InputText',
                 props: {
                     type: 'text',
                     class: 'product-input',
-                    placeholder: 'Enter category',
+                    placeholder: computed(() => t("placeholder_enter_category")),
                     required: true
                 }
             },
         ],
-        header: 'Fill product information:',
+        header: computed(() => t("title_edit_page", { pageName: t("entity_product_prep") })),
     }
 }

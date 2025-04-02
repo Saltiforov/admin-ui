@@ -83,10 +83,11 @@ const dynamicAttrsRef = ref(null);
 
 const allData = ref({});
 
-const collectDataFromComponents = (e) => {
+const collectDataFromComponents = () => {
   allData.value = {
     ...fieldsBlockRef.value.getData(),
     ...dynamicAttrsRef.value.getData(),
+    images: uploadFilesRef.value.getData()
   };
   handleProduct()
 };

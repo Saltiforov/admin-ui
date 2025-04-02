@@ -205,3 +205,8 @@ export function fullImageUrls(imagesRef) {
         /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
     )
 }
+
+export function capitalizeFirstLetter(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}

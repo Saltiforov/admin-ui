@@ -8,7 +8,7 @@
         :loading="isLoading"
     >
       <template #image="{ data }">
-        <img :src="data.image ? data.image : defaultProductImage" alt="Product image"
+        <img :src="data.images.length ?  fullImageUrls(data.images)[0] : defaultProductImage" alt="Product image"
              class="table-image h-auto rounded object-contain"/>
       </template>
       <template #availability="{ data }">
@@ -44,10 +44,11 @@ import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useRoute} from "vue-router";
-import {createQueryString} from "@/utils/index.js";
+import {createQueryString, fullImageUrls} from "@/utils/index.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import createDebouncedService from "@/services/debounceService/debounceService.js";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
+import {useI18n} from "vue-i18n";
 
 const route = useRoute()
 
@@ -122,91 +123,97 @@ const addNewProduct = () => {
   });
 }
 
-const configActionsBar = ref({
-  buttons: [
-    {
-      component: Button,
-      props: {
-        label: 'Add new product',
-        class: 'filter-button',
-        icon: 'pi pi-check',
-      },
-      onClick: addNewProduct
-    },
-  ],
-  filters: [
-    {
-      component: 'IconField',
-      disablePropsBinding: false,
-      name: 'q',
-      props: {},
-      children: [
-        {
-          component: 'InputIcon',
-          props: {
-            class: 'pi pi-search',
+const {t} = useI18n();
 
-          },
+const configActionsBar = computed(() => {
+  return {
+    buttons: [
+      {
+        component: Button,
+        props: {
+          label: t('button_new_products'),
+          class: 'filter-button',
+          icon: 'pi pi-check',
         },
-        {
-          component: 'InputText',
-          props: {
-            placeholder: 'Enter the code, please.',
-            class: 'w-full',
+        onClick: addNewProduct
+      },
+    ],
+    filters: [
+      {
+        component: 'IconField',
+        disablePropsBinding: false,
+        name: 'q',
+        props: {},
+        children: [
+          {
+            component: 'InputIcon',
+            props: {
+              class: 'pi pi-search',
+
+            },
           },
-        },
-      ],
-    },
-    {
-      component: AsyncTreeSelect,
-      disablePropsBinding: true,
-      name: 'filters',
-      props: {
-        restOptionsUrl: 'api/filters',
-        placeholder: 'Select filters, please',
-        selectionMode: 'multiple',
-        class: 'w-full product-input md:w-56',
-        required: false,
-        showClear: true,
-        fullWidth: true,
-      }
-    },
-  ],
-});
+          {
+            component: 'InputText',
+            props: {
+              placeholder: t('placeholder_code_search'),
+              class: 'w-full',
+            },
+          },
+        ],
+      },
+      {
+        component: AsyncTreeSelect,
+        disablePropsBinding: true,
+        name: 'filters',
+        props: {
+          restOptionsUrl: 'api/filters',
+          placeholder: t('placeholder_filters_select'),
+          selectionMode: 'multiple',
+          class: 'w-full product-input md:w-56',
+          required: false,
+          showClear: true,
+          fullWidth: true,
+        }
+      },
+    ],
+  }
+})
 
 const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
 const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
 
 
-const dataTableConfig = ref({
-  value: products.value,
-  paginator: true,
-  rows: tableRows.value,
-  skip: tableSkip.value,
-  lazy: true,
-  rowsPerPageOptions: [10, 20, 30],
-  tableStyle: "min-width: 50rem",
-  class: "custom-table",
-  size: 'null',
-  columns: [
-    {field: 'name', header: 'Name', class: 'multiline-truncate'},
-    {
-      field: 'image',
-      header: 'Image',
-      slotName: 'image',
-    },
-    {field: 'price', header: 'Price', sortable: true},
-    {field: 'description', header: 'Description', class: 'multiline-truncate'},
-    {field: 'category', header: 'Category'},
-    {field: 'availability', header: 'Availability', slotName: 'availability'},
-    {
-      field: 'actions',
-      header: '',
-      slotName: 'actions',
-      style: 'width: 10%',
-    },
-  ],
-});
+const dataTableConfig = computed(() => {
+  return {
+    value: products.value,
+    paginator: true,
+    rows: tableRows.value,
+    skip: tableSkip.value,
+    lazy: true,
+    rowsPerPageOptions: [10, 20, 30],
+    tableStyle: "min-width: 50rem",
+    class: "custom-table",
+    size: 'null',
+    columns: [
+      {field: 'name', header: t('table_header_name'), class: 'multiline-truncate'},
+      {
+        field: 'image',
+        header: t('table_header_image'),
+        slotName: 'image',
+      },
+      {field: 'price', header: t('table_header_price'), sortable: true},
+      {field: 'description', header: t('table_header_description'), class: 'multiline-truncate'},
+      {field: 'category', header: t('table_header_category')},
+      {field: 'availability', header: t('table_header_availability'), slotName: 'availability'},
+      {
+        field: 'actions',
+        header: '',
+        slotName: 'actions',
+        style: 'width: 10%',
+      },
+    ],
+  }
+})
 
 watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
 
