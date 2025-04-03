@@ -149,4 +149,6 @@ export const ru = {
   "confirm_reject_message_summary": "Отменено",
   "confirm_accept_message": "${name} было удалено",
   "confirm_accept_message_summary": "Удалено",
+
+  "related_multiselect_placeholder": "Выберите значение",
 }

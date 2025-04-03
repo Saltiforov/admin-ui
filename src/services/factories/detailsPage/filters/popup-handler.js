@@ -1,4 +1,3 @@
-import {t} from '@/i18n';
 import {computed} from "vue";
 
 export const filtersPopups = {

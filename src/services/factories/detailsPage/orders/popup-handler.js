@@ -1,4 +1,5 @@
 import AsyncMultiSelect from "@/components/UI/AsyncMultiSelect.vue";
+import {computed} from "vue";
 
 export const ordersPopups = {
     relatedEntitiesTablePopup: {
@@ -10,8 +11,8 @@ export const ordersPopups = {
                     selectId: 'relatedEntitiesSelect',
                     filter: true,
                     filterPlaceholder: "Search...",
-                    maxSelectedLabels: 5,
-                    placeholder: "Select a value",
+                    maxSelectedLabels: 1,
+                    placeholder: computed(() => t("related_multiselect_placeholder")),
                     optionLabel: "name",
                     storeId: 'relatedEntitiesSelect',
                     itemsPerPage: 10,

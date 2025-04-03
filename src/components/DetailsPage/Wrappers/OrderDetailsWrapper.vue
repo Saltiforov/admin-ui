@@ -114,8 +114,8 @@ watch(() => detailsPageData.value, (value) => {
   });
   const selectedData = value.products?.map(item => {
     return {
-      label: item.product.name,
-      code: item.product._id
+      label: item.product?.name,
+      code: item.product?._id,
     }
   })
   dataStore.setSelectedData(selectId, selectedData)

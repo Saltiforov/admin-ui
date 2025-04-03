@@ -5,7 +5,7 @@
         <Button
             type="button"
             icon="pi pi-ellipsis-v"
-            :label="t('button_text_new_entity')"
+            :label="buttonLabel"
             @click="handlePopup"
         />
       </div>
@@ -55,7 +55,6 @@ import eventBus from "../../../../eventBus.js";
 import {pathBuilder} from "@/utils/index.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
-import { t } from "@/i18n"
 
 const props = defineProps({
   data: {
@@ -75,6 +74,8 @@ const props = defineProps({
     default: 0,
   }
 });
+
+const buttonLabel = computed(() => t('button_text_new_entity'))
 
 const isUpdateMode = computed(() => !!props.data)
 

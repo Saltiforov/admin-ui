@@ -75,6 +75,13 @@ const routes = [
                 component: Users,
             },
             {
+                path: "users/:id",
+                meta: { pageType: 'users' },
+                name: "UsersDetails",
+                component: DetailsPage,
+            },
+
+            {
                 path: "/users/new",
                 meta: { pageType: 'users' },
                 name: "UserCreate",

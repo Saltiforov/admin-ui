@@ -1,4 +1,3 @@
-import { t } from '@/i18n';
 import {computed} from "vue";
 import {capitalizeFirstLetter} from "@/utils/index.js";
 
@@ -17,7 +16,7 @@ export const ordersFieldsBlock = {
                 },
                 validators: [
                     // (value) => (value ? true : "Username is required"),
-                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("label_name", { entity: capitalizeFirstLetter(t("entity_order_gen")) }), max: 100 }))
+                    // (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("label_name", { entity: capitalizeFirstLetter(t("entity_order_gen")) }), max: 100 }))
                 ],
             },
             {

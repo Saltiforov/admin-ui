@@ -149,4 +149,6 @@ export const uk = {
     "confirm_reject_message_summary": "Скасовано",
     "confirm_accept_message": "${name} було видалено",
     "confirm_accept_message_summary": "Видалено",
+
+    "related_multiselect_placeholder": "Виберіть значення",
 }

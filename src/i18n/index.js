@@ -14,6 +14,6 @@ const i18n = createI18n({
 
 export default i18n;
 
-export function t(key, params = {}) {
-    return i18n.global.t(key, params);
-}
+// export function t(key, params = {}) {
+//     return i18n.global.t(key, params);
+// }

@@ -3,7 +3,7 @@
     <ActionsButtonsBar :config="configActionsBar" @update:filters="updateQuery"/>
     <CustomDataTable
         title="Products"
-        :config="dataTableConfig"
+        :config="updatedDataTableConfig"
         :total-records="totalRecords"
         :loading="isLoading"
     >
@@ -38,8 +38,6 @@
 <script setup>
 import {computed, ref, watch, watchEffect} from 'vue';
 import {deleteProductById, getProductsList} from "@/services/api/product-service.api.js";
-import {useToast} from "primevue/usetoast";
-import {useConfirm} from "primevue/useconfirm";
 import router from "@/router/index.js";
 import defaultProductImage from '@/assets/icons/shopping-bag.svg';
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
@@ -52,20 +50,20 @@ import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import createDebouncedService from "@/services/debounceService/debounceService.js";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
 import {useI18n} from "vue-i18n";
+import {useConfirmDelete} from "@/composables/useConfirmDelete.js";
+import {
+  confirmProductsOptions
+} from "@/services/factories/detailsPage/products/uiConfigs/configConfirm.js";
+import {dataProductsTableConfig} from "@/services/factories/detailsPage/products/uiConfigs/tableConfig.js";
 
 const route = useRoute()
-
-const confirm = useConfirm();
-const toast = useToast();
-
 const products = ref();
-
 const isLoading = ref(true);
 
-
 const {debounceService} = createDebouncedService();
-
 const {updateQuery} = useQueryUpdater();
+const {t} = useI18n();
+
 
 const productData = ref({});
 const toggle = (event, data) => {
@@ -87,14 +85,13 @@ const items = ref([
       {
         label: computed(() => t("menu_popup_operation_delete")),
         icon: "pi pi-trash",
-        command: () => confirmDelete(productData.value),
+        command: () => confirmDelete(),
       },
     ],
   },
 ]);
 
 const totalRecords = ref(0);
-
 
 const fetchProducts = async () => {
   isLoading.value = true;
@@ -120,14 +117,6 @@ const deleteProduct = async (id) => {
   await deleteProductById(id)
 };
 
-const addNewProduct = () => {
-  router.push({
-    name: 'ProductCreate',
-  });
-}
-
-const {t} = useI18n();
-
 const configActionsBar = computed(() => {
   return {
     buttons: [
@@ -138,7 +127,11 @@ const configActionsBar = computed(() => {
           class: 'filter-button',
           icon: 'pi pi-check',
         },
-        onClick: addNewProduct
+        onClick: () => {
+          router.push({
+            name: 'ProductCreate',
+          });
+        }
       },
     ],
     filters: [
@@ -185,84 +178,32 @@ const configActionsBar = computed(() => {
 const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
 const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
 
-
-const dataTableConfig = computed(() => {
-  return {
-    value: products.value,
-    paginator: true,
-    rows: tableRows.value,
-    skip: tableSkip.value,
-    lazy: true,
-    rowsPerPageOptions: [10, 20, 30],
-    tableStyle: "min-width: 50rem",
-    class: "custom-table",
-    size: 'null',
-    columns: [
-      {field: 'name', header: t('table_header_name'), class: 'multiline-truncate'},
-      {
-        field: 'image',
-        header: t('table_header_image'),
-        slotName: 'image',
-        style: "width: 15%",
-      },
-      {field: 'price', header: t('table_header_price'), sortable: true},
-      {field: 'description', header: t('table_header_description'), class: 'multiline-truncate'},
-      {field: 'category', header: t('table_header_category')},
-      {field: 'availability', header: t('table_header_availability'), slotName: 'availability'},
-      {
-        field: 'actions',
-        header: '',
-        slotName: 'actions',
-        style: 'width: 10%',
-      },
-    ],
-  }
-})
-
 watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
-
-watchEffect(() => {
-  dataTableConfig.value = {...dataTableConfig.value, value: products.value};
-});
 
 timeoutService.setTimeout(() => {
   isLoading.value = false;
 }, 1000)
 
-const confirmDelete = (product) => {
-  console.log(confirm.require)
-  confirm.require({
-    message: t("confirm_delete_message", {name: product.name || "this item"}),
-    header: t('confirm_delete_title'),
-    icon: 'pi pi-info-circle',
-    rejectProps: {
-      label: t('button_text_cancel'),
-      severity: 'secondary',
-      outlined: true,
-    },
-    acceptProps: {
-      label: t('button_text_delete'),
-      severity: 'danger',
-    },
-    accept: () => {
-      deleteProduct(product._id)
-      toast.add({
-        severity: 'info',
-        summary: t("confirm_accept_message_summary"),
-        detail: t("confirm_accept_message", {name: product.name || 'this item'}),
-        life: 3000
-      });
-    },
-    reject: () => {
-      toast.add({
-        severity: 'error',
-        summary: t("confirm_reject_message_summary"),
-        detail: t("confirm_reject_message"),
-        life: 3000
-      });
-    },
-  });
-};
+const updatedDataTableConfig = ref({
+  ...dataProductsTableConfig.value,
+  value: products.value,
+  rows: tableRows.value,
+  skip: tableSkip.value,
+})
+
+watchEffect(() => {
+  updatedDataTableConfig.value = {...updatedDataTableConfig.value, value: products.value};
+});
+
+const updatedConfirmOptions = {
+  ...confirmProductsOptions,
+  confirmMessage: computed(() => t("confirm_delete_message", {name: productData.value.name || "this item"})),
+  acceptToastDetail: computed(() => t("confirm_accept_message", {name: productData.value.name || "this item"})),
+  acceptAction: () => deleteProduct(productData.value._id),
+  data: productData.value,
+}
+
+const {confirmDelete} = useConfirmDelete(updatedConfirmOptions)
 
 </script>
 

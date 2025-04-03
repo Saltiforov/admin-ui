@@ -148,4 +148,7 @@ export const en = {
     "confirm_reject_message_summary": "Cancelled",
     "confirm_accept_message": "The ${name} has been deleted",
     "confirm_accept_message_summary": "Deleted",
+
+    "related_multiselect_placeholder": "Select a value",
+
 }

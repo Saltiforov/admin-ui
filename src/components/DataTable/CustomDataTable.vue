@@ -63,12 +63,13 @@ const props = defineProps({
 });
 
 const placeholderRows = computed(() => {
+
   return Array.from({ length: props.config.rows || 5 }, () =>
-      Object.fromEntries(props.config.columns.map(col => [col.field, ""]))
+      Object.fromEntries(props.config?.columns.map(col => [col.field, ""]))
   );
 });
 
-console.log("props DataTable", props);
+console.log("props DataTable", props.config);
 
 watch(
     () => [props.config.rows, props.config.skip],

@@ -76,20 +76,3 @@ export async function deleteUserById(userId) {
         throw error;
     }
 }
-
-
-
-
-
-export async function deleteProductById(productId) {
-    const api = app.config.globalProperties.$api;
-
-    try {
-        const response = await api.delete(`${router.products}/${productId}`);
-        if (response.status === 200) {
-            return response.data;
-        }
-    } catch (error) {
-        console.error('Error in deleteProductById:', error);
-    }
-}

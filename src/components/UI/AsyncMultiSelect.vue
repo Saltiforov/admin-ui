@@ -47,7 +47,7 @@
         show more
       </div>
     </div>
-    <div v-if="isOpen" :style="{ top: isShowMore ? '390%' : '310%' }" class="p-multiselect-panel"
+    <div v-if="isOpen" :style="{ top: isShowMore ? '380%' : '310%' }" class="p-multiselect-panel"
          @scroll="handleScroll">
       <div class="p-multiselect-panel-container">
         <div class="p-multiselect-search-wrapper">

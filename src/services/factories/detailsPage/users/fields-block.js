@@ -1,5 +1,4 @@
 import {computed} from "vue";
-import {t} from "@/i18n/index.js";
 import {capitalizeFirstLetter} from "@/utils/index.js";
 
 export const usersFieldsBlock = {

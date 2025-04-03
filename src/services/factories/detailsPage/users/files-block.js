@@ -1,5 +1,4 @@
 import {computed} from "vue";
-import {t} from "@/i18n/index.js";
 
 export const usersFilesBlock = {
     files: {

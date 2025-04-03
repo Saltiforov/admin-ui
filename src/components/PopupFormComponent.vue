@@ -141,7 +141,7 @@ const closePopup = () => {
 }
 
 .uploaded-image {
-  width: 16rem;
+  width: 8rem;
 }
 
 .message-error {

@@ -110,10 +110,12 @@
 import {computed, reactive, ref} from "vue";
 import {capitalizeFirstLetter} from "@/utils/index.js";
 import ProgressSpinner from "primevue/progressspinner";
-import {t} from "../i18n/index.js";
 import Button from "primevue/button";
 import {useRouter} from "vue-router";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
+import {useI18n} from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter()
 

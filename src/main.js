@@ -73,6 +73,8 @@ app.use(PrimeVue, {
 });
 export default app;
 
+window.t = (key, params = {}) => i18n.global.t(key, params);
+
 const api = app.config.globalProperties.$api;
 
 api.instance.interceptors?.response.use(
