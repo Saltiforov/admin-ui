@@ -40,6 +40,8 @@
         </template>
       </Column>
 
+
+
       <Column field="icon" :header="t('table_header_icon')" style="width: 15%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="30px" height="30px"/>

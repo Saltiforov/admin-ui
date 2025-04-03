@@ -8,6 +8,7 @@
       <ul class="menu">
         <li
             v-for="item in menuItems[0].items"
+            v-show="item.userAccess"
             :key="item.label"
             class="menu-item"
             :class="{ active: isActiveRoute(item.command) }"
@@ -31,8 +32,11 @@
             </OverlayBadge>
           </div>
           <div class="action__item pointer">
-            <Avatar image="https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png" @click="router.push('about-user')" class="mr-2" size="large" style="background-color: #ece9fc; color: #2a1261"
-                    shape="circle"/>
+            <Avatar
+                image="https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png"
+                @click="router.push('about-user')" class="mr-2" size="large"
+                style="background-color: #ece9fc; color: #2a1261"
+                shape="circle"/>
           </div>
           <LocaleSwitch></LocaleSwitch>
         </div>
@@ -56,17 +60,33 @@ const router = useRouter();
 const route = useRoute();
 
 import {useI18n} from 'vue-i18n';
+import {useUserStore} from "@/stores/userRole.js";
 
 const {t} = useI18n();
+const authStore = useUserStore();
 
 const menuItems = computed(() => [
   {
     label: "Navigation",
     items: [
-      { label: t("title_filters"), icon: "pi pi-filter", command: () => router.push("/filters-configuration") },
-      { label: t("title_products"), icon: "pi pi-shopping-cart", command: () => router.push("/products") },
-      { label: t("title_users"), icon: "pi pi-user", command: () => router.push("/users") },
-      { label: t("title_orders"), icon: "pi pi-clipboard", command: () => router.push("/orders") },
+      {
+        label: t("title_filters"),
+        icon: "pi pi-filter",
+        command: () => router.push("/filters-configuration"),
+        userAccess: authStore.canManage
+      },
+      {
+        label: t("title_products"), icon: "pi pi-shopping-cart", command: () => router.push("/products"),
+        userAccess: authStore.canManage
+      },
+      {
+        label: t("title_users"), icon: "pi pi-user", command: () => router.push("/users"),
+        userAccess: authStore.canManage
+      },
+      {
+        label: t("title_orders"), icon: "pi pi-clipboard", command: () => router.push("/orders"),
+        userAccess: authStore.canManage
+      },
     ],
   },
 ])

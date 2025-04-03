@@ -26,20 +26,20 @@
                 mask="+(999) 999-9999"
                 placeholder="(999) 999-9999"
                 fluid
-                :disabled="isWatchMode"
+                :disabled="!isUpdateMode"
             />
           </div>
         </div>
         <div class="contact" v-for="(address, idx) in user.address">
           <p class="contact-label">{{ capitalizeFirstLetter(t(`label_${idx}`)) }}:</p>
           <div class="contact-info">
-            <InputText class="w-full" :disabled="isWatchMode" v-model="user.address[idx]"/>
+            <InputText class="w-full" :disabled="!isUpdateMode" v-model="user.address[idx]"/>
           </div>
         </div>
         <div class="contact">
           <p class="contact-label">{{ t("label_email") }}:</p>
           <div class="contact-info">
-            <InputText class="w-full" :disabled="isWatchMode" v-model="user.email"/>
+            <InputText class="w-full" :disabled="!isUpdateMode" v-model="user.email"/>
           </div>
         </div>
         <div class="contact">
@@ -51,7 +51,7 @@
                 optionLabel="name"
                 placeholder="Select Roles"
                 :maxSelectedLabels="3"
-                :disabled="isWatchMode"
+                :disabled="!isUpdateMode"
                 class="w-full md:w-80"
             />
           </div>
@@ -64,24 +64,34 @@
       <div class="activity-grid">
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_registration") }}:</p>
-          <p class="contact-info">{{ user.registrationDate }}</p>
+          <p class="contact-info">{{ user.userActivity.registrationDate }}</p>
         </div>
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_last_login") }}:</p>
-          <p class="contact-info">{{ user.lastLogin }}</p>
+          <p class="contact-info">{{ user.userActivity.lastLogin }}</p>
         </div>
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_status") }}:</p>
-          <span :class="['status-badge', user.status.toLowerCase()]">
-            {{ user.status }}
+          <span :class="['status-badge', user.userActivity.status.toLowerCase()]">
+            {{ user.userActivity.status }}
           </span>
         </div>
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_orders") }}:</p>
-          <p class="contact-info">{{ user.ordersCount }}</p>
+          <p class="contact-info">{{ user.userActivity.ordersCount }}</p>
+        </div>
+        <div class="activity-item">
+          <p class="contact-label">{{ t("about_user_role") }}:</p>
+          <p class="contact-info">{{ user.userActivity.role }}</p>
+        </div>
+        <div class="activity-item">
+          <p class="contact-label">{{ t("about_user_subscriptionLevel") }}:</p>
+          <p class="contact-info">{{ user.userActivity.subscriptionLevel }}</p>
         </div>
       </div>
     </div>
+
+    <RoleManagement v-if="authStore.canManage"/>
 
     <div class="user-actions">
       <div class="actions-wrapper flex justify-end items-end">
@@ -96,11 +106,12 @@
             class="user-action"
             type="button"
             icon="pi pi-save"
-            :disabled="isWatchMode"
+            :disabled="isUpdateMode"
             :label="t('button_text_save')"
         />
       </div>
     </div>
+
 
   </div>
 </template>
@@ -114,12 +125,14 @@ import Button from "primevue/button";
 import {useRouter} from "vue-router";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useI18n} from 'vue-i18n';
+import {useUserStore} from "@/stores/userRole.js";
+import RoleManagement from "@/components/RoleManagement/RoleManagement.vue";
 
-const { t } = useI18n();
+const {t} = useI18n();
 
 const router = useRouter()
-
-const isWatchMode = ref(true);
+const authStore = useUserStore();
+const isUpdateMode = ref(authStore.canManage);
 
 const isLoading = ref(true);
 
@@ -141,10 +154,14 @@ const user = reactive({
     {name: "Moderator", code: "MOD"},
     {name: "Content Manager", code: "CNT"}
   ],
-  registrationDate: "2024-01-10",
-  lastLogin: "2025-04-01 15:32",
-  status: "Online", // Может быть "Offline"
-  ordersCount: 12
+  userActivity: {
+    registrationDate: "2024-01-10",
+    lastLogin: "2025-04-01 15:32",
+    status: "Online",
+    ordersCount: 12,
+    role: "Admin",
+    subscriptionLevel: "Premium",
+  }
 });
 
 timeoutService.setTimeout(() => {
@@ -179,7 +196,7 @@ const userFullName = computed(() => {
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
-  min-width: 350px;
+  min-width: 100%;
 }
 
 .section-title {

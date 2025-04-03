@@ -24,6 +24,8 @@ export const en = {
     "placeholder_select_status": "Select {entity} status",
     "placeholder_select_payment_method": "Select payment method",
 
+    "placeholder_search": "Search",
+
     "placeholder_select_language": "English",
 
     "placeholder_enter_street_address": "Enter street address",
@@ -140,7 +142,9 @@ export const en = {
     "about_user_registration": "Registration",
     "about_user_last_login": "Last login",
     "about_user_status": "Status",
-    "about_user_orders": "Orders",
+    "about_user_orders": "Status",
+    "about_user_role": "Role",
+    "about_user_subscriptionLevel": "Subscription Level",
 
     "confirm_delete_message": "Are you sure you want to delete {name}?",
     "confirm_delete_title": "Delete Confirmation",
@@ -150,5 +154,8 @@ export const en = {
     "confirm_accept_message_summary": "Deleted",
 
     "related_multiselect_placeholder": "Select a value",
+
+    "roles_management_failed_search": "Blank... Perhaps a misspelling? Try entering a different name.",
+    "roles_management_title": "Role management",
 
 }

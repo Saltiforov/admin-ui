@@ -26,6 +26,9 @@ export const uk = {
 
     "placeholder_select_language": "Українська",
 
+    "placeholder_search": "Пошук",
+
+
     "placeholder_enter_street_address": "Введіть адресу вулиці",
     "placeholder_enter_city": "Введіть місто",
     "placeholder_enter_postal_code": "Введіть поштовий код",
@@ -142,6 +145,8 @@ export const uk = {
     "about_user_last_login": "Останній вхід",
     "about_user_status": "Статус",
     "about_user_orders": "Замовлення",
+    "about_user_role": "Роль",
+    "about_user_subscriptionLevel": "Рівень підписки",
 
     "confirm_delete_message": "Ви впевнені, що хочете видалити {name}?",
     "confirm_delete_title": "Підтвердження видалення",
@@ -151,4 +156,7 @@ export const uk = {
     "confirm_accept_message_summary": "Видалено",
 
     "related_multiselect_placeholder": "Виберіть значення",
+
+    "roles_management_failed_search": "Пусто... Можливо, помилка в написанні? Спробуйте ввести інше ім'я.",
+    "roles_management_title": "Управління ролями",
 }

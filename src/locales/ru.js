@@ -26,6 +26,9 @@ export const ru = {
 
   "placeholder_select_language": "Русский",
 
+  "placeholder_search": "Поиск",
+
+
   "placeholder_enter_street_address": "Введите адрес улицы",
   "placeholder_enter_city": "Введите город",
   "placeholder_enter_postal_code": "Введите почтовый индекс",
@@ -142,6 +145,8 @@ export const ru = {
   "about_user_last_login": "Последний вход",
   "about_user_status": "Статус",
   "about_user_orders": "Заказы",
+  "about_user_role": "Роль",
+  "about_user_subscriptionLevel": "Уровень подписки",
 
   "confirm_delete_message": "Вы уверены, что хотите удалить {name}?",
   "confirm_delete_title": "Подтверждение удаления",
@@ -151,4 +156,7 @@ export const ru = {
   "confirm_accept_message_summary": "Удалено",
 
   "related_multiselect_placeholder": "Выберите значение",
+
+  "roles_management_failed_search": "Пусто... Возможно, ошибка в написании? Попробуйте ввести другое имя.",
+  "roles_management_title": "Управление ролями",
 }
