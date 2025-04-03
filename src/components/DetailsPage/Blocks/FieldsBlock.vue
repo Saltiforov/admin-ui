@@ -7,7 +7,7 @@
     <div class="container">
       <div class="form-content grid grid-cols-2 gap-6">
         <template v-for="field in baseFields" :key="field.name">
-          <div   class="form-group">
+          <div class="form-group">
             <p class="form__title mb-1">{{ field.label }}:</p>
             <component
                 class="w-full"
@@ -15,7 +15,7 @@
                 v-bind="field.disablePropsBinding ? {} : (field.props || {})"
                 :config="field.props"
                 v-model="formData[field.name]"
-             />
+            />
             <Message
                 v-if="errors && errors[field.code]"
                 severity="error"
@@ -48,14 +48,14 @@
                        :is="field.type"
                        v-bind="field.props"
                        v-model="formData[field.name]"
-                       />
+            />
           </div>
         </template>
 
       </div>
       <div class="mt-4">
         <template v-if="baseFieldsWithFullWidth" v-for="fieldFullWidth in baseFieldsWithFullWidth">
-          <div   class="form-group mb-3">
+          <div class="form-group mb-3">
             <p class="form__title mb-1">{{ fieldFullWidth.label }}:</p>
             <component
                 class="w-full"
@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, inject, watchEffect, watch} from "vue";
+import {ref, computed, onMounted, watchEffect} from "vue";
 
 const props = defineProps({
   data: {
@@ -107,11 +107,11 @@ const isEditMode = computed(() => {
 })
 
 const getData = () => {
-  return { ...formData.value };
+  return {...formData.value};
 };
 
 watchEffect(() => {
-  formData.value = { ...props.data };
+  formData.value = {...props.data};
 });
 
 defineExpose({
@@ -127,7 +127,6 @@ onMounted(() => {
     }
   });
 });
-
 
 
 const baseFields = computed(() => {

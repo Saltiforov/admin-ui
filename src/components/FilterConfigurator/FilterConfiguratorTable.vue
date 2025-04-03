@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed} from 'vue';
+import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed, unref, isRef} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
 import {
@@ -213,29 +213,34 @@ const deleteNode = async (node) => {
 
 const confirmDelete = (node) => {
   confirm.require({
-    message: `Are you sure you want to delete "${node?.data?.name?.uk || 'this item'}"?`,
-    header: 'Delete Confirmation',
+    message: t("confirm_delete_message", {name: node?.data?.name?.uk || 'this item'}),
+    header: t('confirm_delete_title'),
     icon: 'pi pi-info-circle',
     rejectProps: {
-      label: 'Cancel',
+      label: t('button_text_cancel'),
       severity: 'secondary',
       outlined: true,
     },
     acceptProps: {
-      label: 'Delete',
+      label: t('button_text_delete'),
       severity: 'danger',
     },
     accept: () => {
       deleteNode(node)
       toast.add({
         severity: 'info',
-        summary: 'Deleted',
-        detail: `The "${node?.data?.name?.uk || 'this item'}" has been deleted`,
+        summary: t("confirm_accept_message_summary"),
+        detail: t("confirm_accept_message", {name: node?.data?.name?.uk || 'this item'}),
         life: 3000
       });
     },
     reject: () => {
-      toast.add({severity: 'error', summary: 'Cancelled', detail: 'Deletion was cancelled', life: 3000});
+      toast.add({
+        severity: 'error',
+        summary: t("confirm_reject_message_summary"),
+        detail: t("confirm_reject_message"),
+        life: 3000
+      });
     },
   });
 };
@@ -335,8 +340,6 @@ const handleOpenPopup = (filter = null, eventType = "add") => {
   parentFilterForNode.value = filter;
   popupType.value = eventType;
 
-  console.log("updatePopupFields(filter, isEditMode)", updatePopupFields(filter, isEditMode))
-
   eventBus.emit("show-popup", {
     title,
     fields: updatePopupFields(filter, isEditMode),
@@ -357,7 +360,6 @@ const updateExpandedKeys = (keys) => {
 
 
 const onAddFilter = async (data) => {
-
 
 
   const newFilter = {

@@ -85,6 +85,7 @@ export const en = {
     "title_edit_page_orders" : "Fill order information:",
 
     "button_text_cancel": "Cancel",
+    "button_text_delete": "Delete",
     "button_text_submit": "Submit",
     "button_text_choose": "Choose",
     "button_text_save": "Save",
@@ -140,4 +141,11 @@ export const en = {
     "about_user_last_login": "Last login",
     "about_user_status": "Status",
     "about_user_orders": "Orders",
+
+    "confirm_delete_message": "Are you sure you want to delete {name}?",
+    "confirm_delete_title": "Delete Confirmation",
+    "confirm_reject_message": "Deletion was cancelled",
+    "confirm_reject_message_summary": "Cancelled",
+    "confirm_accept_message": "The ${name} has been deleted",
+    "confirm_accept_message_summary": "Deleted",
 }

@@ -15,9 +15,10 @@ export const ordersFieldsBlock = {
                     placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_order_gen") })),
                     required: true
                 },
-                // validators: [
-                //     (value) => (value ? true : "Username is required"),
-                // ],
+                validators: [
+                    // (value) => (value ? true : "Username is required"),
+                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("label_name", { entity: capitalizeFirstLetter(t("entity_order_gen")) }), max: 100 }))
+                ],
             },
             {
                 name: 'totalAmount',

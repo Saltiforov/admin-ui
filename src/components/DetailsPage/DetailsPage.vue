@@ -59,14 +59,6 @@ function extractComputedPlaceholders(config) {
     },
   };
 }
-
-console.log("blockList", extractComputedPlaceholders(blockList.value))
-// console.log("blockList", blockList.value)
-
-// console.log("localizeDetailsPage localizeDetailsPage", blockList.value)
-
-// console.log("localizeDetailsPage",localizeDetailsPage(blockList.value))
-
 </script>
 
 <style scoped>

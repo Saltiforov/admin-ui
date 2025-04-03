@@ -86,6 +86,7 @@ export const ru = {
   "title_edit_page_orders" : "Заполните информацию о заказе:",
 
   "button_text_cancel": "Отменить",
+  "button_text_delete": "Удалить",
   "button_text_submit": "Отправить",
   "button_text_choose": "Выбрать",
   "button_text_save": "Сохранить",
@@ -140,6 +141,12 @@ export const ru = {
   "about_user_registration": "Регистрация",
   "about_user_last_login": "Последний вход",
   "about_user_status": "Статус",
-  "about_user_orders": "Заказы"
+  "about_user_orders": "Заказы",
 
+  "confirm_delete_message": "Вы уверены, что хотите удалить {name}?",
+  "confirm_delete_title": "Подтверждение удаления",
+  "confirm_reject_message": "Удаление было отменено",
+  "confirm_reject_message_summary": "Отменено",
+  "confirm_accept_message": "${name} было удалено",
+  "confirm_accept_message_summary": "Удалено",
 }

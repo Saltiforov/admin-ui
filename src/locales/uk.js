@@ -86,6 +86,7 @@ export const uk = {
     "title_edit_page_orders": "Заповніть інформацію про замовлення:",
 
     "button_text_cancel": "Скасувати",
+    "button_text_delete": "Видалити",
     "button_text_submit": "Відправити",
     "button_text_choose": "Вибрати",
     "button_text_save": "Зберегти",
@@ -140,5 +141,12 @@ export const uk = {
     "about_user_registration": "Реєстрація",
     "about_user_last_login": "Останній вхід",
     "about_user_status": "Статус",
-    "about_user_orders": "Замовлення"
+    "about_user_orders": "Замовлення",
+
+    "confirm_delete_message": "Ви впевнені, що хочете видалити {name}?",
+    "confirm_delete_title": "Підтвердження видалення",
+    "confirm_reject_message": "Видалення було скасовано",
+    "confirm_reject_message_summary": "Скасовано",
+    "confirm_accept_message": "${name} було видалено",
+    "confirm_accept_message_summary": "Видалено",
 }

@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue';
+import {reactive, ref, unref} from 'vue';
 import eventBus from '../../eventBus';
 import {useI18n} from "vue-i18n";
 
@@ -93,12 +93,13 @@ const onFormSubmit = () => {
   popupConfig.fields.forEach((field) => {
     errors[field.code] = null;
 
+
     if (field.validators) {
       for (const validator of field.validators) {
-        const validationResult = validator(formValues[field.code]).value;
+
+        const validationResult = unref(validator(formValues[field.code]));
         if (validationResult !== true) {
           errors[field.code] = validationResult;
-
           isValid = false;
           break;
         }
@@ -106,7 +107,9 @@ const onFormSubmit = () => {
     }
   });
 
+
   if (isValid) {
+
     eventBus.emit("handle-popup-data", formValues);
     iconPath.value = null
     setTimeout(() => {

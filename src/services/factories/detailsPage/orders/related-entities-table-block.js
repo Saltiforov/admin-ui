@@ -17,7 +17,7 @@ export const ordersRelatedTable = {
                 field: 'image',
                 header: computed(() => t("table_header_image")),
                 slotName: 'image',
-                style: "width: 19%"
+                style: "width: 20%"
             },
             {field: 'price', header: computed(() => t("table_header_price")),},
             {field: 'description', header: computed(() => t("table_header_description")),  style: 'width: 30%', class: 'multiline-truncate'},

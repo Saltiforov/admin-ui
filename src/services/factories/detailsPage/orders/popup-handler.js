@@ -22,7 +22,6 @@ export const ordersPopups = {
                     selectClass: "w-full",
                     style: "margin-bottom: 15px",
                 },
-                validators: [(value) => (value ? true : "Products is required")],
             },
         ]
     }

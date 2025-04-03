@@ -8,8 +8,10 @@
         :loading="isLoading"
     >
       <template #image="{ data }">
-        <img :src="data.images.length ?  fullImageUrls(data.images)[0] : defaultProductImage" alt="Product image"
-             class="table-image h-auto rounded object-contain"/>
+        <div class="image-wrapper">
+          <img :src="data.images.length ?  fullImageUrls(data.images)[0] : defaultProductImage" alt="Product image"
+               class="table-image h-auto rounded object-contain"/>
+        </div>
       </template>
       <template #availability="{ data }">
         <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
@@ -28,6 +30,7 @@
       </template>
     </CustomDataTable>
     <ConfirmDialog/>
+    <Toast/>
     <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
   </div>
 </template>
@@ -74,15 +77,15 @@ const toggle = (event, data) => {
 const menu = ref();
 const items = ref([
   {
-    label: 'Operations',
+    label: computed(() => t("menu_popup_title")),
     items: [
       {
-        label: "Edit",
+        label: computed(() => t("menu_popup_operation_edit")),
         icon: "pi pi-pencil",
         command: () => editProduct(productData.value._id),
       },
       {
-        label: "Delete",
+        label: computed(() => t("menu_popup_operation_delete")),
         icon: "pi pi-trash",
         command: () => confirmDelete(productData.value),
       },
@@ -200,6 +203,7 @@ const dataTableConfig = computed(() => {
         field: 'image',
         header: t('table_header_image'),
         slotName: 'image',
+        style: "width: 15%",
       },
       {field: 'price', header: t('table_header_price'), sortable: true},
       {field: 'description', header: t('table_header_description'), class: 'multiline-truncate'},
@@ -221,7 +225,6 @@ watchEffect(() => {
   dataTableConfig.value = {...dataTableConfig.value, value: products.value};
 });
 
-// const isLoading = computed(() => !products.value);
 timeoutService.setTimeout(() => {
   isLoading.value = false;
 }, 1000)
@@ -229,29 +232,34 @@ timeoutService.setTimeout(() => {
 const confirmDelete = (product) => {
   console.log(confirm.require)
   confirm.require({
-    message: `Are you sure you want to delete "${product.name || 'this item'}"?`,
-    header: 'Delete Confirmation',
+    message: t("confirm_delete_message", {name: product.name || "this item"}),
+    header: t('confirm_delete_title'),
     icon: 'pi pi-info-circle',
     rejectProps: {
-      label: 'Cancel',
+      label: t('button_text_cancel'),
       severity: 'secondary',
       outlined: true,
     },
     acceptProps: {
-      label: 'Delete',
+      label: t('button_text_delete'),
       severity: 'danger',
     },
     accept: () => {
       deleteProduct(product._id)
       toast.add({
         severity: 'info',
-        summary: 'Deleted',
-        detail: `The "${product.name || 'this item'}" has been deleted`,
+        summary: t("confirm_accept_message_summary"),
+        detail: t("confirm_accept_message", {name: product.name || 'this item'}),
         life: 3000
       });
     },
     reject: () => {
-      toast.add({severity: 'error', summary: 'Cancelled', detail: 'Deletion was cancelled', life: 3000});
+      toast.add({
+        severity: 'error',
+        summary: t("confirm_reject_message_summary"),
+        detail: t("confirm_reject_message"),
+        life: 3000
+      });
     },
   });
 };

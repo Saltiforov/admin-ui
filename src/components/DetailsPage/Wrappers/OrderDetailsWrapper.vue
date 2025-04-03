@@ -135,6 +135,7 @@ const deleteRelatedEntitiesItem = (item) => {
 
 onMounted(async () => {
   eventBus.on("handle-popup-data", async ({products}) => {
+    if (!products) return;
     const existingProducts = relatedConfig.value
     const existingCodes = existingProducts.map(p => p._id)
     const newProducts = products.filter(item => !existingCodes.includes(item.code));

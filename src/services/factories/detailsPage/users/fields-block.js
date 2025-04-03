@@ -65,12 +65,12 @@ export const usersFieldsBlock = {
                 name: 'password',
                 code: 'password',
                 label: computed(() => t("label_password")),
-                type: 'Password',
+                type: 'InputText',
                 props: {
                     type: 'password',
                     placeholder: computed(() => t("placeholder_enter_password")),
                     required: true,
-                    feedback: false,
+                    feedback: true,
                 },
                 validators: [
                     (value) => (value ? true : 'Password is required')
