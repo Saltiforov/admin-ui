@@ -181,6 +181,7 @@ function prepareDataForSubmit(inputData) {
       country: inputData.country
     },
     totalAmount: inputData.totalAmount,
+    paymentMethod: inputData.paymentMethod?.value,
     discount: inputData.discount || 0, // Если нет скидки, ставим 0
     tax: inputData.tax || 0, // Если нет налога, ставим 0
     orderStatus: inputData.orderStatus?.value || 'pending', // Если нет статуса, ставим 'pending'
