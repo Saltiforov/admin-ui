@@ -1,7 +1,7 @@
 import app from '@/main'
 
 const router = {
-    orders: '/api/orders',
+    orders: '/api/admin/orders',
 }
 
 export async function getOrdersList() {

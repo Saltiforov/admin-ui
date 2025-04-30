@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
-export const useUserStore = defineStore('userRole', () => {
+export const useAuthStore = defineStore('auth', () => {
     const userRole = ref(null); // Хранит роль пользователя
 
     // Устанавливаем роль

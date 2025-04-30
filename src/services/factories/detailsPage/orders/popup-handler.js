@@ -18,7 +18,7 @@ export const ordersPopups = {
                     itemsPerPage: 10,
                     skip: 0,
                     display: "chip",
-                    restOptionsUrl: 'api/products',
+                    restOptionsUrl: 'api/admin/products',
                     loading: false,
                     selectClass: "w-full",
                     style: "margin-bottom: 15px",

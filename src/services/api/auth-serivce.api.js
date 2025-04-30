@@ -1,8 +1,8 @@
 import app from '@/main';
 
 const routes = {
-    userList: '/api/login',
-    signup: '/api/signup'
+    userList: '/api/admin/login',
+    signup: '/api/admin/signup'
 }
 
 export async function login(payload) {

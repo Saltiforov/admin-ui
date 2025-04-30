@@ -1,5 +1,5 @@
 <template>
-  <div v-if="filters.length" class="filters-wrapper">
+  <div v-if="filters?.length" class="filters-wrapper">
     <div class="filters-content">
       <div class="filter" v-for="(filter, index) in filters" :key="index">
         <component

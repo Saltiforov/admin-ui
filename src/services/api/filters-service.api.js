@@ -1,17 +1,16 @@
 import app from '@/main';
 
 const routes = {
-    filters: '/api/filters',
-    filters_configuration: '/api/filters-configuration',
-    child_filters_configuration: '/api/filter-child-configuration',
-    update_node: '/filters-configuration/:id'
+    filters: '/api/admin/filters',
+    filters_configuration: '/api/admin/filters-configuration',
+    child_filters_configuration: '/api/admin/filter-child-configuration',
+    update_node: 'admin/filters-configuration/:id'
 }
 
 export async function deleteFilter(id) {
     try {
         const api = app.config.globalProperties.$api;
-        //filters
-        const response = await api.delete(`/api/filters/${id}`);
+        const response = await api.delete(`${routes.filters}/${id}`);
 
         if (response.status === 200) {
             console.log(`Фильтр с id ${id} успешно удалён`);
@@ -24,7 +23,7 @@ export async function deleteFilter(id) {
 export async function deleteFilters(ids) {
     try {
         const api = app.config.globalProperties.$api;
-        const response = await api.delete(`/api/filters`, {
+        const response = await api.delete(routes.filters, {
             data: { ids: ids }
         });
 
@@ -104,7 +103,7 @@ export async function createNewFilterChildNode(payload) {
 export async function updateExistedNode(id, payload) {
     const api = app.config.globalProperties.$api;
 
-    const response = await api.put(`/api/filters-configuration/${id}`, payload)
+    const response = await api.put(`${routes.filters_configuration}/${id}`, payload)
 
     return response.data;
 }

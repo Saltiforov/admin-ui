@@ -1,7 +1,7 @@
 import app from '@/main';
 
 const router = {
-    users: '/api/users'
+    users: '/api/admin/users'
 }
 
 export async function getUserList(query = {}) {

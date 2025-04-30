@@ -8,7 +8,7 @@
     <div :style="{ overflowY: users.length >= 6 ? 'scroll' : 'hidden' }" class="roles-content">
       <div v-for="user in searchedRoles" :key="user.id" class="user">
         <p>{{ user.name }}</p>
-        <MultiSelect optionLabel="name" v-model="user.roles" :options="roles"></MultiSelect>
+        <MultiSelect optionLabel="name" @change="updateRole(user)" v-model="user.roles" :options="roles"></MultiSelect>
       </div>
       <p v-show="!searchedRoles.length">{{ t("roles_management_failed_search") }}</p>
     </div>
@@ -50,18 +50,13 @@ const users = ref([
 ]);
 
 const updateRole = (user) => {
-  localStorage.setItem(`role_${user.id}`, user.role);
-  alert(`${user.name} теперь ${user.role}`);
+  console.log("updateRole", user)
 };
-
-users.value.forEach(user => {
-  const savedRole = localStorage.getItem(`role_${user.id}`);
-  if (savedRole) user.role = savedRole;
-});
 </script>
 
 <style scoped>
 .roles-wrapper {
+  color: black;
   background: #f9f9f9;
   padding: 15px;
   border-radius: 10px;

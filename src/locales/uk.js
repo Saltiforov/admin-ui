@@ -81,6 +81,7 @@ export const uk = {
     "title_filters": "Фільтри",
     "title_products": "Продукти",
     "title_orders": "Замовлення",
+    "title_roles": "Ролі",
     "title_users": "Користувачі",
 
     "title_edit_page": "Заповніть інформацію про {pageName}:",
@@ -145,7 +146,7 @@ export const uk = {
     "about_user_last_login": "Останній вхід",
     "about_user_status": "Статус",
     "about_user_orders": "Замовлення",
-    "about_user_role": "Роль",
+    "about_user_role": "Ролі",
     "about_user_subscriptionLevel": "Рівень підписки",
 
     "confirm_delete_message": "Ви впевнені, що хочете видалити {name}?",

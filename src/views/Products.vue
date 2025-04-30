@@ -162,7 +162,7 @@ const configActionsBar = computed(() => {
         disablePropsBinding: true,
         name: 'filters',
         props: {
-          restOptionsUrl: 'api/filters',
+          restOptionsUrl: 'api/admin/filters',
           placeholder: t('placeholder_filters_select'),
           selectionMode: 'multiple',
           class: 'w-full product-input md:w-56',

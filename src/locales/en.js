@@ -81,6 +81,7 @@ export const en = {
     "title_products": "Products",
     "title_orders": "Orders",
     "title_users": "Users",
+    "title_roles": "Roles",
     "title_edit_page": "Fill {pageName} information:",
     "title_edit_page_products" : "Fill product information:",
     "title_edit_page_users" : "Fill user information:",
@@ -143,7 +144,7 @@ export const en = {
     "about_user_last_login": "Last login",
     "about_user_status": "Status",
     "about_user_orders": "Status",
-    "about_user_role": "Role",
+    "about_user_role": "Roles",
     "about_user_subscriptionLevel": "Subscription Level",
 
     "confirm_delete_message": "Are you sure you want to delete {name}?",

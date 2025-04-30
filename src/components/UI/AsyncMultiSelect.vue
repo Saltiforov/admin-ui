@@ -1,104 +1,106 @@
 <template>
-  <div :class="selectClass" :style="style" class="p-multiselect p-component p-inputwrapper w-full md:w-80"
-       ref="multiselectRef">
-    <div class="p-hidden-accessible">
-      <input
-          type="text"
-          readonly
-          :placeholder="placeholder"
-          tabindex="0"
-          role="combobox"
-          aria-haspopup="listbox"
-          :aria-expanded="isOpen"
-      />
-    </div>
-    <div class="p-multiselect-label-container" @click="toggleDropdown">
-      <div class="p-multiselect-label">
-        <span v-if="selectedOptions.length">{{ displaySelectedOptions }}</span>
-        <span v-else class="p-placeholder">{{ placeholder }}</span>
+  <div :class="selectClass" :style="style">
+    <div class="p-multiselect mb-1 p-component p-inputwrapper w-full md:w-80"
+         ref="multiselectRef">
+      <div class="p-hidden-accessible">
+        <input
+            type="text"
+            readonly
+            :placeholder="placeholder"
+            tabindex="0"
+            role="combobox"
+            aria-haspopup="listbox"
+            :aria-expanded="isOpen"
+        />
+      </div>
+      <div class="p-multiselect-label-container" @click="toggleDropdown">
+        <div class="p-multiselect-label">
+          <span v-if="selectedOptions.length">{{ displaySelectedOptions }}</span>
+          <span v-else class="p-placeholder">{{ placeholder }}</span>
+        </div>
+      </div>
+      <div class="p-multiselect-dropdown" @click="toggleDropdown">
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="p-icon p-multiselect-dropdown-icon"
+            aria-hidden="true"
+        >
+          <path
+              d="M7.01744 10.398C6.91269 10.3985 6.8089 10.378 6.71215 10.3379C6.61541 10.2977 6.52766 10.2386 6.45405 10.1641L1.13907 4.84913C1.03306 4.69404 0.985221 4.5065 1.00399 4.31958C1.02276 4.13266 1.10693 3.95838 1.24166 3.82747C1.37639 3.69655 1.55301 3.61742 1.74039 3.60402C1.92777 3.59062 2.11386 3.64382 2.26584 3.75424L7.01744 8.47394L11.769 3.75424C11.9189 3.65709 12.097 3.61306 12.2748 3.62921C12.4527 3.64535 12.6199 3.72073 12.7498 3.84328C12.8797 3.96582 12.9647 4.12842 12.9912 4.30502C13.0177 4.48162 12.9841 4.662 12.8958 4.81724L7.58083 10.1322C7.50996 10.2125 7.42344 10.2775 7.32656 10.3232C7.22968 10.3689 7.12449 10.3944 7.01744 10.398Z"
+              fill="currentColor"
+          />
+        </svg>
+      </div>
+      <div v-if="isOpen" class="p-multiselect-panel"
+           @scroll="handleScroll">
+        <div class="p-multiselect-panel-container">
+          <div class="p-multiselect-search-wrapper">
+            <div class="p-multiselect-select-all">
+              <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  @change="toggleSelectAll"
+                  class="p-checkbox-input"
+              />
+            </div>
+            <div class="w-full">
+              <input
+                  type="text"
+                  v-model="searchQuery"
+                  :placeholder="filterPlaceholder"
+                  class="p-multiselect-search"
+              />
+            </div>
+          </div>
+
+          <ul class="p-multiselect-search-list" @scroll="handleScroll">
+            <li
+                class="p-multiselect-option"
+                v-for="option in options"
+                :key="option.code"
+                @click="toggleSelection(option)"
+                :class="{
+          selected: isSelected(option),
+          }"
+            >
+              <input
+                  type="checkbox"
+                  :checked="isSelected(option)"
+                  @change="toggleSelection(option)"
+                  @click="toggleSelection(option)"
+                  class="p-checkbox-input"
+              />
+              {{ option.label }}
+            </li>
+          </ul>
+          <div v-if="loading" class="loading-spinner">Loading...</div>
+        </div>
       </div>
     </div>
-    <div class="p-multiselect-dropdown" @click="toggleDropdown">
-      <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="p-icon p-multiselect-dropdown-icon"
-          aria-hidden="true"
-      >
-        <path
-            d="M7.01744 10.398C6.91269 10.3985 6.8089 10.378 6.71215 10.3379C6.61541 10.2977 6.52766 10.2386 6.45405 10.1641L1.13907 4.84913C1.03306 4.69404 0.985221 4.5065 1.00399 4.31958C1.02276 4.13266 1.10693 3.95838 1.24166 3.82747C1.37639 3.69655 1.55301 3.61742 1.74039 3.60402C1.92777 3.59062 2.11386 3.64382 2.26584 3.75424L7.01744 8.47394L11.769 3.75424C11.9189 3.65709 12.097 3.61306 12.2748 3.62921C12.4527 3.64535 12.6199 3.72073 12.7498 3.84328C12.8797 3.96582 12.9647 4.12842 12.9912 4.30502C13.0177 4.48162 12.9841 4.662 12.8958 4.81724L7.58083 10.1322C7.50996 10.2125 7.42344 10.2775 7.32656 10.3232C7.22968 10.3689 7.12449 10.3944 7.01744 10.398Z"
-            fill="currentColor"
-        />
-      </svg>
-    </div>
-    <div v-if="isOpen" class="p-multiselect-panel">
-      <div v-if="display === 'chip'" :style="{ height: isShowMore ? '72px' : '44px' }" class="selected-chips">
+    <div v-if="chipsedSelectedOptions.length > maxSelectedLabels" class="p-multiselect-panel-chips">
+      <div v-if="display === 'chip'" class="selected-chips">
         <div class="chips-wrapper">
-            <span v-if="selectedOptions.length" v-for="selected in chipsedSelectedOptions">
-          {{ selected.label }},
+            <span class="chip-item mb-1 mr-1" v-if="selectedOptions.length" v-for="selected in chipsedSelectedOptions">
+          {{ selected.label }}
         </span>
           <span v-else>Values not selected...</span>
         </div>
       </div>
-      <div @click="showMoreSelectedOptions" class="flex p-1 justify-end">
-        show more
+      <div @click="showMoreSelectedOptions" class="flex p-1 pointer justify-end">
+        Show more
       </div>
     </div>
-    <div v-if="isOpen" :style="{ top: isShowMore ? '380%' : '310%' }" class="p-multiselect-panel"
-         @scroll="handleScroll">
-      <div class="p-multiselect-panel-container">
-        <div class="p-multiselect-search-wrapper">
-          <div class="p-multiselect-select-all">
-            <input
-                type="checkbox"
-                :checked="allSelected"
-                @change="toggleSelectAll"
-                class="p-checkbox-input"
-            />
-          </div>
-          <div class="w-full">
-            <input
-                type="text"
-                v-model="searchQuery"
-                :placeholder="filterPlaceholder"
-                class="p-multiselect-search"
-            />
-          </div>
-        </div>
 
-        <ul class="p-multiselect-search-list" @scroll="handleScroll">
-          <li
-              class="p-multiselect-option"
-              v-for="option in options"
-              :key="option.code"
-              @click="toggleSelection(option)"
-              :class="{
-          selected: isSelected(option),
-          }"
-          >
-            <input
-                type="checkbox"
-                :checked="isSelected(option)"
-                @change="toggleSelection(option)"
-                @click="toggleSelection(option)"
-                class="p-checkbox-input"
-            />
-            {{ option.label }}
-          </li>
-        </ul>
-        <div v-if="loading" class="loading-spinner">Loading...</div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import {ref, computed, onMounted, onUnmounted, watch, defineProps} from 'vue';
 import {useDataStore} from "@/stores/dataStore.js";
-// Props
 const props = defineProps({
   selectId: {
     type: String,
@@ -150,7 +152,7 @@ const props = defineProps({
   },
   style: {
     type: String,
-    default: "margin-bottom: 15px"
+    default: ""
   },
   modelValue: {
     type: Array,
@@ -166,8 +168,9 @@ const props = defineProps({
   },
 });
 
-
 const emit = defineEmits(['update:modelValue']);
+
+// :style="{ height: isShowMore ? '100%' : '85px' }"
 
 const searchQuery = ref('');
 const selectedOptions = ref([]);
@@ -342,6 +345,11 @@ watch(selectedOptions, (newValue) => {
   transition: transform 0.3s ease;
 }
 
+.p-multiselect-panel-chips {
+  width: 100%;
+  background: white;
+}
+
 .p-multiselect-option {
   padding: 7px 13.5px;
   cursor: pointer;
@@ -357,6 +365,15 @@ watch(selectedOptions, (newValue) => {
 
 .p-multiselect-option:hover {
   background: #f0f0f0;
+}
+
+.chip-item {
+  padding: 5px;
+  background: rgb(235, 235, 235);
+  color: #676767;
+  border-radius: 25px;
+  display: inline-block;
+  font-weight: 400;
 }
 
 .p-multiselect-search-wrapper {

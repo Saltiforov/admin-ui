@@ -82,7 +82,7 @@
         </div>
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_role") }}:</p>
-          <p class="contact-info">{{ user.userActivity.role }}</p>
+          <p class="contact-info">{{ userRoles }}</p>
         </div>
         <div class="activity-item">
           <p class="contact-label">{{ t("about_user_subscriptionLevel") }}:</p>
@@ -91,7 +91,7 @@
       </div>
     </div>
 
-    <RoleManagement v-if="authStore.canManage"/>
+    <RoleManagement v-if="!authStore.canManage"/>
 
     <div class="user-actions">
       <div class="actions-wrapper flex justify-end items-end">
@@ -106,7 +106,6 @@
             class="user-action"
             type="button"
             icon="pi pi-save"
-            :disabled="isUpdateMode"
             :label="t('button_text_save')"
         />
       </div>
@@ -125,13 +124,13 @@ import Button from "primevue/button";
 import {useRouter} from "vue-router";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useI18n} from 'vue-i18n';
-import {useUserStore} from "@/stores/userRole.js";
+import {useAuthStore} from "@/stores/authRole.js";
 import RoleManagement from "@/components/RoleManagement/RoleManagement.vue";
 
 const {t} = useI18n();
 
 const router = useRouter()
-const authStore = useUserStore();
+const authStore = useAuthStore();
 const isUpdateMode = ref(authStore.canManage);
 
 const isLoading = ref(true);
@@ -182,6 +181,10 @@ const roles = ref([
   {name: 'Tech Support', code: 'TSP'},
   {name: 'Security Specialist', code: 'SEC'}
 ]);
+
+const userRoles = computed(() => {
+  return user.roles.map(role => role.name).join(' / ');
+})
 
 const userFullName = computed(() => {
   return `${user.firstName} ${user.lastName}`

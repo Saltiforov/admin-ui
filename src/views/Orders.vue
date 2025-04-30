@@ -41,7 +41,7 @@ import {dataOrderTableConfig} from "@/services/factories/detailsPage/orders/uiCo
 const {updateQuery} = useQueryUpdater();
 const {debounceService} = createDebouncedService();
 const route = useRoute()
-
+const pizza = ref([true])
 const {t} = useI18n();
 
 const ordersList = ref([])
@@ -129,7 +129,7 @@ const configActionsBar = computed(() => {
         disablePropsBinding: true,
         name: 'filters',
         props: {
-          restOptionsUrl: 'api/filters',
+          restOptionsUrl: 'api/admin/filters',
           placeholder: t('placeholder_filters_select'),
           selectionMode: 'multiple',
           class: 'w-full product-input md:w-56',

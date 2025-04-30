@@ -1,4 +1,4 @@
-<template>
+ё<template>
   <div>
     <AuthForm title="Register" :is-register=true></AuthForm>
   </div>

@@ -8,6 +8,7 @@ import Noir from "@/presets/Noir.js";
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import IconField from "primevue/iconfield";
+import Checkbox from 'primevue/checkbox';
 import FileUpload from "primevue/fileupload";
 import Rating from 'primevue/rating';
 import Select from 'primevue/select';
@@ -17,9 +18,9 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import MultiSelect from 'primevue/multiselect';
 import TreeSelect from 'primevue/treeselect';
-import Checkbox from 'primevue/checkbox';
 import Password from 'primevue/password';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Tooltip from 'primevue/tooltip';
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -42,14 +43,15 @@ app.use(fetchPlugin);
 app.use(ToastService);
 app.use(ConfirmationService);
 
+app.directive('tooltip', Tooltip);
 
 app.component('ToggleSwitch', ToggleSwitch);
+app.component('Checkbox', Checkbox);
 app.component('InputText', InputText);
 app.component('Password', Password);
 app.component('InputNumber', InputNumber);
 app.component('IconField', IconField);
 app.component('InputIcon', InputIcon);
-app.component('Checkbox', Checkbox);
 app.component('MultiSelect', MultiSelect);
 app.component('Select', Select);
 app.component('TreeSelect', TreeSelect);

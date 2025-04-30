@@ -40,7 +40,7 @@ export const productsFieldsBlock = {
                 type: 'AsyncTreeSelect',
                 disablePropsBinding: true,
                 props: {
-                    restOptionsUrl: 'api/filters',
+                    restOptionsUrl: 'api/admin/filters',
                     placeholder: computed(() => t("placeholder_enter_filters")),
                     selectionMode: 'multiple',
                     class: 'w-full product-input md:w-56',

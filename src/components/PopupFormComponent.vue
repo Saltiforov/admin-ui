@@ -1,5 +1,6 @@
 <template>
   <Dialog
+      :draggable="false"
       v-model:visible="isVisible"
       :header="popupConfig?.title || 'Form'"
       :modal="true"

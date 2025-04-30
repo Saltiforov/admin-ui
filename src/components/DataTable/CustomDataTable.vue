@@ -14,7 +14,9 @@
         :class="config.class"
         :scrollable="config.scrollable"
         :size="config.size"
+        :show-gridlines="config.showGridlines"
     >
+
       <template v-for="col in config.columns" :key="col.field">
         <Column
             :field="col.field"
@@ -23,6 +25,9 @@
 
             :sortable="col.sortable"
         >
+          <template v-if="col.headerSlotName" v-slot:header>
+            <slot :name="`header-${col.headerSlotName}`" />
+          </template>
 
           <template v-slot:body="slotProps">
             <div class="fixed-row" :class="col.class">

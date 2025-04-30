@@ -81,6 +81,7 @@ export const ru = {
   "title_filters": "Фильтры",
   "title_products": "Продукты",
   "title_orders": "Заказы",
+  "title_roles": "Роли",
   "title_users": "Пользователи",
 
   "title_edit_page": "Заполните информацию о {pageName}:",
@@ -145,7 +146,7 @@ export const ru = {
   "about_user_last_login": "Последний вход",
   "about_user_status": "Статус",
   "about_user_orders": "Заказы",
-  "about_user_role": "Роль",
+  "about_user_role": "Роли",
   "about_user_subscriptionLevel": "Уровень подписки",
 
   "confirm_delete_message": "Вы уверены, что хотите удалить {name}?",

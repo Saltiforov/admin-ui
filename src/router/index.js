@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
-import {useUserStore} from "@/stores/userRole.js";
+import {useAuthStore} from "@/stores/authRole.js";
 
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Products from "@/views/Products.vue";
@@ -10,7 +10,10 @@ import DetailsPage from "@/components/DetailsPage/DetailsPage.vue";
 import Users from "@/views/Users.vue";
 import SignUp from "@/views/Auth/SignUp.vue";
 import Orders from "@/views/Orders.vue";
-import AboutUser from "@/views/AboutUser.vue";
+import AboutUser from "@/pages/AboutUser.vue";
+import AdminPage from "@/pages/AdminPage.vue";
+import Roles from "@/views/Roles.vue";
+import RoleWorkspace from "@/pages/RoleWorkspace.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -28,6 +31,13 @@ const routes = [
                 redirect: "/filters-configuration",
             },
             {
+                path: "admin-page",
+                name: "AdminPage",
+                meta: {requiresRole: ["Admin", "Manager", "Supervisor"]},
+                component: AdminPage,
+            },
+
+            {
                 path: "about-user",
                 name: "User",
                 component: AboutUser,
@@ -42,6 +52,16 @@ const routes = [
                 path: "orders",
                 name: "Orders",
                 component: Orders,
+            },
+            {
+                path: "roles",
+                name: "Roles",
+                component: Roles,
+            },
+            {
+                path: "role-workspace",
+                name: "RoleWorkspace",
+                component: RoleWorkspace,
             },
             {
                 path: "/orders/new",
@@ -121,7 +141,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const isAuth = isAuthenticated();
-    const authStore = useUserStore();
+    const authStore = useAuthStore();
     authStore.setUserRole('Admin');
     const userRole = authStore.userRole;
 
@@ -130,7 +150,7 @@ router.beforeEach((to, from, next) => {
     } else if (!isAuth && to.matched.some((record) => record.meta.requiresAuth)) {
         next({path: "/auth/login"});
     } else if (to.meta.requiresRole && !to.meta.requiresRole.includes(userRole)) {
-        next({ path: "/filters-configuration" });
+        next({path: "/filters-configuration"});
     } else {
         next();
     }

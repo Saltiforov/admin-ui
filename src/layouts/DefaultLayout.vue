@@ -8,7 +8,6 @@
       <ul class="menu">
         <li
             v-for="item in menuItems[0].items"
-            v-show="item.userAccess"
             :key="item.label"
             class="menu-item"
             :class="{ active: isActiveRoute(item.command) }"
@@ -60,10 +59,12 @@ const router = useRouter();
 const route = useRoute();
 
 import {useI18n} from 'vue-i18n';
-import {useUserStore} from "@/stores/userRole.js";
+import {useAuthStore} from "@/stores/authRole.js";
 
 const {t} = useI18n();
-const authStore = useUserStore();
+const authStore = useAuthStore();
+
+// v-show="item.userAccess"
 
 const menuItems = computed(() => [
   {
@@ -87,6 +88,11 @@ const menuItems = computed(() => [
         label: t("title_orders"), icon: "pi pi-clipboard", command: () => router.push("/orders"),
         userAccess: authStore.canManage
       },
+      {
+        label: t("title_roles"), icon: "pi pi-id-card", command: () => router.push("/roles"),
+        userAccess: authStore.canManage
+      },
+
     ],
   },
 ])
