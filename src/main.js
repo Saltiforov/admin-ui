@@ -21,6 +21,11 @@ import TreeSelect from 'primevue/treeselect';
 import Password from 'primevue/password';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Tooltip from 'primevue/tooltip';
+import InputMask from 'primevue/inputmask';
+
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
+
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -45,11 +50,14 @@ app.use(ConfirmationService);
 
 app.directive('tooltip', Tooltip);
 
+app.component('InputGroup', InputGroup);
+app.component('InputGroupAddon', InputGroupAddon);
 app.component('ToggleSwitch', ToggleSwitch);
 app.component('Checkbox', Checkbox);
 app.component('InputText', InputText);
 app.component('Password', Password);
 app.component('InputNumber', InputNumber);
+app.component('InputMask', InputMask);
 app.component('IconField', IconField);
 app.component('InputIcon', InputIcon);
 app.component('MultiSelect', MultiSelect);

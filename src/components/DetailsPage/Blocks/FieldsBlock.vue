@@ -9,7 +9,13 @@
         <template v-for="field in baseFields" :key="field.name">
           <div class="form-group">
             <p class="form__title mb-1">{{ field.label }}:</p>
+            <DynamicRenderField
+                v-if="field.render"
+                :field="field"
+                v-model="formData[field.name]"
+            />
             <component
+                v-else
                 class="w-full"
                 :is="field.type"
                 v-bind="field.disablePropsBinding ? {} : (field.props || {})"

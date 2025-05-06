@@ -214,6 +214,7 @@ const action = computed(() => {
 })
 
 const handleOrder = async () => {
+  console.log("handleOrder", action.value)
   try {
     await handleSubmit(action.value)
     props.startLoading()
