@@ -180,11 +180,21 @@ function prepareDataForSubmit(inputData) {
       postalCode: inputData.postalCode,
       country: inputData.country
     },
+    firstName: inputData.firstName,
+    telegramUsername: inputData.telegramUsername,
+    deliveryInfo: inputData.deliveryInfo,
+    promoCode: inputData.promoCode,
+    phone: inputData.phone,
+    sms: inputData.sms,
+    cashOnDelivery: inputData.cashOnDelivery,
+    orderComment: inputData.orderComment,
+    email: inputData.email,
+    lastName: inputData.lastName,
     totalAmount: inputData.totalAmount,
     paymentMethod: inputData.paymentMethod?.value,
-    discount: inputData.discount || 0, // Если нет скидки, ставим 0
-    tax: inputData.tax || 0, // Если нет налога, ставим 0
-    orderStatus: inputData.orderStatus?.value || 'pending', // Если нет статуса, ставим 'pending'
+    discount: inputData.discount || 0,
+    tax: inputData.tax || 0,
+    orderStatus: inputData.orderStatus?.value || 'pending',
     orderNumber: inputData.orderNumber
   };
 }

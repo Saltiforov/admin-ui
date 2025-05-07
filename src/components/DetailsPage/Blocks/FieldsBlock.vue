@@ -55,6 +55,15 @@
                        v-bind="field.props"
                        v-model="formData[field.name]"
             />
+            <Message
+                v-if="errors && errors[field.code]"
+                severity="error"
+                size="small"
+                variant="simple"
+                class="message-error"
+            >
+              {{ errors[field.code] }}
+            </Message>
           </div>
         </template>
 
