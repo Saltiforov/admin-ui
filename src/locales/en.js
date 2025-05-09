@@ -35,7 +35,7 @@ export const en = {
 
     "label_name": "{entity} Name",
     "label_price": "{entity} Price",
-    "label_discount": "Discount (%)",
+    "label_discount": "Discount ",
     "label_category": "Category",
     "label_description": "Description",
     "label_related_filters": "Related Filters",
@@ -61,6 +61,8 @@ export const en = {
     "label_tax": "Tax",
     "label_order_status": "Order Status",
     "label_payment_method": "Payment Method",
+
+    "label_select_user": "Select a user",
 
     "entity_product_nom": "product",
     "entity_product_gen": "product",

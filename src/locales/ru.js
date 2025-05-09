@@ -36,7 +36,7 @@ export const ru = {
 
   "label_name": "Имя {entity}",
   "label_price": "Цена {entity}",
-  "label_discount": "Скидка (%)",
+  "label_discount": "Скидка",
   "label_category": "Категория",
   "label_description": "Описание",
   "label_related_filters": "Сопутствующие фильтры",
@@ -46,6 +46,7 @@ export const ru = {
   "label_sms": "Отправить sms по указанным данным",
   "label_cash_on_delivery": "Наложенный платеж",
   "label_promo_code": "Промокод",
+  "label_select_user": "Выберите пользователя",
   "label_last_name": "Фамилия",
   "label_email": "Электронная почта",
   "label_telegram_user" : "Имя пользователя Telegram",

@@ -75,6 +75,7 @@
                   @change="toggleSelection(option)"
                   @click="toggleSelection(option)"
                   class="p-checkbox-input"
+                  :class="{ 'selected' : isSelected(option) }"
               />
               {{ option.label }}
             </li>
@@ -228,6 +229,8 @@ const toggleSelection = (option) => {
     emit('update:modelValue', selectedOptions.value);
   } else {
     selectedOptions.value = [option];
+    console.log("selectedOptions.value", selectedOptions.value)
+    console.log("selectedOptions.value option", option)
     emit('update:modelValue', option); // если нужно отправлять не массив
     isOpen.value = false; // закрываем дропдаун при выборе
   }
@@ -323,6 +326,9 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped>
+.selected {
+  background: #c7c7c7;
+}
 .p-multiselect {
   position: relative;
   display: flex;

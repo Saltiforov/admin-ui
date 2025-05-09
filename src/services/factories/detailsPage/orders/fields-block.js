@@ -8,7 +8,7 @@ export const ordersFieldsBlock = {
             {
                 name: 'userSelect',
                 code: 'userSelect',
-                label: computed(() => t("select_user")),
+                label: computed(() => t("label_select_user")),
                 type: UserSelect,
                 disablePropsBinding: true,
                 props: {
@@ -39,7 +39,7 @@ export const ordersFieldsBlock = {
                 type: 'InputNumber',
                 props: {
                     inputId: 'discount',
-                    suffix: '%',
+                    useGrouping: false,
                     min: 0,
                     max: 100,
                     placeholder: computed(() => t("placeholder_enter_discount")),
@@ -72,8 +72,8 @@ export const ordersFieldsBlock = {
                 type: 'Select',
                 props: {
                     options: [
-                        {label: 'Card', value: 'card'},
-                        {label: 'Cash', value: 'cash'},
+                        {label: 'Відправити SMS по вказаних данних', value: 'send_sms'},
+                        {label: 'Накладений платіж', value: 'cash_on_delivery'},
                     ],
                     optionLabel: 'label',
                     placeholder: computed(() => t("placeholder_select_payment_method")),

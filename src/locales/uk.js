@@ -36,7 +36,7 @@ export const uk = {
 
     "label_name": "Ім'я {entity}",
     "label_price": "Ціна {entity}",
-    "label_discount": "Знижка (%)",
+    "label_discount": "Знижка",
     "label_category": "Категорія",
     "label_description": "Опис",
     "label_related_filters": "Супутні фільтри",
@@ -47,6 +47,7 @@ export const uk = {
     "label_email": "Електронна пошта",
     "label_telegram_user" : "Ім'я користувача Telegram",
     "label_promo_code": "Промокод",
+    "label_select_user": "Виберіть користувача",
     "label_delivery_info" : "Служба доставки та номер відділення",
     "comment_to_order": "Коментар до замовлення",
     "label_sms": "Відправити sms по вказаних данних",

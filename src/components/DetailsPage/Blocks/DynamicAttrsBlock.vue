@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import Accordion from "primevue/accordion";
 import AccordionPanel from "primevue/accordionpanel";
 import AccordionHeader from "primevue/accordionheader";

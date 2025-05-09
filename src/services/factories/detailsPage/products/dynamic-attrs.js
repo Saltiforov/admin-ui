@@ -4,10 +4,10 @@ export const productsDynamicAttrsBlock = {
     dynamicAttrs: {
         relationCode: 'attributes',
         initialPairs: [
-            {key: '', value: ''},
-            {key: '', value: ''},
-            {key: '', value: ''},
-            {key: '', value: ''}
+            // {key: '', value: ''},
+            // {key: '', value: ''},
+            // {key: '', value: ''},
+            // {key: '', value: ''}
         ],
         placeholders: {
             key: 'Key',

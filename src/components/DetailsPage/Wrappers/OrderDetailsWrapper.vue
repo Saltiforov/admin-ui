@@ -32,7 +32,7 @@ import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEn
 import eventBus from "../../../../eventBus.js";
 import {useDataStore} from "@/stores/dataStore.js";
 import {useRoute, useRouter} from "vue-router";
-import {mappedFieldsForValidation} from "@/utils/index.js";
+import {capitalizeFirstLetter, mappedFieldsForValidation} from "@/utils/index.js";
 import {useFormHandler} from "@/composables/useFormHandler.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 
@@ -71,7 +71,7 @@ const route = useRoute()
 
 const selectId = 'relatedEntitiesSelect'
 
-const selectedUser = ref(null)
+const selectedUserId = ref(null)
 
 const addressBySelectedUser = ref(null)
 
@@ -89,42 +89,68 @@ const getStatusLabel = (status) => {
   return statusMap[status] || "Unknown";
 };
 
-const detailsPageData = computed(() => {
-  const data = props.data?.[DETAILS_PAGES.ORDERS];
+const isUserInitialized = ref(false);
 
-  if (data && Object.keys(data).length > 0) {
-    const { shippingAddress, orderStatus, paymentMethod, user,  ...rest } = data;
+const selectedUsername = ref(null)
 
-    return {
-      ...rest,
-      ...shippingAddress,
-      ...(orderStatus && {
-        orderStatus: {
-          label: getStatusLabel(orderStatus),
-          value: orderStatus
-        },
-        userSelect: {
-          label: user.username,
-          code: user._id
-        },
-        paymentMethod: {
-          label: paymentMethod === "true" ? 'card' : 'cash',
-          value: paymentMethod === "true" ? 'card' : 'cash'
-        }
-      })
-    };
+const getSelectedUserAddress = computed(() => addressBySelectedUser.value)
+
+const rawOrderData = computed(() => props.data?.[DETAILS_PAGES.ORDERS]);
+
+const shippingInfo = computed(() => {
+  if (!selectedUsername.value) {
+    return rawOrderData.value?.shippingAddress;
   }
-
-  // Если нет data — формируем объект только из addressBySelectedUser
-  const address = addressBySelectedUser.value;
-
-  return address
-      ? {
-        ...address
-      }
-      : undefined;
+  return getSelectedUserAddress.value;
 });
 
+const userSelectOptions = computed(() => {
+  if (!selectedUsername.value) {
+    return {
+      label: rawOrderData.value?.user.username,
+      code: rawOrderData.value?.user._id
+    };
+  }
+  return {
+    label: selectedUsername.value,
+    code: selectedUserId.value
+  };
+});
+
+const paymentMethodOptions = computed(() => {
+  const method = rawOrderData.value?.paymentMethod
+  return {
+    label: paymentMethodLabels[method],
+    value: method
+  }
+})
+
+const paymentMethodLabels = {
+  'send_sms': 'Відправити SMS по вказаних данних',
+  'cash_on_delivery': 'Накладений платіж'
+}
+
+const detailsPageData = computed(() => {
+  const data = rawOrderData.value;
+  if (!data || Object.keys(data).length === 0) {
+    return addressBySelectedUser.value || undefined;
+  }
+
+  const { orderStatus, ...rest } = data;
+
+  return {
+    ...rest,
+    ...shippingInfo.value,
+    paymentMethod: paymentMethodOptions.value,
+    ...(orderStatus && {
+      orderStatus: {
+        label: getStatusLabel(orderStatus),
+        value: orderStatus
+      },
+      userSelect: userSelectOptions.value
+    })
+  };
+});
 
 
 watch(() => detailsPageData.value, (value) => {
@@ -173,9 +199,10 @@ onMounted(async () => {
     ];
   });
 
-  eventBus.on("orderUserSelected", async ({address, _id}) => {
+  eventBus.on("orderUserSelected", async ({address, _id, username}) => {
     addressBySelectedUser.value = address;
-    selectedUser.value = _id
+    selectedUserId.value = _id
+    selectedUsername.value = username;
   })
 
 });
@@ -203,10 +230,10 @@ function prepareDataForSubmit(inputData) {
       };
     }),
     shippingAddress: {
-      street: addressBySelectedUser.value.street || inputData.street,
-      city: addressBySelectedUser.value.city || inputData.city,
-      postalCode: addressBySelectedUser.value.postalCode || inputData.postalCode,
-      country: addressBySelectedUser.value.country || inputData.country,
+      street: inputData.street,
+      city: inputData.city,
+      postalCode: inputData.postalCode,
+      country: inputData.country,
       firstName: inputData.firstName,
       lastName: inputData.lastName,
       email: inputData.email,
@@ -214,7 +241,7 @@ function prepareDataForSubmit(inputData) {
       telegramUsername: inputData.telegramUsername,
 
     },
-    user: selectedUser.value,
+    user: selectedUserId.value,
     deliveryInfo: inputData.deliveryInfo,
     promoCode: inputData.promoCode,
     sms: inputData.sms,
