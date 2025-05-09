@@ -25,8 +25,6 @@ const route = useRoute();
 const pageType = route.meta.pageType;
 const id = route.params.id;
 
-console.log("route.params.id", route.params.id)
-
 const {
   blockList,
   data,

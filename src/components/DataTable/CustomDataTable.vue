@@ -74,8 +74,6 @@ const placeholderRows = computed(() => {
   );
 });
 
-console.log("props DataTable", props.config);
-
 watch(
     () => [props.config.rows, props.config.skip],
     ([limit, skip]) => {

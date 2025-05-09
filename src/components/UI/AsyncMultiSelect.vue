@@ -41,6 +41,7 @@
           <div class="p-multiselect-search-wrapper">
             <div class="p-multiselect-select-all">
               <input
+                  v-if="multiple"
                   type="checkbox"
                   :checked="allSelected"
                   @change="toggleSelectAll"
@@ -68,6 +69,7 @@
           }"
             >
               <input
+                  v-if="multiple"
                   type="checkbox"
                   :checked="isSelected(option)"
                   @change="toggleSelection(option)"
@@ -166,6 +168,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  multiple: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -187,9 +193,10 @@ const params = computed(() => {
 
 const useEditMode = computed(() => props.useEditMode)
 
+
 const options = computed(() => {
   return dataStore.getOptions(props.selectId).map(option => ({
-    label: option.name,
+    label: option.name || option.username,
     code: option._id
   }))
 });
@@ -211,13 +218,19 @@ const closeDropdown = (event) => {
 };
 
 const toggleSelection = (option) => {
-  const index = selectedOptions.value.findIndex(o => o.code === option.code);
-  if (index === -1) {
-    selectedOptions.value.push(option);
+  if (props.multiple) {
+    const index = selectedOptions.value.findIndex(o => o.code === option.code);
+    if (index === -1) {
+      selectedOptions.value.push(option);
+    } else {
+      selectedOptions.value.splice(index, 1);
+    }
+    emit('update:modelValue', selectedOptions.value);
   } else {
-    selectedOptions.value.splice(index, 1);
+    selectedOptions.value = [option];
+    emit('update:modelValue', option); // если нужно отправлять не массив
+    isOpen.value = false; // закрываем дропдаун при выборе
   }
-  emit('update:modelValue', selectedOptions.value);
 };
 
 const hasMoreData = computed(() => options.value.length < dataStore.getTotalCount(props.selectId))
@@ -255,6 +268,8 @@ const loadOptions = async () => {
 };
 
 const toggleSelectAll = () => {
+  if (!props.multiple) return; // ничего не делаем в одиночном режиме
+
   if (allSelected.value) {
     selectedOptions.value = [];
   } else {
@@ -264,7 +279,9 @@ const toggleSelectAll = () => {
 };
 
 const isSelected = (option) => {
-  return selectedOptions.value.some(o => o.code === option.code);
+  return props.multiple
+      ? selectedOptions.value.some(o => o.code === option.code)
+      : selectedOptions.value[0]?.code === option.code;
 };
 
 const allSelected = computed(() => {
@@ -295,12 +312,13 @@ onUnmounted(() => {
   document.removeEventListener('click', closeDropdown);
 });
 
-watch(selectedOptions, (newValue) => {
-  dataStore.setSelectedData(props.selectId, newValue);
-  if (newValue.length === 0) {
-    isShowMore.value = false
+watch(() => props.modelValue, (newValue) => {
+  if (props.multiple) {
+    selectedOptions.value = Array.isArray(newValue) ? newValue : [];
+  } else {
+    selectedOptions.value = newValue ? [newValue] : [];
   }
-}, {deep: true});
+}, { immediate: true });
 
 </script>
 
@@ -312,6 +330,7 @@ watch(selectedOptions, (newValue) => {
   border: 1px solid #ccc;
   border-radius: 7px;
   cursor: pointer;
+  background: transparent;
 }
 
 .p-multiselect-search-list {

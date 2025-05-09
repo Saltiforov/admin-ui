@@ -31,7 +31,7 @@ import {createOrder, updateOrderById} from "@/services/api/orders-service.api.js
 import RelatedEntitiesTableBlock from "@/components/DetailsPage/Blocks/RelatedEntitiesTableBlock.vue";
 import eventBus from "../../../../eventBus.js";
 import {useDataStore} from "@/stores/dataStore.js";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {mappedFieldsForValidation} from "@/utils/index.js";
 import {useFormHandler} from "@/composables/useFormHandler.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
@@ -67,7 +67,13 @@ const dataStore = useDataStore();
 
 const router = useRouter()
 
+const route = useRoute()
+
 const selectId = 'relatedEntitiesSelect'
+
+const selectedUser = ref(null)
+
+const addressBySelectedUser = ref(null)
 
 const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
@@ -84,28 +90,47 @@ const getStatusLabel = (status) => {
 };
 
 const detailsPageData = computed(() => {
-  const data = props.data[DETAILS_PAGES.ORDERS];
+  const data = props.data?.[DETAILS_PAGES.ORDERS];
 
-  if (!data || Object.keys(data).length === 0) {
-    return undefined;
+  if (data && Object.keys(data).length > 0) {
+    const { shippingAddress, orderStatus, paymentMethod, user,  ...rest } = data;
+
+    return {
+      ...rest,
+      ...shippingAddress,
+      ...(orderStatus && {
+        orderStatus: {
+          label: getStatusLabel(orderStatus),
+          value: orderStatus
+        },
+        userSelect: {
+          label: user.username,
+          code: user._id
+        },
+        paymentMethod: {
+          label: paymentMethod === "true" ? 'card' : 'cash',
+          value: paymentMethod === "true" ? 'card' : 'cash'
+        }
+      })
+    };
   }
 
-  const {shippingAddress, orderStatus, ...rest} = data;
+  // Если нет data — формируем объект только из addressBySelectedUser
+  const address = addressBySelectedUser.value;
 
-  return {
-    ...rest,
-    ...shippingAddress,
-    ...(orderStatus && {
-      orderStatus: {
-        label: getStatusLabel(orderStatus),
-        value: orderStatus
+  return address
+      ? {
+        ...address
       }
-    })
-  };
+      : undefined;
 });
 
 
+
 watch(() => detailsPageData.value, (value) => {
+
+  if (addressBySelectedUser.value) return
+
   relatedConfig.value = value.products?.map(item => {
     return {
       ...item.product,
@@ -147,6 +172,12 @@ onMounted(async () => {
       }))
     ];
   });
+
+  eventBus.on("orderUserSelected", async ({address, _id}) => {
+    addressBySelectedUser.value = address;
+    selectedUser.value = _id
+  })
+
 });
 
 onUnmounted(() => {
@@ -155,10 +186,7 @@ onUnmounted(() => {
   });
 })
 
-
-const isEditMode = computed(() => !!detailsPageData.value);
-
-const orderId = computed(() => detailsPageData.value._id)
+const orderId = computed(() => route.params.id)
 
 const fieldsBlockRef = ref(null);
 const relatedEntitiesBlockRef = ref(null);
@@ -175,21 +203,23 @@ function prepareDataForSubmit(inputData) {
       };
     }),
     shippingAddress: {
-      street: inputData.street,
-      city: inputData.city,
-      postalCode: inputData.postalCode,
-      country: inputData.country
+      street: addressBySelectedUser.value.street || inputData.street,
+      city: addressBySelectedUser.value.city || inputData.city,
+      postalCode: addressBySelectedUser.value.postalCode || inputData.postalCode,
+      country: addressBySelectedUser.value.country || inputData.country,
+      firstName: inputData.firstName,
+      lastName: inputData.lastName,
+      email: inputData.email,
+      phone: inputData.phone,
+      telegramUsername: inputData.telegramUsername,
+
     },
-    firstName: inputData.firstName,
-    telegramUsername: inputData.telegramUsername,
+    user: selectedUser.value,
     deliveryInfo: inputData.deliveryInfo,
     promoCode: inputData.promoCode,
-    phone: inputData.phone,
     sms: inputData.sms,
     cashOnDelivery: inputData.cashOnDelivery,
     orderComment: inputData.orderComment,
-    email: inputData.email,
-    lastName: inputData.lastName,
     totalAmount: inputData.totalAmount,
     paymentMethod: inputData.paymentMethod?.value,
     discount: inputData.discount || 0,
@@ -215,7 +245,7 @@ const {
 } = useFormHandler(() => mappedFieldsForValidation(props.blockList?.fields.items), () => allData.value)
 
 const action = computed(() => {
-  return !isEditMode.value
+  return !orderId.value
       ? () => {
         createOrder(transformedData.value)
         router.go(-1)
@@ -223,8 +253,10 @@ const action = computed(() => {
       : () => updateOrderById(orderId.value, transformedData.value)
 })
 
+console.log("handleOrder", action.value)
+
+
 const handleOrder = async () => {
-  console.log("handleOrder", action.value)
   try {
     await handleSubmit(action.value)
     props.startLoading()

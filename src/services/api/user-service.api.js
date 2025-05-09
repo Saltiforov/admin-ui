@@ -1,7 +1,8 @@
 import app from '@/main';
 
 const router = {
-    users: '/api/admin/users'
+    users: '/api/admin/users',
+    me: '/api/admin/users/me',
 }
 
 export async function getUserList(query = {}) {
@@ -22,6 +23,21 @@ export async function createUsers(users) {
     try {
 
         const response = await api.post(`${router.users}`, users);
+
+        return response;
+
+    } catch (error) {
+        console.error('Error in createUser:', error);
+        throw error;
+    }
+}
+
+export async function getCurrentUser() {
+    const api = app.config.globalProperties.$api;
+
+    try {
+
+        const response = await api.get(router.me);
 
         return response;
 

@@ -23,10 +23,10 @@ export const useDataStore = defineStore('dataStore', {
                 const api = app.config.globalProperties.$api;
                 const response = await api.get(route, params);
 
-                if (response.status === 200) {
+                if (response.status === 200 || response.status === 201) {
                     this.totalCount[selectId] = response.data.count;
                     this.data[selectId] = this.currentPage[selectId] === 1
-                        ? response.data.list
+                        ? response.data.list || response.data
                         : [...this.data[selectId], ...response.data.list];
                 }
 

@@ -134,7 +134,6 @@ defineExpose({
 });
 
 onMounted(() => {
-  console.log("onMounted", !!props.data,);
   props.config.items.forEach((field) => {
     if (field.code && props?.data?.[field?.code]) {
       formData.value[field.code] =

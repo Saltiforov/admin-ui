@@ -152,7 +152,7 @@ const updatedConfirmOrderOptions = {
   confirmMessage: computed(() => t("confirm_delete_message", {name: orderData.value.name || "this item"})),
   acceptToastDetail: computed(() => t("confirm_accept_message", {name: orderData.value.name || "this item"})),
   acceptAction: () => deleteOrder(orderData.value._id),
-  data: orderData.value,
+  data: computed(() => orderData.value) ,
 };
 
 const {confirmDelete} = useConfirmDelete(updatedConfirmOrderOptions)
