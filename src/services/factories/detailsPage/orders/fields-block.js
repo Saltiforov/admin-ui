@@ -1,6 +1,8 @@
 import {computed, h} from "vue";
-import {capitalizeFirstLetter} from "@/utils/index.js";
 import UserSelect from "@/components/UI/UserSelect/UserSelect.vue";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import InputNumber from "primevue/inputnumber";
 
 export const ordersFieldsBlock = {
     fields: {
@@ -20,6 +22,85 @@ export const ordersFieldsBlock = {
                     fullWidth: false,
                 }
             },
+            {
+                name: 'firstName',
+                code: 'firstName',
+                label: computed(() => t('label_first_name')),
+                type: 'InputText',
+                props: {
+                    side: 'right',
+                    placeholder: '',
+                    disabled: true
+                }
+            },
+            {
+                name: 'lastName',
+                code: 'lastName',
+                label: computed(() => t('label_last_name')),
+                type: 'InputText',
+                props: {
+                    side: 'right',
+                    placeholder: '',
+                    disabled: true
+                }
+            },
+            {
+                name: 'email',
+                code: 'email',
+                label: computed(() => t('label_email')),
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    required: true,
+                    disabled: true
+                },
+            },
+            {
+                name: 'phone',
+                code: 'phone',
+                label: computed(() => t('label_phone')),
+                type: 'Custom',
+                props: {
+                    side: 'left',
+                    disabled: true
+
+                },
+                render: ({modelValue, 'onUpdate:modelValue': update}) =>
+                    h(InputGroup, {}, {
+                        default: () => [
+                            h(InputGroupAddon, {
+                                pt: {
+                                    root: {
+                                        style: {
+                                            backgroundColor: 'white',
+                                            color: 'black',
+                                        }
+                                    }
+                                }
+                            }, () => '+380'),
+                            h(InputNumber, {
+                                modelValue,
+                                'onUpdate:modelValue': update,
+                                useGrouping: false,
+                                placeholder: '',
+                                defaultValue: null,
+                                disabled: true
+                            })
+                        ]
+                    })
+            },
+            {
+                name: 'telegramUsername',
+                code: 'telegramUsername',
+                label: computed(() => t('label_telegram_user')),
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    disabled: true,
+                    class: 'w-full'
+                },
+            },
+
 
             {
                 name: 'deliveryInfo',
@@ -31,6 +112,7 @@ export const ordersFieldsBlock = {
                     placeholder: ''
                 }
             },
+
 
             {
                 name: 'discount',
@@ -60,7 +142,7 @@ export const ordersFieldsBlock = {
                         {label: 'Cancelled', value: 'cancelled'},
                     ],
                     optionLabel: 'label',
-                    placeholder: computed(() => t("placeholder_select_status", { entity: t("entity_order_gen") })),
+                    placeholder: computed(() => t("placeholder_select_status", {entity: t("entity_order_gen")})),
                     class: 'w-full md:w-56',
                     required: false
                 }
@@ -177,6 +259,6 @@ export const ordersFieldsBlock = {
                 // ],
             },
         ],
-        header: computed(() => t("title_edit_page", { pageName: t("entity_order_prep") })),
+        header: computed(() => t("title_edit_page", {pageName: t("entity_order_prep")})),
     }
 };

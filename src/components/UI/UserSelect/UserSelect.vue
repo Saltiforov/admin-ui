@@ -4,7 +4,7 @@
       rest-options-url="api/admin/users"
       select-id="orderUser"
       :multiple="false"
-      :placeholder="'Select User'"
+      placeholder="Select User"
       style="margin-bottom: 15px; background: #fff;"
       @update:model-value="chooseUser"
   />

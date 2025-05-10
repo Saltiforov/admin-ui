@@ -24,7 +24,7 @@ export async function deleteFilters(ids) {
     try {
         const api = app.config.globalProperties.$api;
         const response = await api.delete(routes.filters, {
-            data: { ids: ids }
+            data: {ids: ids}
         });
 
         if (response.status === 200) {
@@ -74,7 +74,8 @@ export async function createFilters(payload) {
         const response = await api.post(routes.filters, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-            }});
+            }
+        });
 
         return response.data;
     } catch (error) {
@@ -85,9 +86,8 @@ export async function createFilters(payload) {
 
 export async function createNewFilterNode(payload) {
     const api = app.config.globalProperties.$api;
-    const parsedPayload = Array.isArray(payload) ? payload : [payload];
 
-    const response = await api.post(routes.filters_configuration, { filters: parsedPayload })
+    const response = await api.post(routes.filters_configuration, payload)
 
     return response.data;
 }

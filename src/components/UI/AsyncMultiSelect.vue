@@ -61,7 +61,7 @@
           <ul class="p-multiselect-search-list" @scroll="handleScroll">
             <li
                 class="p-multiselect-option"
-                v-for="option in options"
+                v-for="option in filteredOptions"
                 :key="option.code"
                 @click="toggleSelection(option)"
                 :class="{
@@ -180,7 +180,18 @@ const emit = defineEmits(['update:modelValue']);
 // :style="{ height: isShowMore ? '100%' : '85px' }"
 
 const searchQuery = ref('');
+
 const selectedOptions = ref([]);
+
+const filteredOptions = computed(() => {
+  if (!searchQuery.value.trim()) return options.value;
+
+  const query = searchQuery.value.trim().toLowerCase();
+  return options.value.filter(option =>
+      option.label.toLowerCase().includes(query)
+  );
+});
+
 const loading = ref(false);
 
 const dataStore = useDataStore()
@@ -229,8 +240,6 @@ const toggleSelection = (option) => {
     emit('update:modelValue', selectedOptions.value);
   } else {
     selectedOptions.value = [option];
-    console.log("selectedOptions.value", selectedOptions.value)
-    console.log("selectedOptions.value option", option)
     emit('update:modelValue', option); // если нужно отправлять не массив
     isOpen.value = false; // закрываем дропдаун при выборе
   }

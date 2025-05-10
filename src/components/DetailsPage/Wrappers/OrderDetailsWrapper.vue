@@ -71,9 +71,7 @@ const route = useRoute()
 
 const selectId = 'relatedEntitiesSelect'
 
-const selectedUserId = ref(null)
-
-const addressBySelectedUser = ref(null)
+const selectedUser = ref({})
 
 const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
@@ -89,31 +87,27 @@ const getStatusLabel = (status) => {
   return statusMap[status] || "Unknown";
 };
 
-const isUserInitialized = ref(false);
-
-const selectedUsername = ref(null)
-
-const getSelectedUserAddress = computed(() => addressBySelectedUser.value)
+const getSelectedUserAddress = computed(() => selectedUser.value.address)
 
 const rawOrderData = computed(() => props.data?.[DETAILS_PAGES.ORDERS]);
 
 const shippingInfo = computed(() => {
-  if (!selectedUsername.value) {
+  if (!selectedUser.value.username) {
     return rawOrderData.value?.shippingAddress;
   }
   return getSelectedUserAddress.value;
 });
 
 const userSelectOptions = computed(() => {
-  if (!selectedUsername.value) {
+  if (!selectedUser.value.username) {
     return {
       label: rawOrderData.value?.user.username,
       code: rawOrderData.value?.user._id
     };
   }
   return {
-    label: selectedUsername.value,
-    code: selectedUserId.value
+    label: selectedUser.value.username,
+    code: selectedUser.value._id
   };
 });
 
@@ -130,13 +124,36 @@ const paymentMethodLabels = {
   'cash_on_delivery': 'Накладений платіж'
 }
 
+const orderUserFirstName = computed(() => {
+  if (!selectedUser.value.username) return rawOrderData.value?.user.firstName
+  return selectedUser.value.firstName
+})
+
+const orderUserLastName = computed(() => {
+  if (!selectedUser.value.username) return rawOrderData.value?.user.lastName
+  return selectedUser.value.lastName
+})
+
+const orderUserEmail = computed(() => {
+  if (!selectedUser.value.username) return rawOrderData.value?.user.email
+  return selectedUser.value.email
+})
+
+const orderUserPhone = computed(() => {
+  if (!selectedUser.value.username) return rawOrderData.value?.user.phone
+  return selectedUser.value.phone
+})
+
+
+
+
 const detailsPageData = computed(() => {
   const data = rawOrderData.value;
   if (!data || Object.keys(data).length === 0) {
-    return addressBySelectedUser.value || undefined;
+    return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const { orderStatus, ...rest } = data;
+  const {orderStatus, discount, ...rest} = data;
 
   return {
     ...rest,
@@ -147,7 +164,11 @@ const detailsPageData = computed(() => {
         label: getStatusLabel(orderStatus),
         value: orderStatus
       },
-      userSelect: userSelectOptions.value
+      userSelect: userSelectOptions.value,
+      firstName: orderUserFirstName.value,
+      lastName: orderUserLastName.value,
+      email: orderUserEmail,
+      discount,
     })
   };
 });
@@ -155,7 +176,7 @@ const detailsPageData = computed(() => {
 
 watch(() => detailsPageData.value, (value) => {
 
-  if (addressBySelectedUser.value) return
+  if (selectedUser.value.address) return
 
   relatedConfig.value = value.products?.map(item => {
     return {
@@ -199,10 +220,8 @@ onMounted(async () => {
     ];
   });
 
-  eventBus.on("orderUserSelected", async ({address, _id, username}) => {
-    addressBySelectedUser.value = address;
-    selectedUserId.value = _id
-    selectedUsername.value = username;
+  eventBus.on("orderUserSelected", async (user) => {
+    selectedUser.value = user;
   })
 
 });

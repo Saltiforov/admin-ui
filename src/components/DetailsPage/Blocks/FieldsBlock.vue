@@ -99,6 +99,8 @@
 
 <script setup>
 import {ref, computed, onMounted, watchEffect} from "vue";
+import DynamicRenderField from "@/components/UI/DynamicRenderField/DynamicRenderField.vue";
+import {useRoute} from "vue-router";
 
 const props = defineProps({
   data: {
@@ -117,9 +119,9 @@ const props = defineProps({
 
 const formData = ref({});
 
-const isEditMode = computed(() => {
-  return !!props.data
-})
+const route = useRoute()
+
+const isEditMode = computed(() => route.params.id)
 
 const getData = () => {
   return {...formData.value};
