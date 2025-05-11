@@ -4,6 +4,7 @@
     <CustomDataTable
         title="Users"
         :config="dataTableConfig"
+        :total-records="totalRecords"
         :loading="isLoading"
     >
       <template style="width: 5%" #actions="{ data }">
@@ -47,7 +48,7 @@ const route = useRoute()
 
 const users = ref([])
 
-
+const isLoading = ref(true);
 
 const userData = ref({});
 const toggle = (event, data) => {
@@ -101,16 +102,28 @@ const confirmOptions = {
 
 const {confirmDelete} = useConfirmDelete(confirmOptions)
 
+const totalRecords = ref(0);
+
 const fetchUsers = async () => {
-  users.value = await getUserList(createQueryString(route.query))
+  isLoading.value = true;
+  const response = await getUserList(createQueryString(route.query))
+  users.value = response.list
+  totalRecords.value = response.count
+  timeoutService.setTimeout(() => {
+    isLoading.value = false;
+  }, 500)
 }
 fetchUsers()
+
+const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
+const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
 
 const dataTableConfig = ref({
   value: users.value,
   paginator: true,
-  rows: 10,
-  skip: 0,
+  lazy: true,
+  rows: tableRows.value,
+  skip: tableSkip.value,
   scrollable: true,
   size: 'null',
   rowsPerPageOptions: [10, 20, 30, 50],
@@ -183,7 +196,7 @@ const configActionsBar = computed(() => {
         disablePropsBinding: true,
         name: 'filters',
         props: {
-          restOptionsUrl: 'api/admin/filters',
+          restOptionsUrl: 'api/admin/filters-configuration',
           placeholder: t('placeholder_filters_select'),
           selectionMode: 'multiple',
           class: 'w-full product-input md:w-56',
@@ -206,7 +219,6 @@ watchEffect(() => {
 });
 
 
-const isLoading = ref(true);
 
 timeoutService.setTimeout(() => {
   isLoading.value = false

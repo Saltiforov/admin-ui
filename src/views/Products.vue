@@ -117,6 +117,26 @@ const deleteProduct = async (id) => {
   await deleteProductById(id)
 };
 
+const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
+const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
+
+// watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
+
+timeoutService.setTimeout(() => {
+  isLoading.value = false;
+}, 1000)
+
+const updatedDataTableConfig = ref({
+  ...dataProductsTableConfig.value,
+  value: products.value,
+  rows: tableRows.value,
+  skip: tableSkip.value,
+})
+
+watchEffect(() => {
+  updatedDataTableConfig.value = {...updatedDataTableConfig.value, value: products.value};
+});
+
 const configActionsBar = computed(() => {
   return {
     buttons: [
@@ -162,7 +182,7 @@ const configActionsBar = computed(() => {
         disablePropsBinding: true,
         name: 'filters',
         props: {
-          restOptionsUrl: 'api/admin/filters',
+          restOptionsUrl: 'api/admin/filters-configuration',
           placeholder: t('placeholder_filters_select'),
           selectionMode: 'multiple',
           class: 'w-full product-input md:w-56',
@@ -175,25 +195,6 @@ const configActionsBar = computed(() => {
   }
 })
 
-const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
-const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
-
-watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
-
-timeoutService.setTimeout(() => {
-  isLoading.value = false;
-}, 1000)
-
-const updatedDataTableConfig = ref({
-  ...dataProductsTableConfig.value,
-  value: products.value,
-  rows: tableRows.value,
-  skip: tableSkip.value,
-})
-
-watchEffect(() => {
-  updatedDataTableConfig.value = {...updatedDataTableConfig.value, value: products.value};
-});
 
 const updatedConfirmOptions = {
   ...confirmProductsOptions,

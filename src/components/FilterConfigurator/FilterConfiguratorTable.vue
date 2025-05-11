@@ -89,10 +89,8 @@
 import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed, unref, isRef} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
-import {
-  createFilters, createNewFilterChildNode,
-  createNewFilterNode, deleteFilter,
-  deleteFilters, updateExistedNode
+import { createNewFilterChildNode,
+  createNewFilterNode, deleteFilter, updateExistedNode
 } from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";

@@ -4,6 +4,7 @@
     <CustomDataTable
         title="Orders"
         :config="updatedDataTableConfig"
+        :totalRecords="totalRecords"
         :loading="isLoading"
     >
       <template style="width: 5%" #actions="{ data }">
@@ -37,6 +38,7 @@ import {useI18n} from "vue-i18n";
 import {useConfirmDelete} from "@/composables/useConfirmDelete.js";
 import {confirmOrderOptions} from "@/services/factories/detailsPage/orders/uiConfigs/confirmOptions.js";
 import {dataOrderTableConfig} from "@/services/factories/detailsPage/orders/uiConfigs/tableConfig.js";
+import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
 
 const {updateQuery} = useQueryUpdater();
 const {debounceService} = createDebouncedService();
@@ -45,6 +47,8 @@ const pizza = ref([true])
 const {t} = useI18n();
 
 const ordersList = ref([])
+
+const isLoading = ref(true);
 
 const menu = ref();
 const items = ref([
@@ -129,7 +133,7 @@ const configActionsBar = computed(() => {
         disablePropsBinding: true,
         name: 'filters',
         props: {
-          restOptionsUrl: 'api/admin/filters',
+          restOptionsUrl: 'api/admin/filters-configuration',
           placeholder: t('placeholder_filters_select'),
           selectionMode: 'multiple',
           class: 'w-full product-input md:w-56',
@@ -142,9 +146,14 @@ const configActionsBar = computed(() => {
   }
 })
 
+const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
+const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
+
 const updatedDataTableConfig = ref({
   ...dataOrderTableConfig.value,
   value: ordersList.value,
+  rows: tableRows.value,
+  skip: tableSkip.value,
 })
 
 const updatedConfirmOrderOptions = {
@@ -157,16 +166,24 @@ const updatedConfirmOrderOptions = {
 
 const {confirmDelete} = useConfirmDelete(updatedConfirmOrderOptions)
 
+const totalRecords = ref(0)
+
 const fetchOrdersList = async () => {
-  ordersList.value = await getOrdersList();
+  isLoading.value = true;
+  const response = await getOrdersList();
+  ordersList.value = response.list
+  totalRecords.value = response.count
+  timeoutService.setTimeout(() => {
+    isLoading.value = false;
+  }, 500)
 }
+
 fetchOrdersList()
 
 watch(() => route.query, () => debounceService(fetchOrdersList, 500), {immediate: false});
 
 const mappedOrders = computed(() => extractFields(ordersList.value, "shippingAddress"));
 
-const isLoading = ref(true);
 
 timeoutService.setTimeout(() => {
   isLoading.value = false

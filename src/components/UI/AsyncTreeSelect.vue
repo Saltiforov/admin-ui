@@ -46,8 +46,8 @@ const loadOptions = async () => {
     try {
       const api = app.config.globalProperties.$api;
       const response = await api.get(props.config.restOptionsUrl);
-      if (Array.isArray(response.data)) {
-        nodes.value = nodeBuilder.recursiveNodeBuilder(response.data, {mapper: nodeMapper});
+      if (Array.isArray(response.data.list)) {
+        nodes.value = nodeBuilder.recursiveNodeBuilder(response.data.list, {mapper: nodeMapper});
       }
     } catch (error) {
       console.error('Error loading options:', error);

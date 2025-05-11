@@ -1,7 +1,6 @@
 import app from '@/main';
 
 const routes = {
-    filters: '/api/admin/filters',
     filters_configuration: '/api/admin/filters-configuration',
     child_filters_configuration: '/api/admin/filter-child-configuration',
     update_node: 'admin/filters-configuration/:id'
@@ -10,77 +9,13 @@ const routes = {
 export async function deleteFilter(id) {
     try {
         const api = app.config.globalProperties.$api;
-        const response = await api.delete(`${routes.filters}/${id}`);
+        const response = await api.delete(`${routes.filters_configuration}/${id}`);
 
         if (response.status === 200) {
             console.log(`Фильтр с id ${id} успешно удалён`);
         }
     } catch (error) {
         console.error(`Ошибка при удалении фильтра с id ${id}:`, error);
-    }
-}
-
-export async function deleteFilters(ids) {
-    try {
-        const api = app.config.globalProperties.$api;
-        const response = await api.delete(routes.filters, {
-            data: {ids: ids}
-        });
-
-        if (response.status === 200) {
-            console.log(`Фильтр с id ${ids} успешно удалён`);
-        }
-    } catch (error) {
-        console.error(`Ошибка при удалении фильтра с id ${ids}:`, error);
-    }
-}
-
-export async function createFilters(payload) {
-    const api = app.config.globalProperties.$api;
-
-    try {
-        const formData = new FormData();
-
-        const processFilters = (filters, parentKey = 'filters') => {
-            filters.forEach((filter, index) => {
-                const filterKey = `${parentKey}[${index}]`;
-
-                for (const [key, value] of Object.entries(filter)) {
-                    if (key === 'icon' && value && value instanceof File) {
-                        console.log('createFilters', value);
-                        // Если это иконка (файл), добавляем её напрямую
-                        formData.append(`${filterKey}[${key}]`, value);
-                    } else if (key === 'children' && Array.isArray(value)) {
-                        // Если это дочерние элементы, обрабатываем их рекурсивно
-                        processFilters(value, `${filterKey}[children]`);
-                    } else {
-                        // Если это обычное поле, добавляем его
-                        formData.append(`${filterKey}[${key}]`, JSON.stringify(value));
-                    }
-                }
-            });
-        };
-
-        const logFormData = (formData) => {
-            for (let pair of formData.entries()) {
-                console.log(`${pair[0]}:`, pair[1]);
-            }
-        };
-
-        processFilters(payload.filters);
-
-        logFormData(formData);
-
-        const response = await api.post(routes.filters, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
-        });
-
-        return response.data;
-    } catch (error) {
-        console.error('Error in createFilters:', error);
-        throw error;
     }
 }
 

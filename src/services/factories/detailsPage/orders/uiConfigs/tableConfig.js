@@ -2,6 +2,7 @@ import {computed, ref} from "vue";
 
 export const dataOrderTableConfig = ref({
     paginator: true,
+    lazy: true,
     rows: 10,
     skip: 0,
     scrollable: true,

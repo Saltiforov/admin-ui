@@ -15,7 +15,7 @@ const filters = ref([])
 
 const fetchFiltersList = async () => {
   const response = await getFiltersList();
-  filters.value = response || [];
+  filters.value = response.list || [];
 };
 
 const resetCache = () => {
