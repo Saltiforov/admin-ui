@@ -22,6 +22,7 @@ import Password from 'primevue/password';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Tooltip from 'primevue/tooltip';
 import InputMask from 'primevue/inputmask';
+import Editor from 'primevue/editor';
 
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
@@ -51,6 +52,7 @@ app.use(ConfirmationService);
 app.directive('tooltip', Tooltip);
 
 app.component('InputGroup', InputGroup);
+app.component('Editor', Editor);
 app.component('InputGroupAddon', InputGroupAddon);
 app.component('ToggleSwitch', ToggleSwitch);
 app.component('Checkbox', Checkbox);

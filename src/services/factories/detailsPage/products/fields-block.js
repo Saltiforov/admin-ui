@@ -42,7 +42,6 @@ export const productsFieldsBlock = {
                 props: {
                     restOptionsUrl: 'api/admin/filters-configuration',
                     placeholder: computed(() => t("placeholder_enter_filters")),
-                    selectionMode: 'multiple',
                     class: 'w-full product-input md:w-56',
                     required: false,
                     showClear: true,
@@ -53,15 +52,20 @@ export const productsFieldsBlock = {
                 name: 'description',
                 code: 'description',
                 label: computed(() => t("label_description")),
-                type: 'TextArea',
-                disablePropsBinding: false,
+                type: 'Editor',
                 props: {
-                    placeholder: computed(() => t("placeholder_enter_description")),
-                    class: 'w-full product-input md:w-56',
-                    required: false,
-                    showClear: true,
+                    style: 'height: 320px',
+                    required: true,
                     fullWidth: true,
-                    rows: "5"
+                    pt: {
+                        codeBlock: {
+                            style: 'display: none;',
+                        },
+                        image: {
+                            style: 'display: none;',
+                        },
+
+                    }
                 }
             },
             {

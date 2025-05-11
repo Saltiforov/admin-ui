@@ -7,7 +7,14 @@
         :maxSelectedLabels="5"
         display="chip"
         @change="prepareSelectedValue"
-    />
+    >
+      <template #clearicon="{ clearCallback }">
+        <i
+            class="pi pi-times cursor-pointer icon-centered"
+            @click="(e) => handleClear(clearCallback, e)"
+        ></i>
+      </template>
+    </TreeSelect>
   </div>
 </template>
 
@@ -40,6 +47,15 @@ const nodeMapper = (node, key, parentKey, idx) => ({
   id: node._id,
   label: node.name.ru
 });
+
+const handleClear = (clearCallback, event) => {
+  event.stopPropagation();
+  event.preventDefault();
+
+  clearCallback();
+  payload.value = [];
+  emit('update:modelValue', []);
+};
 
 const loadOptions = async () => {
   if (props.config.restOptionsUrl) {
@@ -125,5 +141,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Добавьте стили при необходимости */
+.icon-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #94A3B8;
+  width: 24px;
+  height: 38px;
+}
 </style>

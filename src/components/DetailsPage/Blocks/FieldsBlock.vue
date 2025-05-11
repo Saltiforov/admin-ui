@@ -94,9 +94,6 @@
       </div>
 
     </div>
-
-    <Editor v-model="editorTestValue"></Editor>
-
   </div>
 </template>
 
@@ -123,7 +120,6 @@ const props = defineProps({
 const formData = ref({});
 
 const route = useRoute()
-const editorTestValue = ref('');
 
 const isEditMode = computed(() => route.params.id)
 

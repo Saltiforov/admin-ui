@@ -91,7 +91,12 @@ const items = ref([
   },
 ]);
 
+
+
 const totalRecords = ref(0);
+
+const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
+const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
 
 const fetchProducts = async () => {
   isLoading.value = true;
@@ -117,10 +122,9 @@ const deleteProduct = async (id) => {
   await deleteProductById(id)
 };
 
-const tableRows = ref(route.query.limit ? parseInt(route.query.limit) : 10);
-const tableSkip = ref(route.query.skip ? parseInt(route.query.skip) : 0);
 
-// watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
+watch(() => route.query, () => debounceService(fetchProducts, 500), {immediate: false});
+
 
 timeoutService.setTimeout(() => {
   isLoading.value = false;

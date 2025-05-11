@@ -23,6 +23,7 @@ const props = defineProps({
 const emit = defineEmits(['update:filters']);
 
 const selectedFilters = (filters) => {
+  console.log(filters);
   emit("update:filters", filters)
 }
 

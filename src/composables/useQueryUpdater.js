@@ -5,12 +5,20 @@ export function useQueryUpdater() {
     const router = useRouter();
 
     const updateQuery = (newParams) => {
-        // Объединяем старые query с новыми
         const updatedQuery = { ...route.query, ...newParams };
+
+        const serializedQuery = Object.fromEntries(
+            Object.entries(updatedQuery).map(([key, value]) => {
+                if (Array.isArray(value)) {
+                    return [key, value.join(',')];
+                }
+                return [key, value];
+            })
+        );
 
         // Убираем пустые, null и undefined значения
         const cleanedQuery = Object.fromEntries(
-            Object.entries(updatedQuery).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+            Object.entries(serializedQuery).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
         );
 
         router.push({ path: route.path, query: cleanedQuery });

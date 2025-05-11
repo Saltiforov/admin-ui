@@ -18,8 +18,6 @@ export const useConfirmDelete = (options) => {
         data
     } = options
 
-    console.log("options",options)
-
 
     const confirmDelete = () => {
         confirm.require({
