@@ -34,8 +34,10 @@ export const ru = {
   "placeholder_enter_postal_code": "Введите почтовый индекс",
   "placeholder_enter_country": "Введите страну",
 
+  "static_shipping_and_payment" : "Доставка и оплата",
+  "static_about_us" : "О нас",
   "label_name": "Имя {entity}",
-  "label_price": "Цена {entity}",
+  "label_price": "Цена {entity} ({currency})",
   "label_discount": "Скидка",
   "label_category": "Категория",
   "label_description": "Описание",
@@ -90,6 +92,7 @@ export const ru = {
   "title_orders": "Заказы",
   "title_roles": "Роли",
   "title_users": "Пользователи",
+  "title_static_information": "Статическая информация",
 
   "title_edit_page": "Заполните информацию о {pageName}:",
   "title_edit_page_products" : "Заполните информацию о продукте:",

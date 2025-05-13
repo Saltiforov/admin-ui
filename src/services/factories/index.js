@@ -18,6 +18,12 @@ import {ordersRelatedTable} from "@/services/factories/detailsPage/orders/relate
 import {ordersPopups} from "@/services/factories/detailsPage/orders/popup-handler.js";
 import {POPUP_TYPE} from "@/constants/popups.enum.js";
 import {filtersPopups} from "@/services/factories/detailsPage/filters/popup-handler.js";
+import AboutUsStaticInformation from "@/views/StaticInformation/AboutUsStaticInformation.vue";
+import ShippingAndPayment from "@/views/StaticInformation/ShippingAndPayment.vue";
+import {aboutUsFieldsBlock} from "@/services/factories/detailsPage/static-information/about-us/fields-block.js";
+import {
+    shippingAndPaymentFieldsBlock
+} from "@/services/factories/detailsPage/static-information/shipping-and-payment/fields-block.js";
 
 
 const blocks = {
@@ -56,7 +62,25 @@ const blocks = {
             pageName: OrderDetailsWrapper,
             fetchData: ({ id }) => getOrderById(id),
         }
-    }
+    },
+    [PAGES.STATIC_INFO_SHIPPING]: {
+        [PAGES_TYPE.DETAILS_PAGE]: {
+            blockList: {
+                ...shippingAndPaymentFieldsBlock,
+            },
+            source: DETAILS_PAGES.STATIC_INFO_SHIPPING,
+            pageName: ShippingAndPayment,
+        }
+    },
+    [PAGES.STATIC_INFO_ABOUT_US]: {
+        [PAGES_TYPE.DETAILS_PAGE]: {
+            blockList: {
+                ...aboutUsFieldsBlock,
+            },
+            source: DETAILS_PAGES.STATIC_INFO_ABOUT_US,
+            pageName: AboutUsStaticInformation,
+        }
+    },
 }
 
 const popupHandlers = {
@@ -77,5 +101,6 @@ export function getPopupConfig(pageName, popupType) {
 }
 
 export function getPageConfig(pageName, pageType, options = {}) {
+    console.log(blocks[pageName][pageType])
     return blocks[pageName][pageType];
 }

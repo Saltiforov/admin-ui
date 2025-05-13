@@ -1,39 +1,34 @@
 <template>
   <div>
-    <div v-show="isLoading" class="loader-overlay">
-      <ProgressSpinner class="loader-spinner" />
+    <div v-show="config.isLoading" class="loader-overlay">
+      <ProgressSpinner class="loader-spinner"/>
     </div>
     <component
-        :is="pageName"
-        :blockList="extractComputedPlaceholders(blockList)"
-        :data="data"
-        :isLoading="isLoading"
-        :startLoading="startLoading"
-        :stopLoading="stopLoading"
-        :useFetch="useFetch"
+        :is="config.pageName"
+        :blockList="extractComputedPlaceholders(config.blockList)"
+        :data="config.data"
+        :isLoading="config.isLoading"
+        :startLoading="config.startLoading"
+        :stopLoading="config.stopLoading"
+        :useFetch="config.useFetch"
     />
   </div>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
-import { usePagesConfig } from "@/composables/usePagesConfig.js";
+import {useRoute} from 'vue-router';
+import {usePagesConfig} from "@/composables/usePagesConfig.js";
 import ProgressSpinner from 'primevue/progressspinner';
-import {isRef, unref} from "vue";
+import {computed, isRef, ref, unref, watch} from "vue";
 
 const route = useRoute();
-const pageType = route.meta.pageType;
 const id = route.params.id;
 
-const {
-  blockList,
-  data,
-  pageName,
-  isLoading,
-  stopLoading,
-  startLoading,
-  useFetch
-} = usePagesConfig(pageType, { id });
+const config = ref({});
+
+watch(() => route.meta.pageType, (newType) => {
+  config.value = usePagesConfig(newType, { id });
+}, { immediate: true });
 
 function extractComputedPlaceholders(config) {
   if (!config?.fields?.items) return config;
@@ -64,6 +59,7 @@ function extractComputedPlaceholders(config) {
   width: 50px;
   height: 50px;
 }
+
 .color {
   color: black;
 }

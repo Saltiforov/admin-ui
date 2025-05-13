@@ -8,6 +8,8 @@ export function usePagesConfig(pageType, options = {}, isDataRequired) {
     const data = ref({});
     const loading = ref(needToLoadData.value);
 
+    console.log(pageType, PAGES_TYPE.DETAILS_PAGE)
+
     const config = getPageConfig(pageType, PAGES_TYPE.DETAILS_PAGE);
 
     async function useFetch() {

@@ -20,7 +20,23 @@ export const productsFieldsBlock = {
             {
                 name: 'price',
                 code: 'price',
-                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'UAH' })),
+                type: 'InputNumber',
+                props: {
+                    inputId: 'currency-uah',
+                    mode: 'currency',
+                    currency: 'UAH',
+                    locale: 'uk-UA',
+                    fluid: true,
+                    placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                    required: true
+                },
+                validators: [(value) => (value ? true : "Price is required")],
+            },
+            {
+                name: 'price_usd',
+                code: 'price_usd',
+                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'USD' })),
                 type: 'InputNumber',
                 props: {
                     inputId: 'currency-us',
@@ -31,8 +47,9 @@ export const productsFieldsBlock = {
                     placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
                     required: true
                 },
-                validators: [(value) => (value ? true : "Price is required")],
+                // validators: [(value) => (value ? true : "Price is required")],
             },
+
             {
                 name: 'filters',
                 code: 'filters',
@@ -54,7 +71,7 @@ export const productsFieldsBlock = {
                 label: computed(() => t("label_description")),
                 type: 'Editor',
                 props: {
-                    style: 'height: 320px',
+                    style: 'marginBottom: 16px;',
                     required: true,
                     fullWidth: true,
                     pt: {

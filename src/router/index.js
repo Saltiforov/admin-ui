@@ -14,6 +14,9 @@ import AboutUser from "@/pages/AboutUser.vue";
 import AdminPage from "@/pages/AdminPage.vue";
 import Roles from "@/views/Roles.vue";
 import RoleWorkspace from "@/pages/RoleWorkspace.vue";
+import StaticInformationLayout from "@/views/StaticInformation/StaticInformationLayout.vue";
+import ShippingAndPayment from "@/views/StaticInformation/ShippingAndPayment.vue";
+import AboutUsStaticInformation from "@/views/StaticInformation/AboutUsStaticInformation.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -58,6 +61,26 @@ const routes = [
                 name: "Roles",
                 component: Roles,
             },
+            {
+                path: "static-information",
+                name: "StaticInformation",
+                component: StaticInformationLayout,
+                children: [
+                    {
+                        path: "shipping-and-payment",
+                        name: "ShippingAndPayment",
+                        meta: {pageType: 'shipping-and-payment'},
+                        component: DetailsPage,
+                    },
+                    {
+                        path: "about-us",
+                        name: "AboutUsStaticInformation",
+                        meta: {pageType: 'about-us'},
+                        component: DetailsPage,
+                    },
+                ]
+            },
+
             {
                 path: "role-workspace",
                 name: "RoleWorkspace",

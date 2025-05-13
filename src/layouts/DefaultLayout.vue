@@ -1,6 +1,5 @@
 <template>
   <div class="layout">
-    <!-- Боковое меню -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <img class="sidebar-logo__img" src="../assets/logo/sp-balkan-logo.png" alt="">
@@ -11,9 +10,27 @@
             :key="item.label"
             class="menu-item"
             :class="{ active: isActiveRoute(item.command) }"
-            @click="item.command"
         >
-          <i class="menu-icon" :class="item.icon"></i> {{ item.label }}
+          <div class="menu-link" @click="handleItemClick(item)">
+            <i class="menu-icon" :class="item.icon"></i>
+            {{ item.label }}
+            <span v-if="item.children" class="submenu-arrow">
+              <i :class="isSubmenuOpen(item.label) ? 'pi pi-arrow-right' : 'pi pi-arrow-up'"
+                 style="font-size: 0.8rem"></i>
+            </span>
+          </div>
+
+          <ul v-if="item.children && isSubmenuOpen(item.label) && isActiveRoute(item.command)" class="submenu">
+            <li
+                v-for="child in item.children"
+                :key="child.label"
+                class="submenu-item"
+                :class="{ active: isActiveRoute(child.command) }"
+                @click.stop="child.command"
+            >
+              {{ child.label }}
+            </li>
+          </ul>
         </li>
       </ul>
     </aside>
@@ -41,7 +58,6 @@
         </div>
       </header>
 
-      <!-- Контент -->
       <main class="content">
         <router-view/>
       </main>
@@ -49,22 +65,45 @@
   </div>
 </template>
 
-
 <script setup>
 import {useRouter, useRoute} from "vue-router";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import LocaleSwitch from "@/components/UI/LocaleSwitch.vue";
-
-const router = useRouter();
-const route = useRoute();
-
 import {useI18n} from 'vue-i18n';
 import {useAuthStore} from "@/stores/authRole.js";
 
+const router = useRouter();
+const route = useRoute();
 const {t} = useI18n();
 const authStore = useAuthStore();
 
-// v-show="item.userAccess"
+const openedSubmenus = ref([]);
+
+const toggleSubmenu = (label) => {
+  if (openedSubmenus.value.includes(label)) {
+    openedSubmenus.value = openedSubmenus.value.filter(l => l !== label)
+  } else {
+    openedSubmenus.value.push(label)
+
+  }
+};
+
+const isSubmenuOpen = (label) => {
+  return openedSubmenus.value.includes(label)
+};
+
+const handleItemClick = (item) => {
+  if (item.children && item.children.length) {
+    toggleSubmenu(item.label);
+
+    const firstChild = item.children[0];
+    if (firstChild?.command) {
+      firstChild.command();
+    }
+  } else if (item.command) {
+    item.command();
+  }
+};
 
 const menuItems = computed(() => [
   {
@@ -74,37 +113,76 @@ const menuItems = computed(() => [
         label: t("title_filters"),
         icon: "pi pi-filter",
         command: () => router.push("/filters-configuration"),
+        path: '/filters-configuration',
         userAccess: authStore.canManage
       },
       {
-        label: t("title_products"), icon: "pi pi-shopping-cart", command: () => router.push("/products"),
+        label: t("title_products"),
+        icon: "pi pi-shopping-cart",
+        command: () => router.push("/products"),
+        path: '/products',
         userAccess: authStore.canManage
       },
       {
-        label: t("title_users"), icon: "pi pi-user", command: () => router.push("/users"),
+        label: t("title_users"),
+        icon: "pi pi-user",
+        command: () => router.push("/users"),
+        path: '/users',
         userAccess: authStore.canManage
       },
       {
-        label: t("title_orders"), icon: "pi pi-clipboard", command: () => router.push("/orders"),
+        label: t("title_orders"),
+        icon: "pi pi-clipboard",
+        command: () => router.push("/orders"),
+        path: '/orders',
         userAccess: authStore.canManage
       },
       {
-        label: t("title_roles"), icon: "pi pi-id-card", command: () => router.push("/roles"),
+        label: t("title_roles"),
+        icon: "pi pi-id-card",
+        command: () => router.push("/roles"),
+        path: '/roles',
         userAccess: authStore.canManage
       },
-
+      {
+        label: t("title_static_information"),
+        icon: "pi pi-list",
+        command: () => router.push("/static-information"),
+        path: '/static-information',
+        userAccess: authStore.canManage,
+        children: [
+          {
+            label: t("static_shipping_and_payment"),
+            command: () => router.push("/static-information/shipping-and-payment"),
+            userAccess: authStore.canManage
+          },
+          {
+            label: t("static_about_us"),
+            command: () => router.push("/static-information/about-us"),
+            userAccess: authStore.canManage
+          }
+        ]
+      }
     ],
-  },
-])
+  }
+]);
 
 const isActiveRoute = (command) => {
-  const routePath = command.toString().match(/\/[a-z]+/i)?.[0];
+  const routePath = command.toString().match(/\/[a-z-/]+/i)?.[0];
   return route.path.startsWith(routePath);
 };
 
 const activeTab = computed(() => {
-  const activeItem = menuItems.value[0].items.find(item => isActiveRoute(item.command));
-  return activeItem ? activeItem.label : "";
+  const topLevel = menuItems.value?.[0]?.items ?? [];
+
+  const activeItem = topLevel.find(item => isActiveRoute(item.command));
+  if (!activeItem) return "";
+
+  const activeChild = activeItem.children?.find(child => isActiveRoute(child.command));
+
+  return activeChild
+      ? `${activeItem.label} / ${activeChild.label}`
+      : activeItem.label;
 });
 
 </script>
@@ -113,11 +191,10 @@ const activeTab = computed(() => {
 <style scoped>
 .layout {
   display: grid;
-  grid-template-columns: 250px 1fr; /* Сайдбар фиксированный, контент адаптивный */
-  grid-template-rows: 100vh; /* Высота на весь экран */
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 100vh;
 }
 
-/*   box-shadow: 0px 0 15px rgba(0, 0, 0, 0.1); border-right: 1px solid #ddd; */
 .sidebar {
   padding: 20px;
   display: flex;
@@ -125,7 +202,6 @@ const activeTab = computed(() => {
   z-index: 1;
 }
 
-/* Основной контейнер для топбара и контента */
 .main-container {
   display: flex;
   flex-direction: column;
@@ -133,7 +209,6 @@ const activeTab = computed(() => {
   min-width: 0;
 }
 
-/* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); */
 .topbar {
   color: #ADABC4;
   background: white;
@@ -151,7 +226,6 @@ const activeTab = computed(() => {
   justify-content: center;
 }
 
-/* Контент */
 .content {
   flex-grow: 1;
   padding: 20px;
@@ -161,6 +235,9 @@ const activeTab = computed(() => {
 .topbar__actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  max-width: 400px;
+  width: 100%;
 }
 
 .menu {
@@ -169,49 +246,39 @@ const activeTab = computed(() => {
   margin: 0;
 }
 
-.topbar--input {
-  border-radius: 20px;
+.menu-item {
+  position: relative;
 }
 
-.action__item {
-  margin: 0 20px;
+.submenu {
+  margin-top: 0.25rem;
+  padding-left: 1rem;
 }
 
-.settings-btn {
-  background-color: #EBEFF5; /* Темный фон */
-  border: none;
-  width: 48px; /* Квадратная кнопка */
-  height: 48px;
-  border-radius: 50%; /* Делаем круглую */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.3s ease-in-out;
+.submenu-item {
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.settings-btn:hover {
-  background-color: #d5d0d0 !important; /* Чуть светлее при наведении */
-  border: none !important;
+.submenu-arrow {
+  margin-left: auto;
+  font-size: 0.8rem;
+  transform: rotate(90deg);
 }
-
-.settings-btn:active {
-  transform: scale(0.9); /* Анимация при нажатии */
-}
-
 
 .menu li {
   position: relative;
   color: #C1C1C1;
   margin: 5px 0px;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.3s;
 }
 
 .menu li.active {
-  color: #1C12EB; /* Цвет текста активного элемента */
-  font-weight: bold; /* Делаем активный элемент жирным */
+  color: #1C12EB;
+  font-weight: bold;
 }
 
 .menu li.active::before {
@@ -219,14 +286,21 @@ const activeTab = computed(() => {
   position: absolute;
   left: 0;
   top: 0;
-  width: 4px; /* Ширина полоски */
+  width: 4px;
   height: 100%;
-  background-color: #1A2795; /* Цвет полоски */
-  border-radius: 2px; /* Закругление краёв */
+  background-color: #1A2795;
+  border-radius: 2px;
 }
 
 .menu-item {
   font-size: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
 }
 
 .menu-icon {
@@ -242,5 +316,24 @@ const activeTab = computed(() => {
   border-top-left-radius: 15px;
 }
 
-</style>
+.settings-btn {
+  background-color: #EBEFF5;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s ease-in-out;
+}
 
+.settings-btn:hover {
+  background-color: #d5d0d0 !important;
+  border: none !important;
+}
+
+.settings-btn:active {
+  transform: scale(0.9);
+}
+</style>

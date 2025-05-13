@@ -34,8 +34,10 @@ export const uk = {
     "placeholder_enter_postal_code": "Введіть поштовий код",
     "placeholder_enter_country": "Введіть країну",
 
+    "static_shipping_and_payment" : "Доставка та оплата",
+    "static_about_us" : "Про нас",
     "label_name": "Ім'я {entity}",
-    "label_price": "Ціна {entity}",
+    "label_price": "Ціна {entity} ({currency})",
     "label_discount": "Знижка",
     "label_category": "Категорія",
     "label_description": "Опис",
@@ -90,6 +92,7 @@ export const uk = {
     "title_orders": "Замовлення",
     "title_roles": "Ролі",
     "title_users": "Користувачі",
+    "title_static_information": "Статична інформація",
 
     "title_edit_page": "Заповніть інформацію про {pageName}:",
     "title_edit_page_products": "Заповніть інформацію про продукт:",
