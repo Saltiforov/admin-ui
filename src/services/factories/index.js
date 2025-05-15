@@ -24,6 +24,13 @@ import {aboutUsFieldsBlock} from "@/services/factories/detailsPage/static-inform
 import {
     shippingAndPaymentFieldsBlock
 } from "@/services/factories/detailsPage/static-information/shipping-and-payment/fields-block.js";
+import {getStaticPageBySlug} from "@/services/api/static-information.js";
+import {newArrivalsFieldsBlock} from "@/services/factories/detailsPage/static-information/new-arrivals/fields-block.js";
+import NewArrivalsStatic from "@/views/StaticInformation/NewArrivalsStatic.vue";
+import {
+    deliveryAndPaymentFieldsBLock
+} from "@/services/factories/detailsPage/static-information/delivery-and-payment-product/fields-block.js";
+import DeliveryAndPaymentProduct from "@/views/StaticInformation/DeliveryAndPaymentProduct.vue";
 
 
 const blocks = {
@@ -70,6 +77,7 @@ const blocks = {
             },
             source: DETAILS_PAGES.STATIC_INFO_SHIPPING,
             pageName: ShippingAndPayment,
+            fetchData: ({ slug }) => getStaticPageBySlug(slug),
         }
     },
     [PAGES.STATIC_INFO_ABOUT_US]: {
@@ -79,6 +87,27 @@ const blocks = {
             },
             source: DETAILS_PAGES.STATIC_INFO_ABOUT_US,
             pageName: AboutUsStaticInformation,
+            fetchData: ({ slug }) => getStaticPageBySlug(slug),
+        }
+    },
+    [PAGES.STATIC_INFO_NEW_ARRIVALS]: {
+        [PAGES_TYPE.DETAILS_PAGE]: {
+            blockList: {
+                ...newArrivalsFieldsBlock,
+            },
+            source: DETAILS_PAGES.STATIC_INFO_NEW_ARRIVALS,
+            pageName: NewArrivalsStatic,
+            fetchData: ({ slug }) => getStaticPageBySlug(slug),
+        }
+    },
+    [PAGES.STATIC_INFO_DELIVERY_AND_PAYMENT_PRODUCT]: {
+        [PAGES_TYPE.DETAILS_PAGE]: {
+            blockList: {
+                ...deliveryAndPaymentFieldsBLock,
+            },
+            source: DETAILS_PAGES.STATIC_INFO_DELIVERY_AND_PAYMENT_PRODUCT,
+            pageName: DeliveryAndPaymentProduct,
+            fetchData: ({ slug }) => getStaticPageBySlug(slug),
         }
     },
 }
@@ -101,6 +130,5 @@ export function getPopupConfig(pageName, popupType) {
 }
 
 export function getPageConfig(pageName, pageType, options = {}) {
-    console.log(blocks[pageName][pageType])
     return blocks[pageName][pageType];
 }

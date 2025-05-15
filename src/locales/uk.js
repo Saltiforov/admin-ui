@@ -36,9 +36,11 @@ export const uk = {
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",
+    "static_new_arrivals" : "Нові надходження",
+    "static_delivery_and_payment" : "Доставка та оплата",
     "label_name": "Ім'я {entity}",
     "label_price": "Ціна {entity} ({currency})",
-    "label_discount": "Знижка",
+    "label_discount": "Знижка ({currency})",
     "label_category": "Категорія",
     "label_description": "Опис",
     "label_related_filters": "Супутні фільтри",

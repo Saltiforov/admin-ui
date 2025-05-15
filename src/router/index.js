@@ -78,6 +78,18 @@ const routes = [
                         meta: {pageType: 'about-us'},
                         component: DetailsPage,
                     },
+                    {
+                        path: "new-arrivals",
+                        name: "NewArrivalsStatic",
+                        meta: {pageType: 'new-arrivals'},
+                        component: DetailsPage,
+                    },
+                    {
+                        path: "delivery-and-payment-product",
+                        name: "DeliveryAndPaymentProduct",
+                        meta: {pageType: 'delivery-and-payment-product'},
+                        component: DetailsPage,
+                    },
                 ]
             },
 

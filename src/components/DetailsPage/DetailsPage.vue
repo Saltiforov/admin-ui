@@ -24,11 +24,18 @@ import {computed, isRef, ref, unref, watch} from "vue";
 const route = useRoute();
 const id = route.params.id;
 
+const lastSegment = computed(() => {
+  const segments = route.path.split('/')
+  const filtered = segments.filter(Boolean)
+  return filtered[filtered.length - 1] || null
+})
 const config = ref({});
 
+
 watch(() => route.meta.pageType, (newType) => {
-  config.value = usePagesConfig(newType, { id });
-}, { immediate: true });
+  config.value = usePagesConfig(newType, {id, slug: lastSegment.value});
+
+}, {immediate: true});
 
 function extractComputedPlaceholders(config) {
   if (!config?.fields?.items) return config;

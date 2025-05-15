@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import {computed, defineProps, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
+import {computed, defineProps, ref} from 'vue';
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
 import {useRoute, useRouter} from "vue-router";
@@ -53,7 +53,7 @@ const props = defineProps({
 const route = useRoute();
 
 const detailsPageData = computed(() => {
-  return props.data[DETAILS_PAGES.STATIC_INFO_ABOUT_US];
+  return props.data[DETAILS_PAGES.STATIC_INFO_DELIVERY_AND_PAYMENT_PRODUCT];
 });
 
 const lastSegment = computed(() => {

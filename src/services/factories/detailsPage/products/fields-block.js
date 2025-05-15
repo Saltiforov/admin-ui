@@ -18,37 +18,94 @@ export const productsFieldsBlock = {
                 validators: [(value) => (value ? true : "Name is required")],
             },
             {
-                name: 'price',
-                code: 'price',
-                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'UAH' })),
-                type: 'InputNumber',
+                name: 'vendor',
+                code: 'vendor',
+                label: computed(() => t("vendor", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                type: 'InputText',
                 props: {
-                    inputId: 'currency-uah',
-                    mode: 'currency',
-                    currency: 'UAH',
-                    locale: 'uk-UA',
-                    fluid: true,
-                    placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                    type: 'text',
+                    class: 'product-input',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
                     required: true
                 },
-                validators: [(value) => (value ? true : "Price is required")],
             },
+
             {
-                name: 'price_usd',
-                code: 'price_usd',
-                label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'USD' })),
-                type: 'InputNumber',
+                type: 'InputText',
                 props: {
-                    inputId: 'currency-us',
-                    mode: 'currency',
-                    currency: 'USD',
-                    locale: 'en-US',
-                    fluid: true,
-                    placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
-                    required: true
+                    type: 'text',
+                    class: 'product-input',
+                    required: true,
                 },
-                // validators: [(value) => (value ? true : "Price is required")],
+                blockTitle: 'Pricing',
+                children: [
+                    {
+                        name: 'price_uah',
+                        code: 'price_uah',
+                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'UAH' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'currency-uah',
+                            mode: 'currency',
+                            currency: 'UAH',
+                            locale: 'uk-UA',
+                            fluid: true,
+                            placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                        validators: [(value) => (value ? true : "Price (UAH) is required")],
+                    },
+                    {
+                        name: 'discount',
+                        code: 'discount',
+                        label: computed(() => t("label_discount", { currency: 'UAH' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'discount',
+                            suffix: '%',
+                            min: 0,
+                            max: 100,
+                            placeholder: computed(() => t("placeholder_enter_discount")),
+                            required: false
+                        },
+                        validators: [(value) => (value ? true : "Discount (UAH) is required")],
+                    },
+                    {
+                        name: 'price_usd',
+                        code: 'price_usd',
+                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'USD' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'currency-us',
+                            mode: 'currency',
+                            currency: 'USD',
+                            locale: 'en-US',
+                            fluid: true,
+                            placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                        validators: [(value) => (value ? true : "Price (USD) is required")],
+                    },
+                    {
+                        name: 'discount',
+                        code: 'discount',
+                        label: computed(() => t("label_discount", { currency: 'USD' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'discount',
+                            suffix: '%',
+                            min: 0,
+                            max: 100,
+                            placeholder: computed(() => t("placeholder_enter_discount")),
+                            required: false
+                        },
+                        validators: [(value) => (value ? true : "Discount (USD) is required")],
+                    },
+                ]
             },
+
+
+
 
             {
                 name: 'filters',
@@ -62,7 +119,7 @@ export const productsFieldsBlock = {
                     class: 'w-full product-input md:w-56',
                     required: false,
                     showClear: true,
-                    fullWidth: true,
+                    fullWidth: false,
                 }
             },
             {
@@ -83,20 +140,6 @@ export const productsFieldsBlock = {
                         },
 
                     }
-                }
-            },
-            {
-                name: 'discount',
-                code: 'discount',
-                label: computed(() => t("label_discount")),
-                type: 'InputNumber',
-                props: {
-                    inputId: 'discount',
-                    suffix: '%',
-                    min: 0,
-                    max: 100,
-                    placeholder: computed(() => t("placeholder_enter_discount")),
-                    required: false
                 }
             },
             {

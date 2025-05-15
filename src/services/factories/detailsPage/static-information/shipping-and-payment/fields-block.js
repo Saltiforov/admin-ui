@@ -1,11 +1,38 @@
 import {computed} from "vue";
+import {capitalizeFirstLetter} from "@/utils/index.js";
 
 export const shippingAndPaymentFieldsBlock = {
     fields: {
         items: [
+             {
+                name: 'slug',
+                code: 'slug',
+                label: computed(() => t("slug", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    class: 'product-input',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
+                    required: true,
+                    disabled: true
+                },
+            },
+
             {
-                name: 'description',
-                code: 'description',
+                name: 'title',
+                code: 'title',
+                label: computed(() => t("title", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    class: 'product-input',
+                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
+                    required: true
+                },
+            },
+            {
+                name: 'content',
+                code: 'content',
                 label: computed(() => t("label_description")),
                 type: 'Editor',
                 props: {

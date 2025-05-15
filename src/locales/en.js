@@ -35,9 +35,11 @@ export const en = {
 
     "static_shipping_and_payment" : "Shipping and Payment",
     "static_about_us" : "About us",
+    "static_new_arrivals" : "New Arrivals",
+    "static_delivery_and_payment" : "Delivery and Payment",
     "label_name": "{entity} Name",
     "label_price": "{entity} Price ({currency})",
-    "label_discount": "Discount ",
+    "label_discount": "Discount ({currency})",
     "label_category": "Category",
     "label_description": "Description",
     "label_related_filters": "Related Filters",

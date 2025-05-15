@@ -18,3 +18,33 @@ export async function createStaticPage(payload) {
         throw error;
     }
 }
+
+export async function getStaticPageBySlug(slug) {
+    const api = app.config.globalProperties.$api;
+
+    try {
+
+        const response = await api.get(`${router.static_pages}/${slug}`);
+
+        return response.data;
+
+    } catch (error) {
+        console.error('Error in createProduct:', error);
+        throw error;
+    }
+}
+
+export async function updateExistPageBySlug(slug, payload) {
+    const api = app.config.globalProperties.$api;
+
+    try {
+
+        const response = await api.put(`${router.static_pages}/${slug}`, payload);
+
+        return response.data;
+
+    } catch (error) {
+        console.error('Error in createProduct:', error);
+        throw error;
+    }
+}

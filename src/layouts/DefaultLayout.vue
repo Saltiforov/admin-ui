@@ -160,7 +160,17 @@ const menuItems = computed(() => [
             label: t("static_about_us"),
             command: () => router.push("/static-information/about-us"),
             userAccess: authStore.canManage
-          }
+          },
+          {
+            label: t("static_new_arrivals"),
+            command: () => router.push("/static-information/new-arrivals"),
+            userAccess: authStore.canManage
+          },
+          {
+            label: t("static_delivery_and_payment"),
+            command: () => router.push("/static-information/delivery-and-payment-product"),
+            userAccess: authStore.canManage
+          },
         ]
       }
     ],

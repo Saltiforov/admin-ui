@@ -1,7 +1,7 @@
 import {computed} from "vue";
 import {capitalizeFirstLetter} from "@/utils/index.js";
 
-export const aboutUsFieldsBlock = {
+export const newArrivalsFieldsBlock = {
     fields: {
         items: [
             {
