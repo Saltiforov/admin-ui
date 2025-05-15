@@ -27,6 +27,7 @@ import {capitalizeFirstLetter, mappedFieldsForValidation} from "@/utils/index.js
 import {useFormHandler} from "@/composables/useFormHandler.js";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import FieldsBlock from "@/components/DetailsPage/Blocks/FieldsBlock.vue";
+import {createStaticPage} from "@/services/api/static-information.js";
 
 const props = defineProps({
   blockList: {
@@ -69,10 +70,19 @@ const fieldsBlockRef = ref(null);
 
 const allData = ref({});
 
-const collectDataFromComponents = (e) => {
+const collectDataFromComponents = async (e) => {
   allData.value = {
     ...fieldsBlockRef.value.getData(),
   };
+
+  await createStaticPage({
+    slug: 'about-us',
+    title: "About Us",
+    locale: 'uk',
+    content: allData.value.description,
+  })
+
+  console.log("collectDataFromComponents", allData.value);
 };
 
 
