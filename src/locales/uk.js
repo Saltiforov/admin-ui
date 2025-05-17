@@ -37,6 +37,10 @@ export const uk = {
     "without_accordion": "Без акордеону (списком)",
     "accordion": "Акордеон (згортальні блоки)",
     "slug": "Slug",
+    "static_page_title": "Назва сторінки",
+    "static_accordion_name": "Назва акордеону",
+    "static_accordion_heading": "Заголовок акордеону",
+    "static_accordion_text": "Текст акордеону",
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",

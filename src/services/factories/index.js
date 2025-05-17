@@ -31,6 +31,9 @@ import {
     deliveryAndPaymentFieldsBLock
 } from "@/services/factories/detailsPage/static-information/delivery-and-payment-product/fields-block.js";
 import DeliveryAndPaymentProduct from "@/views/StaticInformation/DeliveryAndPaymentProduct.vue";
+import {
+    aboutUsStaticInfoBlock
+} from "@/services/factories/detailsPage/static-information/about-us/static-info-block.js";
 
 
 const blocks = {
@@ -84,6 +87,7 @@ const blocks = {
         [PAGES_TYPE.DETAILS_PAGE]: {
             blockList: {
                 ...aboutUsFieldsBlock,
+                ...aboutUsStaticInfoBlock,
             },
             source: DETAILS_PAGES.STATIC_INFO_ABOUT_US,
             pageName: AboutUsStaticInformation,

@@ -37,6 +37,10 @@ export const ru = {
   "without_accordion": "Без аккордеона (списком)",
   "accordion": "Аккордеон (сворачиваемые блоки)",
   "slug": "Slug",
+  "static_page_title": "Название страницы",
+  "static_accordion_name": "Название аккордеона",
+  "static_accordion_heading": "Заголовок аккордеона",
+  "static_accordion_text": "Текст для аккордеона",
 
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",

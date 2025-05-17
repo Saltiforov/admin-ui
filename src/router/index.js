@@ -17,6 +17,7 @@ import RoleWorkspace from "@/pages/RoleWorkspace.vue";
 import StaticInformationLayout from "@/views/StaticInformation/StaticInformationLayout.vue";
 import ShippingAndPayment from "@/views/StaticInformation/ShippingAndPayment.vue";
 import AboutUsStaticInformation from "@/views/StaticInformation/AboutUsStaticInformation.vue";
+import StaticInformation from "@/pages/StaticInformation.vue";
 
 function isAuthenticated() {
     return !!localStorage.getItem("authToken");
@@ -56,6 +57,12 @@ const routes = [
                 name: "Orders",
                 component: Orders,
             },
+            {
+                path: "static-information-test",
+                name: "StaticInformationTest",
+                component: StaticInformation,
+            },
+
             {
                 path: "roles",
                 name: "Roles",

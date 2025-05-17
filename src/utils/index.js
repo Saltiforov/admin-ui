@@ -210,3 +210,31 @@ export function capitalizeFirstLetter(str) {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export const generatePageData = (slug, isAccordionFields, pageTitle, blockSections) => {
+    if (isAccordionFields) {
+        return {
+            slug,
+            accordion: true,
+            content: blockSections.map(section => ({
+                title: section.title,
+                blocks: section.blocks.map(block => ({
+                    blockTitle: block.blockTitle,
+                    blockContent: block.blockContent,
+                })),
+            })),
+        };
+    } else {
+        return {
+            slug,
+            accordion: false,
+            content: blockSections.flatMap(section =>
+                section.blocks.map(block => ({
+                    title: block.blockTitle || null,
+                    content: block.blockContent,
+                }))
+            ),
+        };
+    }
+};
+

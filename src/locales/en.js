@@ -36,6 +36,10 @@ export const en = {
     "without_accordion": "Without accordion (list)",
     "accordion": "Accordion (collapsible blocks)",
     "slug": "Slug",
+    "static_page_title": "Page title",
+    "static_accordion_name": "Accordion name",
+    "static_accordion_heading": "Accordion heading",
+    "static_accordion_text": "Accordion text",
 
     "static_shipping_and_payment" : "Shipping and Payment",
     "static_about_us" : "About us",
