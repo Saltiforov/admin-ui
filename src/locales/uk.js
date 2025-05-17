@@ -33,6 +33,10 @@ export const uk = {
     "placeholder_enter_city": "Введіть місто",
     "placeholder_enter_postal_code": "Введіть поштовий код",
     "placeholder_enter_country": "Введіть країну",
+    "display_type_label": "Тип відображення інформації",
+    "without_accordion": "Без акордеону (списком)",
+    "accordion": "Акордеон (згортальні блоки)",
+    "slug": "Slug",
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",

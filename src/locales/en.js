@@ -32,6 +32,10 @@ export const en = {
     "placeholder_enter_city": "Enter city",
     "placeholder_enter_postal_code": "Enter postal code",
     "placeholder_enter_country": "Enter country",
+    "display_type_label": "Display type",
+    "without_accordion": "Without accordion (list)",
+    "accordion": "Accordion (collapsible blocks)",
+    "slug": "Slug",
 
     "static_shipping_and_payment" : "Shipping and Payment",
     "static_about_us" : "About us",

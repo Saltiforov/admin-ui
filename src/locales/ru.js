@@ -33,6 +33,10 @@ export const ru = {
   "placeholder_enter_city": "Введите город",
   "placeholder_enter_postal_code": "Введите почтовый индекс",
   "placeholder_enter_country": "Введите страну",
+  "display_type_label": "Тип отображения информации",
+  "without_accordion": "Без аккордеона (списком)",
+  "accordion": "Аккордеон (сворачиваемые блоки)",
+  "slug": "Slug",
 
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",
