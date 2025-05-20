@@ -15,7 +15,7 @@ export const dataProductsTableConfig = ref({
             slotName: "image",
             style: "width: 15%",
         },
-        {field: "price", header: computed(() => t("table_header_price")), sortable: true},
+        {field: "price", header: computed(() => t("table_header_price")),  slotName: "price", style: "width: 10%",},
         {field: "description", header: computed(() => t("table_header_description")), class: "multiline-truncate"},
         {field: "category", header: computed(() => t("table_header_category"))},
         {field: "availability", header: computed(() => t("table_header_availability")), slotName: "availability"},

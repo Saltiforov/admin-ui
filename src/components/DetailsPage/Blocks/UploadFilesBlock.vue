@@ -82,7 +82,6 @@ const entityId = computed(() => route.params.id || '');
 
 const uploadFiles = async (files, id) => {
   try {
-
     const response = await props.config.uploadMethod(id, files, {
       headers: {"Content-Type": "multipart/form-data"},
     });

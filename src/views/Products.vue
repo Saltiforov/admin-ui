@@ -13,6 +13,12 @@
                class="table-image h-auto rounded object-contain"/>
         </div>
       </template>
+      <template #price="{ data }">
+        <div class="price-display">
+          <div v-if="data.price?.usd">USD: {{ data.price.usd }}</div>
+          <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
+        </div>
+      </template>
       <template #availability="{ data }">
         <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
         <span v-else>---</span>
@@ -225,6 +231,16 @@ const {confirmDelete} = useConfirmDelete(updatedConfirmOptions)
 
 .action-button {
   margin: 0 10px;
+}
+
+.price-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-display span {
+  color: #333;
 }
 
 .products-page__title {

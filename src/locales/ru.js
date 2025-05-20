@@ -41,6 +41,7 @@ export const ru = {
   "static_accordion_name": "Название аккордеона",
   "static_accordion_heading": "Заголовок аккордеона",
   "static_accordion_text": "Текст для аккордеона",
+  "label_show_as_new": "Отображать как новый продукт",
 
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",

@@ -18,6 +18,20 @@ export const productsFieldsBlock = {
                 validators: [(value) => (value ? true : "Name is required")],
             },
             {
+                name: 'showAsNew',
+                code: 'showAsNew',
+                label: computed(() => t("label_show_as_new")),
+                type: 'Checkbox',
+                props: {
+                    class: 'product-checkbox',
+                    trueValue: true,
+                    falseValue: false,
+                    binary: true,
+                },
+                default: false,
+                validators: [],
+            },
+            {
                 name: 'vendor',
                 code: 'vendor',
                 label: computed(() => t("vendor", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
@@ -56,8 +70,8 @@ export const productsFieldsBlock = {
                         validators: [(value) => (value ? true : "Price (UAH) is required")],
                     },
                     {
-                        name: 'discount',
-                        code: 'discount',
+                        name: 'discount_uah',
+                        code: 'discount_uah',
                         label: computed(() => t("label_discount", { currency: 'UAH' })),
                         type: 'InputNumber',
                         props: {
@@ -87,8 +101,8 @@ export const productsFieldsBlock = {
                         validators: [(value) => (value ? true : "Price (USD) is required")],
                     },
                     {
-                        name: 'discount',
-                        code: 'discount',
+                        name: 'discount_usd',
+                        code: 'discount_usd',
                         label: computed(() => t("label_discount", { currency: 'USD' })),
                         type: 'InputNumber',
                         props: {
@@ -103,8 +117,6 @@ export const productsFieldsBlock = {
                     },
                 ]
             },
-
-
 
 
             {

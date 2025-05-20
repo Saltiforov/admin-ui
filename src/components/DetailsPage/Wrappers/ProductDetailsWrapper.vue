@@ -32,7 +32,7 @@ import UploadFilesBlock from "@/components/DetailsPage/Blocks/UploadFilesBlock.v
 import DynamicAttrsBlock from "@/components/DetailsPage/Blocks/DynamicAttrsBlock.vue";
 import {DETAILS_PAGES} from "@/constants/pages.enum.js";
 import FooterActionBlock from "@/components/DetailsPage/Blocks/FooterActionBlock.vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import eventBus from "../../../../eventBus.js";
 import {useFormHandler} from "@/composables/useFormHandler.js";
 import {mappedFieldsForValidation} from "@/utils/index.js";
@@ -66,12 +66,21 @@ const props = defineProps({
 });
 
 const detailsPageData = computed(() => {
-  return props.data[DETAILS_PAGES.PRODUCTS];
+  const data = props.data[DETAILS_PAGES.PRODUCTS]
+  return {
+    ...data,
+    discount_uah: data?.discount?.uah || 0,
+    discount_usd: data?.discount?.usd || 0,
+    price_uah: data?.price?.uah || 0,
+    price_usd: data?.price?.usd || 0,
+  }
 });
 
-const isEditMode = computed(() => {
-  return !!detailsPageData.value;
-});
+const route = useRoute();
+
+console.log("route", route)
+
+const isEditMode = computed(() => !!route.params.id);
 
 const productId = computed(() => detailsPageData.value._id)
 
@@ -89,6 +98,7 @@ const collectDataFromComponents = () => {
     ...dynamicAttrsRef.value.getData(),
     images: uploadFilesRef.value.getData()
   };
+
   handleProduct()
 };
 

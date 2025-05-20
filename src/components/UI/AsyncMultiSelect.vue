@@ -102,237 +102,188 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, onUnmounted, watch, defineProps} from 'vue';
-import {useDataStore} from "@/stores/dataStore.js";
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useDataStore } from "@/stores/dataStore.js";
+import createDebouncedService from '@/services/debounceService/debounceService.js'
+
+const { debounceService } = createDebouncedService();
+
 const props = defineProps({
-  selectId: {
-    type: String,
-    required: true
-  },
-  options: {
-    type: Array,
-    required: true
-  },
-  filter: {
-    type: Boolean,
-    default: true
-  },
-  filterPlaceholder: {
-    type: String,
-    default: "Search..."
-  },
-  maxSelectedLabels: {
-    type: Number,
-    default: 5
-  },
-  placeholder: {
-    type: String,
-    default: "Select a value"
-  },
-  optionLabel: {
-    type: String,
-    default: "label"
-  },
-  itemsPerPage: {
-    type: Number,
-    default: 10
-  },
-  skip: {
-    type: Number,
-    default: 0
-  },
-  display: {
-    type: String,
-    default: "chip"
-  },
-  restOptionsUrl: {
-    type: String,
-    required: true
-  },
-  selectClass: {
-    type: String,
-    default: "w-full"
-  },
-  style: {
-    type: String,
-    default: ""
-  },
-  modelValue: {
-    type: Array,
-    default: () => []
-  },
-  useEditMode: {
-    type: Boolean,
-    default: true
-  },
-  chips: {
-    type: Boolean,
-    default: true
-  },
-  multiple: {
-    type: Boolean,
-    default: true
-  }
+  selectId: { type: String, required: true },
+  options: { type: Array, required: true },
+  filter: { type: Boolean, default: true },
+  filterPlaceholder: { type: String, default: "Search..." },
+  maxSelectedLabels: { type: Number, default: 5 },
+  placeholder: { type: String, default: "Select a value" },
+  optionLabel: { type: String, default: "label" },
+  itemsPerPage: { type: Number, default: 10 },
+  skip: { type: Number, default: 0 },
+  display: { type: String, default: "chip" },
+  restOptionsUrl: { type: String, required: true },
+  selectClass: { type: String, default: "w-full" },
+  style: { type: String, default: "" },
+  modelValue: { type: Array, default: () => [] },
+  useEditMode: { type: Boolean, default: true },
+  chips: { type: Boolean, default: true },
+  multiple: { type: Boolean, default: true }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
-// :style="{ height: isShowMore ? '100%' : '85px' }"
-
-const searchQuery = ref('');
-
-const selectedOptions = ref([]);
-
-const filteredOptions = computed(() => {
-  if (!searchQuery.value.trim()) return options.value;
-
-  const query = searchQuery.value.trim().toLowerCase();
-  return options.value.filter(option =>
-      option.label.toLowerCase().includes(query)
-  );
-});
-
-const loading = ref(false);
+const searchQuery = ref('')
+const selectedOptions = ref([])
+const loading = ref(false)
+const isOpen = ref(false)
+const isShowMore = ref(false)
+const multiselectRef = ref(null)
 
 const dataStore = useDataStore()
 
-const params = computed(() => {
-  return {
-    skip: props.skip + (dataStore.getCurrentPage(props.selectId) - 1) * props.itemsPerPage,
-    limit: props.itemsPerPage,
-  }
-})
-
 const useEditMode = computed(() => props.useEditMode)
 
+const params = computed(() => ({
+  skip: props.skip + (dataStore.getCurrentPage(props.selectId) - 1) * props.itemsPerPage,
+  limit: props.itemsPerPage,
+  q: searchQuery.value.trim()
+}))
 
 const options = computed(() => {
   return dataStore.getOptions(props.selectId).map(option => ({
     label: option.name || option.username,
     code: option._id
   }))
-});
+})
 
-const optionsCache = computed(() => dataStore.getSelectedData(props.selectId) || []);
+const optionsCache = computed(() => dataStore.getSelectedData(props.selectId) || [])
 
-const isOpen = ref(!!optionsCache.value.length);
-
-const multiselectRef = ref(null);
-
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
-};
-
-const closeDropdown = (event) => {
-  if (multiselectRef.value && !multiselectRef.value.contains(event.target)) {
-    isOpen.value = false;
-  }
-};
-
-const toggleSelection = (option) => {
-  if (props.multiple) {
-    const index = selectedOptions.value.findIndex(o => o.code === option.code);
-    if (index === -1) {
-      selectedOptions.value.push(option);
-    } else {
-      selectedOptions.value.splice(index, 1);
-    }
-    emit('update:modelValue', selectedOptions.value);
-  } else {
-    selectedOptions.value = [option];
-    emit('update:modelValue', option); // если нужно отправлять не массив
-    isOpen.value = false; // закрываем дропдаун при выборе
-  }
-};
-
-const hasMoreData = computed(() => options.value.length < dataStore.getTotalCount(props.selectId))
-
-const handleScroll = (event) => {
-  const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
-  if (bottom && !loading.value && hasMoreData.value) {
-    dataStore.loadMoreData(props.selectId, props.restOptionsUrl, params.value)
-  }
-};
+const hasMoreData = computed(() =>
+    options.value.length < dataStore.getTotalCount(props.selectId)
+)
 
 const displaySelectedOptions = computed(() => {
   if (selectedOptions.value.length <= props.maxSelectedLabels) {
-    return selectedOptions.value.map(o => o.label).join(', ');
+    return selectedOptions.value.map(o => o.label).join(', ')
   } else {
-    return `${selectedOptions.value.length} items selected`;
+    return `${selectedOptions.value.length} items selected`
   }
-});
+})
 
-const loadOptions = async () => {
-  if (options.value.length) return;
-
-  if (props.restOptionsUrl && !loading.value) {
-    loading.value = true;
-    try {
-
-      await dataStore.fetchData(props.selectId, props.restOptionsUrl, params.value);
-
-    } catch (error) {
-      console.error('Error loading options:', error);
-    } finally {
-      loading.value = false;
-    }
+const filteredOptions = computed(() => {
+  if (!searchQuery.value) {
+    return options.value
   }
-};
+  const lowerQuery = searchQuery.value.toLowerCase()
+  return options.value.filter(option =>
+      option.label.toLowerCase().includes(lowerQuery)
+  )
+})
 
-const toggleSelectAll = () => {
-  if (!props.multiple) return; // ничего не делаем в одиночном режиме
+const chipsedSelectedOptions = computed(() =>
+    isShowMore.value
+        ? [...selectedOptions.value]
+        : [...selectedOptions.value].slice(0, 4)
+)
 
-  if (allSelected.value) {
-    selectedOptions.value = [];
-  } else {
-    selectedOptions.value = [...options.value];
+const showMoreSelectedOptions = () => {
+  isShowMore.value = !isShowMore.value
+}
+
+const toggleDropdown = () => {
+  isOpen.value = !isOpen.value
+}
+
+const closeDropdown = (event) => {
+  if (multiselectRef.value && !multiselectRef.value.contains(event.target)) {
+    isOpen.value = false
   }
-  emit('update:modelValue', selectedOptions.value);
-};
+}
 
 const isSelected = (option) => {
   return props.multiple
       ? selectedOptions.value.some(o => o.code === option.code)
-      : selectedOptions.value[0]?.code === option.code;
-};
-
-const allSelected = computed(() => {
-  return options.value.length > 0 && options.value.every(option => selectedOptions.value.some(o => o.code === option.code));
-});
-
-const chipsedSelectedOptions = computed(() => {
-  return isShowMore.value
-      ? [...selectedOptions.value]
-      : [...selectedOptions.value].splice(0, 4)
-})
-
-const isShowMore = ref(false)
-
-const showMoreSelectedOptions = () => {
-  isShowMore.value = !isShowMore.value;
+      : selectedOptions.value[0]?.code === option.code
 }
 
+const toggleSelection = (option) => {
+  if (props.multiple) {
+    const index = selectedOptions.value.findIndex(o => o.code === option.code)
+    if (index === -1) {
+      selectedOptions.value.push(option)
+    } else {
+      selectedOptions.value.splice(index, 1)
+    }
+    emit('update:modelValue', selectedOptions.value)
+  } else {
+    selectedOptions.value = [option]
+    emit('update:modelValue', option)
+    isOpen.value = false
+  }
+}
+
+const toggleSelectAll = () => {
+  if (!props.multiple) return
+  selectedOptions.value = allSelected.value ? [] : [...options.value]
+  emit('update:modelValue', selectedOptions.value)
+}
+
+const allSelected = computed(() =>
+    options.value.length > 0 &&
+    options.value.every(option =>
+        selectedOptions.value.some(o => o.code === option.code)
+    )
+)
+
+const handleScroll = (event) => {
+  const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight
+  if (bottom && !loading.value && hasMoreData.value) {
+    dataStore.loadMoreData(props.selectId, props.restOptionsUrl, params.value)
+  }
+}
+
+const loadOptions = async () => {
+  if (props.restOptionsUrl && !loading.value) {
+    loading.value = true
+    try {
+      await dataStore.fetchData(props.selectId, props.restOptionsUrl, params.value)
+    } catch (error) {
+      console.error('Error loading options:', error)
+    } finally {
+      loading.value = false
+    }
+  }
+}
+
+// 🔁 Дебаунс один раз для функции загрузки
+const debouncedLoadOptions = debounceService(loadOptions, 400)
+
+watch(searchQuery, () => {
+  debouncedLoadOptions()
+})
+
+// 📦 первичная загрузка
 onMounted(() => {
   if (optionsCache.value.length > 0 && useEditMode.value) {
-    selectedOptions.value = optionsCache.value;
+    selectedOptions.value = optionsCache.value
   }
-  loadOptions();
-  document.addEventListener('click', closeDropdown);
-});
+  loadOptions() // ЗАГРУЖАЕМ ПЕРВЫЕ 10
+  document.addEventListener('click', closeDropdown)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown);
-});
+  document.removeEventListener('click', closeDropdown)
+})
 
+// 🔄 следим за modelValue
 watch(() => props.modelValue, (newValue) => {
   if (props.multiple) {
-    selectedOptions.value = Array.isArray(newValue) ? newValue : [];
+    selectedOptions.value = Array.isArray(newValue) ? newValue : []
   } else {
-    selectedOptions.value = newValue ? [newValue] : [];
+    selectedOptions.value = newValue ? [newValue] : []
   }
-}, { immediate: true });
-
+}, { immediate: true })
 </script>
+
+
 
 <style scoped>
 .selected {

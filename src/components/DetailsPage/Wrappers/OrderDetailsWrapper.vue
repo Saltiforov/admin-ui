@@ -13,7 +13,6 @@
         ref="relatedEntitiesBlockRef"
         @handle-delete="deleteRelatedEntitiesItem"
     />
-
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
@@ -114,8 +113,8 @@ const userSelectOptions = computed(() => {
 const paymentMethodOptions = computed(() => {
   const method = rawOrderData.value?.paymentMethod
   return {
-    label: paymentMethodLabels[method],
-    value: method
+    label: method === 'false' ?  paymentMethodLabels['cash_on_delivery'] : paymentMethodLabels['send_sms'],
+    value: method === 'false' ?  'cash_on_delivery' : 'send_sms'
   }
 })
 
@@ -153,11 +152,14 @@ const detailsPageData = computed(() => {
     return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const {orderStatus, discount, ...rest} = data;
+  const {orderStatus, discount, pricing, ...rest} = data;
+
+  console.log("detailsPageData", pricing)
 
   return {
     ...rest,
     ...shippingInfo.value,
+    ...pricing,
     paymentMethod: paymentMethodOptions.value,
     ...(orderStatus && {
       orderStatus: {
@@ -260,7 +262,7 @@ function prepareDataForSubmit(inputData) {
       telegramUsername: inputData.telegramUsername,
 
     },
-    user: selectedUserId.value,
+    user: selectedUser.value,
     deliveryInfo: inputData.deliveryInfo,
     promoCode: inputData.promoCode,
     sms: inputData.sms,
@@ -268,10 +270,13 @@ function prepareDataForSubmit(inputData) {
     orderComment: inputData.orderComment,
     totalAmount: inputData.totalAmount,
     paymentMethod: inputData.paymentMethod?.value,
-    discount: inputData.discount || 0,
     tax: inputData.tax || 0,
     orderStatus: inputData.orderStatus?.value || 'pending',
-    orderNumber: inputData.orderNumber
+    orderNumber: inputData.orderNumber,
+    pricing: {
+      priceAfterDiscount: inputData.priceAfterDiscount,
+      totalOrderPrice: inputData.totalOrderPrice,
+    }
   };
 }
 

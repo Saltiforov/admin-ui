@@ -3,15 +3,14 @@ import {getPageConfig} from "@/services/factories/index.js";
 import {PAGES_TYPE} from "@/constants/pages.enum.js";
 
 export function usePagesConfig(pageType, options = {}, isDataRequired) {
-    const needToLoadData = computed(() => !!options.id || !!options.slug)
+    const needToLoadData = computed(() => !!options.id)
+
 
     const data = ref({});
     const loading = ref(needToLoadData.value);
 
 
     const config = getPageConfig(pageType, PAGES_TYPE.DETAILS_PAGE);
-
-    console.log("usePagesConfig", config)
 
 
     async function useFetch() {

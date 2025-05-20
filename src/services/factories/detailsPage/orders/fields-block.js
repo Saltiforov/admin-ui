@@ -3,6 +3,7 @@ import UserSelect from "@/components/UI/UserSelect/UserSelect.vue";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputNumber from "primevue/inputnumber";
+import {capitalizeFirstLetter} from "@/utils/index.js";
 
 export const ordersFieldsBlock = {
     fields: {
@@ -112,8 +113,6 @@ export const ordersFieldsBlock = {
                     placeholder: ''
                 }
             },
-
-
             {
                 name: 'discount',
                 code: 'discount',
@@ -195,9 +194,8 @@ export const ordersFieldsBlock = {
                 name: 'postalCode',
                 code: 'postalCode',
                 label: computed(() => t("label_postal_code")),
-                type: 'InputNumber',
+                type: 'InputText',
                 props: {
-                    type: 'number',
                     placeholder: computed(() => t("placeholder_enter_postal_code")),
                     required: true,
                     useGrouping: false,
@@ -206,6 +204,51 @@ export const ordersFieldsBlock = {
                     (value) => (value ? true : "Postal Code is required"),
                 ],
             },
+
+            {
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    class: 'product-input',
+                    required: true,
+                },
+                blockTitle: 'Pricing',
+                children: [
+                    {
+                        name: 'priceAfterDiscount',
+                        code: 'priceAfterDiscount',
+                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'UAH' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'currency-uah',
+                            mode: 'currency',
+                            currency: 'UAH',
+                            locale: 'uk-UA',
+                            fluid: true,
+                            placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                        validators: [(value) => (value ? true : "Price (UAH) is required")],
+                    },
+                    {
+                        name: 'totalOrderPrice',
+                        code: 'totalOrderPrice',
+                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'USD' })),
+                        type: 'InputNumber',
+                        props: {
+                            inputId: 'currency-uah',
+                            mode: 'currency',
+                            currency: 'UAH',
+                            locale: 'uk-UA',
+                            fluid: true,
+                            placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                        validators: [(value) => (value ? true : "Price (USD) is required")],
+                    },
+                ]
+            },
+
             {
                 name: 'country',
                 code: 'country',
@@ -229,21 +272,6 @@ export const ordersFieldsBlock = {
                     type: 'text',
                     required: true
                 },
-            },
-            {
-                name: 'sms',
-                code: 'sms',
-                label: computed(() => t("label_sms")),
-                type: 'Select',
-                props: {
-                    options: [
-                        {label: 'Send', value: 'true'},
-                        {label: 'Do not send', value: 'false'},
-                    ],
-                    optionLabel: 'label',
-                    class: 'w-full md:w-56',
-                    required: false
-                }
             },
             {
                 name: 'orderComment',

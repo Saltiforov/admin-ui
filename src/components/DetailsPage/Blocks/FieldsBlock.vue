@@ -6,6 +6,20 @@
 
     <div class="container">
       <div class="form-content grid grid-cols-2 gap-6">
+
+        <template v-for="(group, index) in optionFieldGroups" :key="`group-${index}`">
+          <div class="form-group col-span-2 flex items-center gap-6">
+            <div v-for="field in group" :key="field.name">
+              <div v-if="!field.onlyEditMode || isEditMode" class="">
+                <p class="form__title">{{ field.label }}:</p>
+                <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+
+
         <template v-for="field in baseFields" :key="field.name">
           <div class="form-group">
             <p class="form__title mb-1">{{ field.label }}:</p>
@@ -35,17 +49,6 @@
         </template>
 
 
-        <template v-for="(group, index) in optionFieldGroups" :key="`group-${index}`">
-          <div class="form-group col-span-2 flex items-center gap-6">
-            <div v-for="field in group" :key="field.name">
-              <div v-if="!field.onlyEditMode || isEditMode" class="">
-                <p class="form__title">{{ field.label }}:</p>
-                <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
-                />
-              </div>
-            </div>
-          </div>
-        </template>
 
         <template v-for="field in textAreaFields" :key="field.name">
           <div class="form-group col-span-2">
@@ -162,7 +165,19 @@ const route = useRoute()
 const isEditMode = computed(() => route.params.id)
 
 const getData = () => {
-  return {...formData.value};
+  const {price_uah, price_usd, discount_uah, discount_usd, ...rest} = formData.value;
+
+  return {
+    ...rest,
+    price: {
+      uah: price_uah,
+      usd: price_usd,
+    },
+    discount: {
+      uah: discount_uah,
+      usd: discount_usd,
+    },
+  };
 };
 
 watchEffect(() => {
@@ -249,6 +264,7 @@ const textAreaFields = computed(() => {
   color: black;
   font-size: 24px;
 }
+
 .form-content {
   margin-bottom: 16px;
 }

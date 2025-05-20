@@ -41,6 +41,7 @@ export const uk = {
     "static_accordion_name": "Назва акордеону",
     "static_accordion_heading": "Заголовок акордеону",
     "static_accordion_text": "Текст акордеону",
+    "label_show_as_new": "Позначити як новий продукт",
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",

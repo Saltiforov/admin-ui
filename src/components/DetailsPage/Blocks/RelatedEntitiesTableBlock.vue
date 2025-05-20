@@ -21,6 +21,12 @@
           <img :src="data.images ? pathBuilder(data.images[0]) : defaultProductImage" alt="image"
                class="table-image h-auto rounded object-contain"/>
         </template>
+        <template #price="{ data }">
+          <div class="price-display">
+            <div v-if="data.price?.usd">USD: {{ data.price.usd }}</div>
+            <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
+          </div>
+        </template>
         <template #description="{ data }">
           <p>dsadsada</p>
         </template>

@@ -40,6 +40,7 @@ export const en = {
     "static_accordion_name": "Accordion name",
     "static_accordion_heading": "Accordion heading",
     "static_accordion_text": "Accordion text",
+    "label_show_as_new": "Mark as new product",
 
     "static_shipping_and_payment" : "Shipping and Payment",
     "static_about_us" : "About us",
