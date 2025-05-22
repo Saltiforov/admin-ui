@@ -15,7 +15,7 @@
       </template>
       <template #price="{ data }">
         <div class="price-display">
-          <div v-if="data.price?.usd">USD: {{ data.price.usd }}</div>
+          <div v-if="data.price?.eur">USD: {{ data.price.eur }}</div>
           <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
         </div>
       </template>

@@ -254,10 +254,9 @@ const loadOptions = async () => {
 }
 
 // 🔁 Дебаунс один раз для функции загрузки
-const debouncedLoadOptions = debounceService(loadOptions, 400)
 
 watch(searchQuery, () => {
-  debouncedLoadOptions()
+  debounceService(loadOptions, 400)
 })
 
 // 📦 первичная загрузка
@@ -306,7 +305,7 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .p-multiselect-label-container {
-  padding: 7px 10.5px;
+  padding: 8px 12px;
   flex: 1;
 }
 

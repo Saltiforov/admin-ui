@@ -42,6 +42,12 @@ export const ru = {
   "static_accordion_heading": "Заголовок аккордеона",
   "static_accordion_text": "Текст для аккордеона",
   "label_show_as_new": "Отображать как новый продукт",
+  "label_user_information": "Информация о пользователе",
+  "label_shipping_information": "Информация о доставке",
+  "label_payment_information": "Платежная информация",
+  "label_discount_and_status": "Скидка и статус",
+  "order_summary": 'Сумма заказа',
+  "vendor": "Производитель",
 
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",
@@ -108,7 +114,7 @@ export const ru = {
   "title_edit_page": "Заполните информацию о {pageName}:",
   "title_edit_page_products" : "Заполните информацию о продукте:",
   "title_edit_page_users" : "Заполните информацию о пользователе:",
-  "title_edit_page_orders" : "Заполните информацию о заказе:",
+  "title_edit_page_orders" : "Заполните информацию о заказе #{number} :",
 
   "button_text_cancel": "Отменить",
   "button_text_delete": "Удалить",

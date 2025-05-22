@@ -70,9 +70,9 @@ const detailsPageData = computed(() => {
   return {
     ...data,
     discount_uah: data?.discount?.uah || 0,
-    discount_usd: data?.discount?.usd || 0,
+    discount_eur: data?.discount?.eur || 0,
     price_uah: data?.price?.uah || 0,
-    price_usd: data?.price?.usd || 0,
+    price_eur: data?.price?.eur || 0,
   }
 });
 

@@ -7,6 +7,11 @@
         :totalRecords="totalRecords"
         :loading="isLoading"
     >
+      <template #status="{ data }">
+          <span :style="getStatusStyle(data.orderStatus)">
+            {{ capitalizeFirstLetter(data.orderStatus) }}
+          </span>
+      </template>
       <template style="width: 5%" #actions="{ data }">
         <Button
             type="button"
@@ -30,7 +35,7 @@ import {deleteOrderById, getOrdersList} from "@/services/api/orders-service.api.
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import router from "@/router/index.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
-import {extractFields} from '@/utils/index.js'
+import {capitalizeFirstLetter, extractFields} from '@/utils/index.js'
 import createDebouncedService from "@/services/debounceService/debounceService.js";
 import {useRoute} from "vue-router";
 import Button from "primevue/button";
@@ -161,7 +166,7 @@ const updatedConfirmOrderOptions = {
   confirmMessage: computed(() => t("confirm_delete_message", {name: orderData.value.name || "this item"})),
   acceptToastDetail: computed(() => t("confirm_accept_message", {name: orderData.value.name || "this item"})),
   acceptAction: () => deleteOrder(orderData.value._id),
-  data: computed(() => orderData.value) ,
+  data: computed(() => orderData.value),
 };
 
 const {confirmDelete} = useConfirmDelete(updatedConfirmOrderOptions)
@@ -192,6 +197,37 @@ timeoutService.setTimeout(() => {
 watchEffect(() => {
   updatedDataTableConfig.value = {...updatedDataTableConfig.value, value: mappedOrders.value};
 });
+
+const statusColorMap = {
+  pending: '#facc15',
+  processing: '#3b82f6',
+  confirmed: '#06b6d4',
+  shipped: '#64748b',
+  in_transit: '#0ea5e9',
+  out_for_delivery: '#f97316',
+  delivered: '#22c55e',
+  delayed: '#f43f5e',
+  failed: '#dc2626',
+  canceled: '#e11d48',
+  returned: '#3b82f6',
+  refunded: '#10b981',
+  on_hold: '#eab308',
+  awaiting_payment: '#fb923c',
+  awaiting_fulfillment: '#7c3aed'
+};
+
+
+const getStatusStyle = (status) => {
+  const normalized = status.toLowerCase().replace(/\s+/g, '_');
+  const backgroundColor = statusColorMap[normalized] || '#e2e3e5';
+  return {
+    backgroundColor,
+    color: 'rgba(0,0,0,0.87)',
+    padding: '4px 8px',
+    borderRadius: '8px',
+    display: 'inline-block',
+  };
+};
 </script>
 
 

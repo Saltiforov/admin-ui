@@ -1,7 +1,7 @@
 <template>
   <div class="fields-block mb-12">
     <div v-if="config?.header" class="mb-4 header-default">
-      <h2 class="text-lg font-bold">{{ config.header }}</h2>
+      <h2 class="text-lg font-bold">{{ t(config.header, { number: contextId }) }}</h2>
     </div>
 
     <div class="container">
@@ -19,6 +19,42 @@
           </div>
         </template>
 
+        <div
+            v-for="(group, index) in groupedFields"
+            :key="'group-' + index"
+            class="form-group col-span-2 mb-5"
+        >
+          <h2 class="text-xl grouped-title font-semibold mb-4">{{ t(group.blockTitle) }}</h2>
+          <div class="grid grid-cols-2 gap-6">
+            <template v-for="field in group.children" :key="field.name">
+              <div class="form-group">
+                <p class="form__title mb-1">{{ field.label }}:</p>
+                <DynamicRenderField
+                    v-if="field.render"
+                    :field="field"
+                    v-model="formData[field.name]"
+                />
+                <component
+                    v-else
+                    class="w-full"
+                    :is="field.type"
+                    v-bind="field.disablePropsBinding ? {} : (field.props || {})"
+                    :config="field.props"
+                    v-model="formData[field.name]"
+                />
+                <Message
+                    v-if="errors && errors[field.code]"
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    class="message-error"
+                >
+                  {{ errors[field.code] }}
+                </Message>
+              </div>
+            </template>
+          </div>
+        </div>
 
         <template v-for="field in baseFields" :key="field.name">
           <div class="form-group">
@@ -72,42 +108,6 @@
 
       </div>
 
-      <div
-          v-for="(group, index) in groupedFields"
-          :key="'group-' + index"
-          class="form-group col-span-2"
-      >
-        <h2 class="text-xl grouped-title font-semibold mb-4">{{ group.blockTitle }}</h2>
-        <div class="grid grid-cols-2 gap-6">
-          <template v-for="field in group.children" :key="field.name">
-            <div class="form-group">
-              <p class="form__title mb-1">{{ field.label }}:</p>
-              <DynamicRenderField
-                  v-if="field.render"
-                  :field="field"
-                  v-model="formData[field.name]"
-              />
-              <component
-                  v-else
-                  class="w-full"
-                  :is="field.type"
-                  v-bind="field.disablePropsBinding ? {} : (field.props || {})"
-                  :config="field.props"
-                  v-model="formData[field.name]"
-              />
-              <Message
-                  v-if="errors && errors[field.code]"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  class="message-error"
-              >
-                {{ errors[field.code] }}
-              </Message>
-            </div>
-          </template>
-        </div>
-      </div>
 
       <div class="mt-4">
         <template v-if="baseFieldsWithFullWidth" v-for="fieldFullWidth in baseFieldsWithFullWidth">
@@ -142,6 +142,7 @@
 import {ref, computed, onMounted, watchEffect} from "vue";
 import DynamicRenderField from "@/components/UI/DynamicRenderField/DynamicRenderField.vue";
 import {useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps({
   data: {
@@ -155,8 +156,14 @@ const props = defineProps({
   errors: {
     type: Object,
     required: true,
+  },
+  contextId: {
+    type: String,
+    required: false,
   }
 });
+
+const {t} = useI18n();
 
 const formData = ref({});
 
@@ -165,17 +172,17 @@ const route = useRoute()
 const isEditMode = computed(() => route.params.id)
 
 const getData = () => {
-  const {price_uah, price_usd, discount_uah, discount_usd, ...rest} = formData.value;
+  const {price_uah, price_eur, discount_uah, discount_eur, ...rest} = formData.value;
 
   return {
     ...rest,
     price: {
       uah: price_uah,
-      usd: price_usd,
+      eur: price_eur,
     },
     discount: {
       uah: discount_uah,
-      usd: discount_usd,
+      eur: discount_eur,
     },
   };
 };

@@ -42,6 +42,13 @@ export const uk = {
     "static_accordion_heading": "Заголовок акордеону",
     "static_accordion_text": "Текст акордеону",
     "label_show_as_new": "Позначити як новий продукт",
+    "label_user_information": "Інформація про користувача",
+    "label_shipping_information": "Інформація про доставку",
+    "label_payment_information": "Платіжна інформація",
+    "label_discount_and_status": "Знижка та статус",
+    "order_summary": 'Сума замовлення',
+    "vendor": "Виробник",
+
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",
@@ -108,7 +115,7 @@ export const uk = {
     "title_edit_page": "Заповніть інформацію про {pageName}:",
     "title_edit_page_products": "Заповніть інформацію про продукт:",
     "title_edit_page_users": "Заповніть інформацію про користувача:",
-    "title_edit_page_orders": "Заповніть інформацію про замовлення:",
+    "title_edit_page_orders": "Заповніть інформацію про замовлення #{number} :",
 
     "button_text_cancel": "Скасувати",
     "button_text_delete": "Видалити",

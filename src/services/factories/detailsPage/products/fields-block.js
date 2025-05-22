@@ -85,25 +85,25 @@ export const productsFieldsBlock = {
                         validators: [(value) => (value ? true : "Discount (UAH) is required")],
                     },
                     {
-                        name: 'price_usd',
-                        code: 'price_usd',
-                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'USD' })),
+                        name: 'price_eur',
+                        code: 'price_eur',
+                        label: computed(() => t("label_price", { entity: capitalizeFirstLetter(t("entity_product_gen")), currency: 'EUR' })),
                         type: 'InputNumber',
                         props: {
-                            inputId: 'currency-us',
+                            inputId: 'currency-eur',
                             mode: 'currency',
-                            currency: 'USD',
-                            locale: 'en-US',
+                            currency: 'EUR',
+                            locale: 'de-DE',
                             fluid: true,
                             placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
                             required: true
                         },
-                        validators: [(value) => (value ? true : "Price (USD) is required")],
+                        validators: [(value) => (value ? true : "Price (EUR) is required")],
                     },
                     {
-                        name: 'discount_usd',
-                        code: 'discount_usd',
-                        label: computed(() => t("label_discount", { currency: 'USD' })),
+                        name: 'discount_eur',
+                        code: 'discount_eur',
+                        label: computed(() => t("label_discount", { currency: 'EUR' })),
                         type: 'InputNumber',
                         props: {
                             inputId: 'discount',
@@ -113,7 +113,7 @@ export const productsFieldsBlock = {
                             placeholder: computed(() => t("placeholder_enter_discount")),
                             required: false
                         },
-                        validators: [(value) => (value ? true : "Discount (USD) is required")],
+                        validators: [(value) => (value ? true : "Discount (EUR) is required")],
                     },
                 ]
             },
@@ -167,6 +167,6 @@ export const productsFieldsBlock = {
                 }
             },
         ],
-        header: computed(() => t("title_edit_page", { pageName: t("entity_product_prep") })),
+        header: "title_edit_page_products",
     }
 }

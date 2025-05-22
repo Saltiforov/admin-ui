@@ -41,6 +41,13 @@ export const en = {
     "static_accordion_heading": "Accordion heading",
     "static_accordion_text": "Accordion text",
     "label_show_as_new": "Mark as new product",
+    "label_user_information": "User Information",
+    "label_shipping_information": "Shipping Information",
+    "label_payment_information": "Payment Information",
+    "label_discount_and_status": "Discount & Status",
+    "order_summary": 'Order Total',
+    "vendor": "Vendor",
+
 
     "static_shipping_and_payment" : "Shipping and Payment",
     "static_about_us" : "About us",
@@ -107,7 +114,7 @@ export const en = {
     "title_edit_page": "Fill {pageName} information:",
     "title_edit_page_products" : "Fill product information:",
     "title_edit_page_users" : "Fill user information:",
-    "title_edit_page_orders" : "Fill order information:",
+    "title_edit_page_orders" : "Fill order #{number} information :",
 
     "button_text_cancel": "Cancel",
     "button_text_delete": "Delete",

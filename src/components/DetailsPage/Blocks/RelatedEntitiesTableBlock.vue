@@ -9,6 +9,7 @@
             @click="handlePopup"
         />
       </div>
+      <div class="order-total-highlight">
       <CustomDataTable
           :config="config"
           :total-records="totalRecords"
@@ -23,7 +24,7 @@
         </template>
         <template #price="{ data }">
           <div class="price-display">
-            <div v-if="data.price?.usd">USD: {{ data.price.usd }}</div>
+            <div v-if="data.price?.eur">USD: {{ data.price.eur }}</div>
             <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
           </div>
         </template>
@@ -46,6 +47,14 @@
           </div>
         </template>
       </CustomDataTable>
+        <div class="order-summary">
+          <h2>{{ t('order_summary') }}</h2>
+          <div class="amounts">
+            <div class="amount-uah">₴ {{ orderSummary }}</div>
+          </div>
+        </div>
+      </div>
+
       <ConfirmDialog/>
       <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
     </div>
@@ -61,6 +70,7 @@ import eventBus from "../../../../eventBus.js";
 import {pathBuilder} from "@/utils/index.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps({
   data: {
@@ -81,6 +91,8 @@ const props = defineProps({
   }
 });
 
+const {t} = useI18n();
+
 const buttonLabel = computed(() => t('button_text_new_entity'))
 
 const isUpdateMode = computed(() => !!props.data)
@@ -94,6 +106,10 @@ const currentTarget = ref({});
 const emit = defineEmits(['handleDelete'])
 
 const pageType = route.meta.pageType;
+
+const orderSummary = computed(() => {
+  return props.data?.pricing?.totalOrderPrice || ''
+})
 
 const {relatedEntitiesTablePopup} = getPopupConfig(pageType, 'orders-popups')
 
@@ -142,3 +158,37 @@ defineExpose({
 
 
 </script>
+
+<style scoped>
+.order-total-highlight {
+  margin-top: 2rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.order-summary {
+  margin-top: 12px;
+  padding: 0.5rem 1.5rem;
+}
+
+.order-total-highlight h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.amount-uah,
+.amount-eur {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+</style>

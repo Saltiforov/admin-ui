@@ -4,15 +4,16 @@
         :config="blockList.fields"
         :data="detailsPageData"
         :errors="fieldsErrors"
+        :context-id="detailsPageData.orderNumber"
         ref="fieldsBlockRef"
     />
-    <RelatedEntitiesTableBlock
-        :config="relatedConfig"
-        :data="detailsPageData"
-        :total-records="totalRecords"
-        ref="relatedEntitiesBlockRef"
-        @handle-delete="deleteRelatedEntitiesItem"
-    />
+      <RelatedEntitiesTableBlock
+          :config="relatedConfig"
+          :data="detailsPageData"
+          :total-records="totalRecords"
+          ref="relatedEntitiesBlockRef"
+          @handle-delete="deleteRelatedEntitiesItem"
+      />
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
@@ -152,14 +153,11 @@ const detailsPageData = computed(() => {
     return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const {orderStatus, discount, pricing, ...rest} = data;
-
-  console.log("detailsPageData", pricing)
+  const {orderStatus, discount, ...rest} = data;
 
   return {
     ...rest,
     ...shippingInfo.value,
-    ...pricing,
     paymentMethod: paymentMethodOptions.value,
     ...(orderStatus && {
       orderStatus: {
@@ -273,10 +271,6 @@ function prepareDataForSubmit(inputData) {
     tax: inputData.tax || 0,
     orderStatus: inputData.orderStatus?.value || 'pending',
     orderNumber: inputData.orderNumber,
-    pricing: {
-      priceAfterDiscount: inputData.priceAfterDiscount,
-      totalOrderPrice: inputData.totalOrderPrice,
-    }
   };
 }
 
