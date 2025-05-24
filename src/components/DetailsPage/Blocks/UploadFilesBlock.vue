@@ -72,7 +72,7 @@ const uploadedImages = ref([]);
 
 const hasUploadedFiles = computed(() => selectedFiles.value.length > 0);
 
-const useEditMode = computed(() => !!props.data)
+const useEditMode = computed(() => !!route.params.id);
 
 function onSelect(event) {
   selectedFiles.value = event.files;

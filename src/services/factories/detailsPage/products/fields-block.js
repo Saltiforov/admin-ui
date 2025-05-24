@@ -115,10 +115,7 @@ export const productsFieldsBlock = {
                         type: 'InputNumber',
                         props: {
                             inputId: 'discount',
-                            suffix: '%',
                             min: 0,
-                            max: 100,
-                            placeholder: computed(() => t("placeholder_enter_discount")),
                             required: false
                         },
                         validators: [(value) => (value ? true : "Discount (UAH) is required")],
@@ -146,10 +143,7 @@ export const productsFieldsBlock = {
                         type: 'InputNumber',
                         props: {
                             inputId: 'discount',
-                            suffix: '%',
                             min: 0,
-                            max: 100,
-                            placeholder: computed(() => t("placeholder_enter_discount")),
                             required: false
                         },
                         validators: [(value) => (value ? true : "Discount (EUR) is required")],

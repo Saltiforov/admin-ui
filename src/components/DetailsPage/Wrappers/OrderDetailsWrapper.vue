@@ -69,9 +69,15 @@ const router = useRouter()
 
 const route = useRoute()
 
+const rawOrderData = computed(() => props.data?.[DETAILS_PAGES.ORDERS]);
+
 const selectId = 'relatedEntitiesSelect'
 
 const selectedUser = ref({})
+
+watch(() => rawOrderData.value, (newValue, oldValue) => {
+  selectedUser.value = newValue.user;
+})
 
 const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
@@ -88,8 +94,6 @@ const getStatusLabel = (status) => {
 };
 
 const getSelectedUserAddress = computed(() => selectedUser.value.address)
-
-const rawOrderData = computed(() => props.data?.[DETAILS_PAGES.ORDERS]);
 
 const shippingInfo = computed(() => {
   if (!selectedUser.value.username) {
@@ -153,7 +157,7 @@ const detailsPageData = computed(() => {
     return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const {orderStatus, discount, ...rest} = data;
+  const {orderStatus, ...rest} = data;
 
   return {
     ...rest,
@@ -168,7 +172,6 @@ const detailsPageData = computed(() => {
       firstName: orderUserFirstName.value,
       lastName: orderUserLastName.value,
       email: orderUserEmail,
-      discount,
     })
   };
 });
@@ -260,7 +263,11 @@ function prepareDataForSubmit(inputData) {
       telegramUsername: inputData.telegramUsername,
 
     },
-    user: inputData.user,
+    pricing: inputData.pricing,
+    discount: inputData.discount,
+    currency: inputData.currency,
+    region: inputData.region,
+    user: selectedUser.value,
     deliveryInfo: inputData.deliveryInfo,
     promoCode: inputData.promoCode,
     sms: inputData.sms,

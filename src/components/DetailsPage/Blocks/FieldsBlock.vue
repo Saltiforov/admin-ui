@@ -172,17 +172,13 @@ const route = useRoute()
 const isEditMode = computed(() => route.params.id)
 
 const getData = () => {
-  const {price_uah, price_eur, discount_uah, discount_eur, ...rest} = formData.value;
+  const {price_uah, price_eur, ...rest} = formData.value;
 
   return {
     ...rest,
     price: {
       uah: price_uah,
       eur: price_eur,
-    },
-    discount: {
-      uah: discount_uah,
-      eur: discount_eur,
     },
   };
 };
