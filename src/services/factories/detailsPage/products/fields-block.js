@@ -5,19 +5,6 @@ export const productsFieldsBlock = {
     fields: {
         items: [
             {
-                name: 'name',
-                code: 'name',
-                label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
-                type: 'InputText',
-                props: {
-                    type: 'text',
-                    class: 'product-input',
-                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
-                    required: true
-                },
-                validators: [(value) => (value ? true : "Name is required")],
-            },
-            {
                 name: 'showAsNew',
                 code: 'showAsNew',
                 label: computed(() => t("label_show_as_new")),
@@ -31,17 +18,69 @@ export const productsFieldsBlock = {
                 default: false,
                 validators: [],
             },
+
             {
-                name: 'vendor',
-                code: 'vendor',
-                label: computed(() => t("vendor", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
                 type: 'InputText',
                 props: {
                     type: 'text',
                     class: 'product-input',
-                    placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
-                    required: true
+                    required: true,
                 },
+                blockTitle: 'About Product',
+                children: [
+                    {
+                        name: 'name',
+                        code: 'name',
+                        label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                        type: 'InputText',
+                        props: {
+                            type: 'text',
+                            class: 'product-input',
+                            placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                        validators: [(value) => (value ? true : "Name is required")],
+                    },
+                    {
+                        name: 'vendor',
+                        code: 'vendor',
+                        label: computed(() => t("vendor", { entity: capitalizeFirstLetter(t("entity_product_gen")) })),
+                        type: 'InputText',
+                        props: {
+                            type: 'text',
+                            class: 'product-input',
+                            placeholder: computed(() => t("placeholder_enter_name", { entity: t("entity_product_gen") })),
+                            required: true
+                        },
+                    },
+                    {
+                        name: 'filters',
+                        code: 'filters',
+                        label: computed(() => t("label_related_filters")),
+                        type: 'AsyncTreeSelect',
+                        disablePropsBinding: true,
+                        props: {
+                            restOptionsUrl: 'api/admin/filters-configuration',
+                            placeholder: computed(() => t("placeholder_enter_filters")),
+                            class: 'w-full product-input md:w-56',
+                            required: false,
+                            showClear: true,
+                            fullWidth: false,
+                        }
+                    },
+                    {
+                        name: 'category',
+                        code: 'category',
+                        label: computed(() => t("label_category")),
+                        type: 'InputText',
+                        props: {
+                            type: 'text',
+                            class: 'product-input',
+                            required: true
+                        }
+                    },
+
+                ]
             },
 
             {
@@ -120,21 +159,6 @@ export const productsFieldsBlock = {
 
 
             {
-                name: 'filters',
-                code: 'filters',
-                label: computed(() => t("label_related_filters")),
-                type: 'AsyncTreeSelect',
-                disablePropsBinding: true,
-                props: {
-                    restOptionsUrl: 'api/admin/filters-configuration',
-                    placeholder: computed(() => t("placeholder_enter_filters")),
-                    class: 'w-full product-input md:w-56',
-                    required: false,
-                    showClear: true,
-                    fullWidth: false,
-                }
-            },
-            {
                 name: 'description',
                 code: 'description',
                 label: computed(() => t("label_description")),
@@ -152,18 +176,6 @@ export const productsFieldsBlock = {
                         },
 
                     }
-                }
-            },
-            {
-                name: 'category',
-                code: 'category',
-                label: computed(() => t("label_category")),
-                type: 'InputText',
-                props: {
-                    type: 'text',
-                    class: 'product-input',
-                    placeholder: computed(() => t("placeholder_enter_category")),
-                    required: true
                 }
             },
         ],

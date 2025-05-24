@@ -260,15 +260,13 @@ function prepareDataForSubmit(inputData) {
       telegramUsername: inputData.telegramUsername,
 
     },
-    user: selectedUser.value,
+    user: inputData.user,
     deliveryInfo: inputData.deliveryInfo,
     promoCode: inputData.promoCode,
     sms: inputData.sms,
     cashOnDelivery: inputData.cashOnDelivery,
     orderComment: inputData.orderComment,
-    totalAmount: inputData.totalAmount,
     paymentMethod: inputData.paymentMethod?.value,
-    tax: inputData.tax || 0,
     orderStatus: inputData.orderStatus?.value || 'pending',
     orderNumber: inputData.orderNumber,
   };
