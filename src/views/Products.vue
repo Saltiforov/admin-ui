@@ -45,7 +45,7 @@
 import {computed, ref, watch, watchEffect} from 'vue';
 import {deleteProductById, getProductsList} from "@/services/api/product-service.api.js";
 import router from "@/router/index.js";
-import defaultProductImage from '@/assets/icons/shopping-bag.svg';
+import defaultProductImage from '@/assets/images/product-image.png';
 import ActionsButtonsBar from "@/components/ActionsButtonsBar/ActionsButtonsBar.vue";
 import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";

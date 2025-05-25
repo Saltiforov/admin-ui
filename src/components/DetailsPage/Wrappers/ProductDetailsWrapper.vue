@@ -107,7 +107,9 @@ const createNewProduct = async (product) => {
   try {
     await createProduct(product).then(res => {
       const {data} = res
-      eventBus.emit("handleImageUpload", data._id)
+      if (data.images) {
+        eventBus.emit("handleImageUpload", data._id)
+      }
       router.go(-1);
     })
   } catch (error) {
