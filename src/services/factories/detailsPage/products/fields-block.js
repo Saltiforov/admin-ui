@@ -76,6 +76,7 @@ export const productsFieldsBlock = {
                         props: {
                             type: 'text',
                             class: 'product-input',
+                            placeholder: computed(() => t("placeholder_enter_category")),
                             required: true
                         }
                     },
@@ -99,8 +100,7 @@ export const productsFieldsBlock = {
                         type: 'InputNumber',
                         props: {
                             inputId: 'currency-uah',
-                            mode: 'currency',
-                            currency: 'UAH',
+                            suffix: " ₴",
                             locale: 'uk-UA',
                             fluid: true,
                             placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
@@ -114,7 +114,11 @@ export const productsFieldsBlock = {
                         label: computed(() => t("label_discount", { currency: 'UAH' })),
                         type: 'InputNumber',
                         props: {
-                            inputId: 'discount',
+                            placeholder: computed(() => t("placeholder_enter_discount")),
+                            inputId: 'discount-uah',
+                            suffix: " ₴",
+                            locale: 'uk-UA',
+                            fluid: true,
                             min: 0,
                             required: false
                         },
@@ -127,9 +131,8 @@ export const productsFieldsBlock = {
                         type: 'InputNumber',
                         props: {
                             inputId: 'currency-eur',
-                            mode: 'currency',
-                            currency: 'EUR',
                             locale: 'de-DE',
+                            suffix: " €",
                             fluid: true,
                             placeholder: computed(() => t("placeholder_enter_price", { entity: t("entity_product_gen") })),
                             required: true
@@ -142,7 +145,11 @@ export const productsFieldsBlock = {
                         label: computed(() => t("label_discount", { currency: 'EUR' })),
                         type: 'InputNumber',
                         props: {
-                            inputId: 'discount',
+                            inputId: 'discount-eur',
+                            locale: 'de-DE',
+                            suffix: " €",
+                            fluid: true,
+                            placeholder: computed(() => t("placeholder_enter_discount")),
                             min: 0,
                             required: false
                         },

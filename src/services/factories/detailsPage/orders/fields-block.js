@@ -130,7 +130,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             side: 'right',
-                            placeholder: ''
+                            placeholder: computed(() => t("placeholder_enter_delivery_service_branch_number")),
                         }
                     },
                     {
@@ -140,7 +140,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             type: 'text',
-                            // placeholder: computed(() => t("placeholder_enter_street_address")),
+                            placeholder: computed(() => t("placeholder_enter_street_address")),
                             required: true
                         },
                         validators: [
@@ -154,7 +154,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             type: 'text',
-                            // placeholder: computed(() => t("placeholder_enter_city")),
+                            placeholder: computed(() => t("placeholder_enter_city")),
                             required: true
                         },
                         validators: [
@@ -167,7 +167,7 @@ export const ordersFieldsBlock = {
                         label: computed(() => t("label_postal_code")),
                         type: 'InputText',
                         props: {
-                            // placeholder: computed(() => t("placeholder_enter_postal_code")),
+                            placeholder: computed(() => t("placeholder_enter_postal_code")),
                             required: true,
                             useGrouping: false,
                         },
@@ -182,7 +182,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             type: 'text',
-                            // placeholder: computed(() => t("placeholder_enter_country")),
+                            placeholder: computed(() => t("placeholder_enter_country")),
                             required: true
                         },
                         validators: [
@@ -227,6 +227,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             type: 'text',
+                            placeholder: computed(() => t("placeholder_enter_promo_code")),
                             required: true
                         },
                     },

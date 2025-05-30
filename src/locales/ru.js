@@ -2,7 +2,7 @@ export const ru = {
   "placeholder_code_search": "Введите код, пожалуйста",
   "placeholder_filters_select": "Выберите фильтры, пожалуйста",
   "placeholder_filter_popup_name_ua": "Имя (UA)",
-  "placeholder_filter_popup_name_ru": "Имя (RU)",
+  "placeholder_filter_popup_name_en": "Имя (EN)",
   "placeholder_filter_popup_unique_code": "Уникальный код",
   "placeholder_edit_product_name": "Введите название продукта",
   "filter_popup_button_text_upload": "Загрузите файл SVG",
@@ -48,6 +48,8 @@ export const ru = {
   "label_discount_and_status": "Скидка и статус",
   "order_summary": 'Сумма заказа',
   "vendor": "Производитель",
+  "placeholder_enter_delivery_service_branch_number": "Введите службу доставки и номер отделения",
+  "placeholder_enter_promo_code": "Введите промокод",
 
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",

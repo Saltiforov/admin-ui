@@ -200,10 +200,21 @@ export async function handleRequest(validFunc, isValid, action, data, onSuccess)
 }
 
 
-export function fullImageUrls(imagesRef) {
-    return imagesRef.map((url) =>
-        /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
-    )
+// export function fullImageUrls(imagesRef) {
+//     return imagesRef.map((url) =>
+//         /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url
+//     )
+// }
+
+
+export function fullImageUrls(imagesRef, size = 'thumb') {
+    return imagesRef.map(image => {
+        const url = image.variants?.[size];
+
+        if (!url) return null
+
+        return /^https?:\/\//.test(url) ? url : "http://localhost:3000" + url;
+    }).filter(Boolean);
 }
 
 export function capitalizeFirstLetter(str) {

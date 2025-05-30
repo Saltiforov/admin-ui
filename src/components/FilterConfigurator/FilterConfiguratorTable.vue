@@ -28,7 +28,7 @@
           <div class="flex" v-else>
             <div class="multiline-truncate">{{ capitalizeNodeName(node, 'uk') || '' }}</div>
             /
-            <div class="multiline-truncate">{{ capitalizeNodeName(node, 'ru') || '' }}</div>
+            <div class="multiline-truncate">{{ capitalizeNodeName(node, 'en') || '' }}</div>
           </div>
         </template>
       </Column>
@@ -146,7 +146,7 @@ const skeletonNodes = ref(
     Array.from({length: 5}).map((_, i) => ({
       key: `skeleton-${i}`,
       data: {
-        name: {uk: "", ru: "",},
+        name: {uk: "", en: "",},
         code: "",
         icon: "",
         description: "",
@@ -378,13 +378,13 @@ const onAddFilter = async (data) => {
     console.log('newFilter', newFilter);
     await createNode(newFilter)
         .then(() => {
-          show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added as a new node `)
+          show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'en')} added as a new node `)
         })
     return;
   }
 
   await handleAddChildNode(parentFilterForNode.value, newFilter);
-  show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'ru')} added to ${capitalizeNodeName(parentFilterForNode, 'uk')} / ${capitalizeNodeName(parentFilterForNode, 'ru')} `)
+  show(`${capitalizeNodeName(newFilter, 'uk')} / ${capitalizeNodeName(newFilter, 'en')} added to ${capitalizeNodeName(parentFilterForNode, 'uk')} / ${capitalizeNodeName(parentFilterForNode, 'en')} `)
 }
 
 const isInvalidParent = (parent) => parent && !parent.key;
@@ -472,15 +472,13 @@ function mapFilters(inputArray) {
   const mapNode = (item, idx, parentKey = "") => {
     const key = parentKey ? `${parentKey}-${idx}` : `${idx}`;
 
-    console.log("mapFilters", item)
-
     return {
       key: key,
       id: item._id,
       data: {
         name: {
           uk: item.name.uk,
-          ru: item.name.ru,
+          en: item.name.en,
         },
         code: item.code || "unknown",
         icon: item.icon,

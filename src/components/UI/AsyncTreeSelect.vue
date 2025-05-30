@@ -33,6 +33,10 @@ const props = defineProps({
   filters: {
     type: Object,
     required: true,
+  },
+  modelValue: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -106,7 +110,6 @@ console.log("ASYNC TREE SELECT", route.query);
 
 const filtersQuery = computed(() => route.query.filters ? route.query.filters : null);
 
-
 const extractValues = (items, field) => {
   return items?.map(item => item[field]);
 };
@@ -131,7 +134,7 @@ const getSelectedKeys = (nodes, matchBy) => {
 
 const searchCriteria = computed(() => extractValues(props.filters, "_id"));
 
-const activeFilters = computed(() => filtersQuery.value || searchCriteria.value);
+const activeFilters = computed(() => filtersQuery.value || props.modelValue);
 
 const selectedKeys = computed(() => getSelectedKeys(nodes.value, activeFilters.value));
 

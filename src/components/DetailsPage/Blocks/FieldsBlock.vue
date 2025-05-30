@@ -1,7 +1,7 @@
 <template>
   <div class="fields-block mb-12">
     <div v-if="config?.header" class="mb-4 header-default">
-      <h2 class="text-lg font-bold">{{ t(config.header, { number: contextId }) }}</h2>
+      <h2 class="text-lg font-bold">{{ t(config.header, {number: contextId}) }}</h2>
     </div>
 
     <div class="container">
@@ -12,7 +12,7 @@
             <div v-for="field in group" :key="field.name">
               <div v-if="!field.onlyEditMode || isEditMode" class="">
                 <p class="form__title">{{ field.label }}:</p>
-                <component class="w-full" :is="field.type" v-bind="field.props" v-model="formData[field.name]"
+                <component class="w-full" :is="field.type" v-bind="getAdaptedProps(field.props)" v-model="formData[field.name]"
                 />
               </div>
             </div>
@@ -38,7 +38,7 @@
                     v-else
                     class="w-full"
                     :is="field.type"
-                    v-bind="field.disablePropsBinding ? {} : (field.props || {})"
+                    v-bind="field.disablePropsBinding ? {} : (getAdaptedProps(field.props)  || {})"
                     :config="field.props"
                     v-model="formData[field.name]"
                 />
@@ -68,7 +68,7 @@
                 v-else
                 class="w-full"
                 :is="field.type"
-                v-bind="field.disablePropsBinding ? {} : (field.props || {})"
+                v-bind="field.disablePropsBinding ? {} : (getAdaptedProps(field.props) || {})"
                 :config="field.props"
                 v-model="formData[field.name]"
             />
@@ -85,13 +85,12 @@
         </template>
 
 
-
         <template v-for="field in textAreaFields" :key="field.name">
           <div class="form-group col-span-2">
             <p class="form__title ">{{ field.label }}:</p>
             <component class="w-full"
                        :is="field.type"
-                       v-bind="field.props"
+                       v-bind="getAdaptedProps(field.props)"
                        v-model="formData[field.name]"
             />
             <Message
@@ -139,7 +138,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, watchEffect} from "vue";
+import {ref, computed, onMounted, watchEffect, isRef} from "vue";
 import DynamicRenderField from "@/components/UI/DynamicRenderField/DynamicRenderField.vue";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
@@ -172,7 +171,7 @@ const route = useRoute()
 const isEditMode = computed(() => route.params.id)
 
 const getData = () => {
-  const {price_uah, price_eur, discount,  discount_uah, discount_eur, ...rest} = formData.value;
+  const {price_uah, price_eur, discount, discount_uah, discount_eur, ...rest} = formData.value;
 
   return {
     ...rest,
@@ -192,6 +191,14 @@ const getData = () => {
         })
   };
 };
+
+const getAdaptedProps = (props) => {
+  const adapted = {}
+  for (const [key, value] of Object.entries(props || {})) {
+    adapted[key] = isRef(value) ? value.value : value
+  }
+  return adapted
+}
 
 watchEffect(() => {
   formData.value = {...props.data};

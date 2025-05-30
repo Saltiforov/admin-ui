@@ -2,7 +2,7 @@ export const en = {
     "placeholder_code_search": "Enter the code, please",
     "placeholder_filters_select": "Select filters, please",
     "placeholder_filter_popup_name_ua": "Name (UA)",
-    "placeholder_filter_popup_name_ru": "Name (RU)",
+    "placeholder_filter_popup_name_en": "Name (EN)",
     "placeholder_filter_popup_unique_code": "Unique code",
     "placeholder_edit_name": "Enter {entity} name",
     "filter_popup_button_text_upload": "Upload SVG File",
@@ -47,6 +47,8 @@ export const en = {
     "label_discount_and_status": "Discount & Status",
     "order_summary": 'Order Total',
     "vendor": "Vendor",
+    "placeholder_enter_delivery_service_branch_number": "Enter delivery service and branch number",
+    "placeholder_enter_promo_code": "Enter promo code",
 
 
     "static_shipping_and_payment" : "Shipping and Payment",

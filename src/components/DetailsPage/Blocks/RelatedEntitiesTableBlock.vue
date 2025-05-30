@@ -19,7 +19,7 @@
                        fluid/>
         </template>
         <template #image="{ data }">
-          <img :src="data.images ? pathBuilder(data.images[0]) : defaultProductImage" alt="image"
+          <img :src="data.images ? fullImageUrls(data.images)[0] : defaultProductImage" alt="image"
                class="table-image h-auto rounded object-contain"/>
         </template>
         <template #price="{ data }">
@@ -67,7 +67,7 @@ import defaultProductImage from "@/assets/icons/shopping-bag.svg";
 import Button from "primevue/button";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";
 import eventBus from "../../../../eventBus.js";
-import {pathBuilder} from "@/utils/index.js";
+import {fullImageUrls, pathBuilder} from "@/utils/index.js";
 import {useRoute} from "vue-router";
 import {getPopupConfig} from "@/services/factories/index.js";
 import {useI18n} from "vue-i18n";

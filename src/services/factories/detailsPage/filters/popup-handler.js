@@ -18,16 +18,16 @@ export const filtersPopups = {
 
             },
             {
-                code: "name.ru",
+                code: "name.en",
                 component: "InputText",
                 props: {
                     type: "text",
-                    placeholder: computed(() => t("placeholder_filter_popup_name_ru")),
+                    placeholder: computed(() => t("placeholder_filter_popup_name_en")),
                     style: "width: 100%; margin-bottom: 15px"
                 },
                 validators: [
-                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_filter_popup_name_ru")}))),
-                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("placeholder_filter_popup_name_ru"), max: 100 }))
+                    (value) => (value ? true : computed(() => t("validation_is_required", {field: t("placeholder_filter_popup_name_en")}))),
+                    (value) => value.length <= 100 || computed(() => t("validation_max_length", { field: t("placeholder_filter_popup_name_en"), max: 100 }))
                 ],
             },
             {

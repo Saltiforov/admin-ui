@@ -2,7 +2,7 @@ export const uk = {
     "placeholder_code_search": "Введіть код, будь ласка",
     "placeholder_filters_select": "Виберіть фільтри, будь ласка",
     "placeholder_filter_popup_name_ua": "Ім'я (UA)",
-    "placeholder_filter_popup_name_ru": "Ім'я (RU)",
+    "placeholder_filter_popup_name_en": "Ім'я (EN)",
     "placeholder_filter_popup_unique_code": "Унікальний код",
     "placeholder_edit_name": "Введіть назву {entity}",
     "filter_popup_button_text_upload": "Завантажити файл SVG",
@@ -48,7 +48,8 @@ export const uk = {
     "label_discount_and_status": "Знижка та статус",
     "order_summary": 'Сума замовлення',
     "vendor": "Виробник",
-
+    "placeholder_enter_delivery_service_branch_number": "Введіть службу доставки та номер відділення",
+    "placeholder_enter_promo_code": "Введіть промокод",
 
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",
