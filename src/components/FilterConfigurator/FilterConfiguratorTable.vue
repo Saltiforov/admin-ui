@@ -179,18 +179,18 @@ const show = (message) => {
 
 const deleteItems = ref([]);
 
-const deleteNodeRecursive = (nodesArray, nodeId, nodeCode) => {
+const deleteNodeRecursive = (nodesArray, nodeId) => {
   return nodesArray
       .filter((node) => {
         if (node.id && node.id === nodeId) {
           collectDeletedIds(node);
           return false;
         }
-        return node.data.code !== nodeCode;
+        return true;
       })
       .map((node) => ({
         ...node,
-        children: deleteNodeRecursive(node.children || [], nodeId, nodeCode),
+        children: deleteNodeRecursive(node.children || [], nodeId),
       }));
 };
 
@@ -207,7 +207,7 @@ const onSearch = (event) => {
 };
 
 const deleteNode = async (node) => {
-  nodes.value = deleteNodeRecursive(nodes.value, node.id, node.data.code);
+  nodes.value = deleteNodeRecursive(nodes.value, node.id);
   await deleteFilter(node.id)
 };
 
@@ -391,11 +391,8 @@ const isInvalidParent = (parent) => parent && !parent.key;
 
 const getBasicEntityFilledModel = (item) => {
   return {
-    id: item?.data?.id || item?.id,
     name: item?.data?.name || item?.name,
-    code: item?.data?.code || item?.code,
     icon: item?.data?.icon || item?.icon?.objectURL || '',
-    description: item?.data?.description || item?.description,
   }
 }
 
@@ -421,7 +418,6 @@ const handleAddChildNode = async (parent, newFilter) => {
 const prepareSaveData = (node, ids) => {
   return {
     ...getBasicEntityFilledModel(node),
-    children: ids,
   }
 }
 
@@ -431,6 +427,7 @@ const prepareChildSaveData = (node, parent) => {
   const basicChildNode = {
     ...getBasicEntityFilledModel(node),
     children: [],
+    icon: node.icon.objectURL || ''
   }
 
   activeFilter.children.push({
@@ -440,7 +437,7 @@ const prepareChildSaveData = (node, parent) => {
   expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
 
   return {
-    parent: parent.data.code,
+    parent: activeFilter.id,
     node: basicChildNode,
   };
 }
@@ -463,6 +460,7 @@ const createNode = async (newFilter, parent = null) => {
 
 const createChildNode = async (node, parent) => {
   const saveData = prepareChildSaveData(node, parent)
+
   await createNewFilterChildNode(saveData)
 }
 
@@ -480,9 +478,7 @@ function mapFilters(inputArray) {
           uk: item.name.uk,
           en: item.name.en,
         },
-        code: item.code || "unknown",
         icon: item.icon,
-        description: item.description || "Нет описания",
       },
       children: item.children && item.children.length
           ? item.children.map((child, childIdx) => mapNode(child, childIdx, key))

@@ -100,7 +100,9 @@ const collectDataFromComponents = () => {
     images: uploadFilesRef.value.getData()
   };
 
-  handleProduct()
+  console.log({ ...fieldsBlockRef.value.getData() })
+
+  // handleProduct()
 };
 
 
