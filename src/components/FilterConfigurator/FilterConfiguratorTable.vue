@@ -452,10 +452,13 @@ const createNode = async (newFilter, parent = null) => {
   }
 
   addedNodes.value++
-  nodes.value.unshift(node);
+  // nodes.value.unshift(node);
 
   const saveData = prepareSaveData(node);
-  await createNewFilterNode(saveData)
+  const response = await createNewFilterNode(saveData)
+  nodes.value = mapFilters(response.results.list)
+  console.log("response", response.results.list)
+
 }
 
 const createChildNode = async (node, parent) => {

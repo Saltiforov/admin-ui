@@ -49,7 +49,7 @@ const payload = ref([]);
 const nodeMapper = (node, key, parentKey, idx) => ({
   key,
   id: node._id,
-  label: node.name.ru
+  label: node.name.en
 });
 
 const handleClear = (clearCallback, event) => {
