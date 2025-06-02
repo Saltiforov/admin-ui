@@ -41,7 +41,6 @@
       </Column>
 
 
-
       <Column field="icon" :header="t('table_header_icon')" style="width: 15%">
         <template #body="{ node }">
           <Skeleton v-if="loading" width="30px" height="30px"/>
@@ -89,7 +88,8 @@
 import {onMounted, onUnmounted, ref, onBeforeMount, watch, computed, unref, isRef} from 'vue';
 import eventBus from "../../../eventBus.js";
 import {convertDottedFieldKeysToNested, deepClone, deepSearchByCode, pathBuilder} from "@/utils/index.js";
-import { createNewFilterChildNode,
+import {
+  createNewFilterChildNode,
   createNewFilterNode, deleteFilter, updateExistedNode
 } from "@/services/api/filters-service.api.js";
 import {useToast} from "primevue/usetoast";
@@ -397,6 +397,9 @@ const getBasicEntityFilledModel = (item) => {
 }
 
 const handleEditFilter = async (parent, newFilter) => {
+
+  console.log("parent?.key", parent?.key)
+
   const activeFilter = deepSearchByCode(nodes.value, parent?.key);
 
   if (!activeFilter) return;
@@ -422,18 +425,14 @@ const prepareSaveData = (node, ids) => {
 }
 
 const prepareChildSaveData = (node, parent) => {
-  const activeFilter = deepSearchByCode(nodes.value, parent.key);
+  const activeFilter = deepSearchByCode(nodes.value, parent?.key);
   const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
   const basicChildNode = {
     ...getBasicEntityFilledModel(node),
     children: [],
-    icon: node.icon.objectURL || ''
+    icon: node.icon?.objectURL || ''
   }
 
-  activeFilter.children.push({
-    key: newKey,
-    ...basicChildNode
-  });
   expandedKeys.value = {...expandedKeys.value, [parent.key]: true};
 
   return {
@@ -452,19 +451,30 @@ const createNode = async (newFilter, parent = null) => {
   }
 
   addedNodes.value++
-  // nodes.value.unshift(node);
-
   const saveData = prepareSaveData(node);
   const response = await createNewFilterNode(saveData)
   nodes.value = mapFilters(response.results.list)
-  console.log("response", response.results.list)
 
 }
 
 const createChildNode = async (node, parent) => {
-  const saveData = prepareChildSaveData(node, parent)
+  const {key, ...saveData} = prepareChildSaveData(node, parent)
 
-  await createNewFilterChildNode(saveData)
+  const activeFilter = deepSearchByCode(nodes.value, parent?.key)
+
+  const { child } = await createNewFilterChildNode(saveData)
+
+  const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
+
+  activeFilter?.children.push({
+    children: child.children,
+    data: {
+      icon: child.icon || '',
+      name: child.name,
+    },
+    id: child._id,
+    key: newKey
+  });
 }
 
 const addedNodes = ref(0)
@@ -483,7 +493,7 @@ function mapFilters(inputArray) {
         },
         icon: item.icon,
       },
-      children: item.children && item.children.length
+      children: item?.children && item.children.length
           ? item.children.map((child, childIdx) => mapNode(child, childIdx, key))
           : [],
     };
@@ -495,6 +505,9 @@ function mapFilters(inputArray) {
 const activeFilter = ref({});
 
 const toggle = (event, node, level) => {
+
+  console.log("node", node)
+
   activeFilter.value = node;
   menu.value.toggle(event);
 };
