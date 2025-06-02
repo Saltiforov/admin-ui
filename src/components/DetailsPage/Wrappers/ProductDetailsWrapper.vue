@@ -102,7 +102,7 @@ const collectDataFromComponents = () => {
 
   console.log({ ...fieldsBlockRef.value.getData() })
 
-  // handleProduct()
+  handleProduct()
 };
 
 
