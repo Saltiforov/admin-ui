@@ -63,6 +63,7 @@ export const productsFieldsBlock = {
                             restOptionsUrl: 'api/admin/filters-configuration',
                             placeholder: computed(() => t("placeholder_enter_filters")),
                             class: 'w-full product-input md:w-56',
+                            selectionMode: 'multiple',
                             required: false,
                             showClear: true,
                             fullWidth: false,

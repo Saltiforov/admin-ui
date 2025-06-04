@@ -73,7 +73,7 @@ const detailsPageData = computed(() => {
     discount_eur: data?.discount?.eur || 0,
     price_uah: data?.price?.uah || 0,
     price_eur: data?.price?.eur || 0,
-    filters: data?.filters.map(filter => filter.id).join(',')
+    filters: data?.filters.map(filter => filter.id)
   }
 });
 
