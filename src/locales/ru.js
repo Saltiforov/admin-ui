@@ -57,7 +57,7 @@ export const ru = {
   "static_delivery_and_payment" : "Доставка и оплата",
   "label_name": "Имя {entity}",
   "label_price": "Цена {entity} ({currency})",
-  "label_discount": "Скидка ({currency})",
+  "label_discount": "Скидка",
   "label_category": "Категория",
   "label_description": "Описание",
   "label_related_filters": "Сопутствующие фильтры",

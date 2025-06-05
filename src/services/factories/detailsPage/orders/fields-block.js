@@ -70,35 +70,28 @@ export const ordersFieldsBlock = {
                         name: 'phone',
                         code: 'phone',
                         label: computed(() => t('label_phone')),
-                        type: 'Custom',
+                        type: 'InputText',
                         props: {
                             side: 'left',
-                            disabled: true
-
+                            type: 'tel',
+                            placeholder: '',
+                            required: true,
+                            onKeydown: (e) => {
+                                const allowedKeys = [
+                                    'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab',
+                                    '+', '-', '(', ')', ' '
+                                ];
+                                if (
+                                    !allowedKeys.includes(e.key) &&
+                                    !e.key.match(/[0-9]/)
+                                ) {
+                                    e.preventDefault();
+                                }
+                            }
                         },
-                        render: ({modelValue, 'onUpdate:modelValue': update}) =>
-                            h(InputGroup, {}, {
-                                default: () => [
-                                    h(InputGroupAddon, {
-                                        pt: {
-                                            root: {
-                                                style: {
-                                                    backgroundColor: 'white',
-                                                    color: 'black',
-                                                }
-                                            }
-                                        }
-                                    }, () => '+380'),
-                                    h(InputNumber, {
-                                        modelValue,
-                                        'onUpdate:modelValue': update,
-                                        useGrouping: false,
-                                        placeholder: '',
-                                        defaultValue: null,
-                                        disabled: true
-                                    })
-                                ]
-                            })
+                        validators: [
+                            (value) => (value ? true : "Phone Number is required"),
+                        ],
                     },
                     {
                         name: 'telegramUsername',

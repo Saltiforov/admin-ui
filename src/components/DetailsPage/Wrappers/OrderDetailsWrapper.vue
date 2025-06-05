@@ -96,7 +96,7 @@ const getStatusLabel = (status) => {
 const getSelectedUserAddress = computed(() => selectedUser.value.address)
 
 const shippingInfo = computed(() => {
-  if (!selectedUser.value.username) {
+  if (selectedUser.value.username) {
     return rawOrderData.value?.shippingAddress;
   }
   return getSelectedUserAddress.value;
@@ -148,6 +148,11 @@ const orderUserPhone = computed(() => {
   return selectedUser.value.phone
 })
 
+const orderUserTelegramUsername = computed(() => {
+  if (!selectedUser.value.username) return rawOrderData.value?.user.telegramUsername
+  return selectedUser.value.telegramUsername
+})
+
 
 
 
@@ -157,7 +162,7 @@ const detailsPageData = computed(() => {
     return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const {orderStatus, ...rest} = data;
+  const {orderStatus, description, ...rest} = data;
 
   return {
     ...rest,
@@ -168,9 +173,12 @@ const detailsPageData = computed(() => {
         label: getStatusLabel(orderStatus),
         value: orderStatus
       },
+      orderComment: description,
       userSelect: userSelectOptions.value,
       firstName: orderUserFirstName.value,
       lastName: orderUserLastName.value,
+      phone: orderUserPhone.value,
+      telegramUsername: orderUserTelegramUsername.value,
       email: orderUserEmail,
     })
   };
@@ -209,11 +217,14 @@ const deleteRelatedEntitiesItem = (item) => {
 }
 
 onMounted(async () => {
-  eventBus.on("handle-popup-data", async ({products}) => {
-    if (!products) return;
-    const existingProducts = relatedConfig.value
-    const existingCodes = existingProducts.map(p => p._id)
+  eventBus.on("handle-popup-data", async ({ products }) => {
+    if (!products || !Array.isArray(products)) return;
+
+    const existingProducts = relatedConfig.value || [];
+    const existingCodes = existingProducts.map(p => p.code);
+
     const newProducts = products.filter(item => !existingCodes.includes(item.code));
+
     relatedConfig.value = [
       ...existingProducts,
       ...newProducts.map(product => ({
@@ -256,12 +267,12 @@ function prepareDataForSubmit(inputData) {
       city: inputData.city,
       postalCode: inputData.postalCode,
       country: inputData.country,
-      firstName: inputData.firstName,
-      lastName: inputData.lastName,
-      email: inputData.email,
+    },
+    customerInfo: {
       phone: inputData.phone,
       telegramUsername: inputData.telegramUsername,
-
+      firstName: selectedUser.value.firstName,
+      lastName: selectedUser.value.lastName,
     },
     pricing: inputData.pricing,
     discount: inputData.discount,
@@ -272,7 +283,7 @@ function prepareDataForSubmit(inputData) {
     promoCode: inputData.promoCode,
     sms: inputData.sms,
     cashOnDelivery: inputData.cashOnDelivery,
-    orderComment: inputData.orderComment,
+    description: inputData.orderComment,
     paymentMethod: inputData.paymentMethod?.value,
     orderStatus: inputData.orderStatus?.value || 'pending',
     orderNumber: inputData.orderNumber,
@@ -297,13 +308,11 @@ const {
 const action = computed(() => {
   return !orderId.value
       ? () => {
-        createOrder(transformedData.value)
+        createOrder({...transformedData.value, region: "ua"})
         router.go(-1)
       }
       : () => updateOrderById(orderId.value, transformedData.value)
 })
-
-console.log("handleOrder", action.value)
 
 
 const handleOrder = async () => {

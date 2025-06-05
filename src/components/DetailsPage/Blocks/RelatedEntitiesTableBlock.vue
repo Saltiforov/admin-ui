@@ -19,17 +19,17 @@
                        fluid/>
         </template>
         <template #image="{ data }">
-          <img :src="data.images ? fullImageUrls(data.images)[0] : defaultProductImage" alt="image"
+          <img :src="data.images.length ? fullImageUrls(data.images)[0] : defaultProductImage" alt="image"
                class="table-image h-auto rounded object-contain"/>
         </template>
         <template #price="{ data }">
           <div class="price-display">
-            <div v-if="data.price?.eur">USD: {{ data.price.eur }}</div>
-            <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
+            <div v-if="data.priceAfterDiscount?.eur">EUR: {{ data.priceAfterDiscount.eur }}</div>
+            <div v-if="data.priceAfterDiscount?.uah">UAH: {{ data.priceAfterDiscount.uah }}</div>
           </div>
         </template>
         <template #description="{ data }">
-          <p>dsadsada</p>
+          <div v-html="data.description" class="no-p-tag" />
         </template>
         <template #availability="{ data }">
           <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
@@ -47,7 +47,7 @@
           </div>
         </template>
       </CustomDataTable>
-        <div class="order-summary">
+        <div v-show="isUpdateMode" class="order-summary">
           <h2>{{ t('order_summary') }}</h2>
           <div class="amounts">
             <div class="amount-uah">₴ {{ orderSummary }}</div>
@@ -95,7 +95,7 @@ const {t} = useI18n();
 
 const buttonLabel = computed(() => t('button_text_new_entity'))
 
-const isUpdateMode = computed(() => !!props.data)
+const isUpdateMode = computed(() => !!route.params.id)
 
 const route = useRoute()
 
@@ -183,6 +183,11 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.no-p-tag p {
+  display: inline;
+  margin: 0;
 }
 
 .amount-uah,

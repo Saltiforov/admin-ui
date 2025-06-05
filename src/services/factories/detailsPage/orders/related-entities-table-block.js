@@ -19,7 +19,7 @@ export const ordersRelatedTable = {
                 style: "width: 20%"
             },
             {field: "price", header: computed(() => t("table_header_price")),  slotName: "price", style: "width: 10%",},
-            {field: 'description', header: computed(() => t("table_header_description")),  style: 'width: 30%', class: 'multiline-truncate'},
+            {field: 'description', header: computed(() => t("table_header_description")), slotName: 'description' , style: 'width: 30%', class: 'multiline-truncate'},
             {field: 'category', header: computed(() => t("table_header_category")), class: 'multiline-truncate'},
             {field: 'availability', header: computed(() => t("table_header_availability")), slotName: 'availability'},
             {

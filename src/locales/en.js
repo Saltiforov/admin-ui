@@ -57,7 +57,7 @@ export const en = {
     "static_delivery_and_payment" : "Delivery and Payment",
     "label_name": "{entity} Name",
     "label_price": "{entity} Price ({currency})",
-    "label_discount": "Discount ({currency})",
+    "label_discount": "Discount",
     "label_category": "Category",
     "label_description": "Description",
     "label_related_filters": "Related Filters",
