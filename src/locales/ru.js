@@ -152,6 +152,7 @@ export const ru = {
   "table_header_roles": "Роли",
   "table_header_last_interaction": "Последнее взаимодействие",
   "table_header_created_at": "Дата создания",
+  "table_header_telegram": "Телеграм",
   "table_header_updated_at": "Дата обновления",
   "table_header_street": "Улица",
   "table_header_city": "Город",

@@ -76,6 +76,7 @@ export const ordersFieldsBlock = {
                             type: 'tel',
                             placeholder: '',
                             required: true,
+                            disabled: true,
                             onKeydown: (e) => {
                                 const allowedKeys = [
                                     'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab',
@@ -184,49 +185,6 @@ export const ordersFieldsBlock = {
                     },
                 ]
             },
-
-
-
-
-            {
-                type: 'InputText',
-                props: {
-                    type: 'text',
-                    class: 'product-input',
-                    required: true,
-                },
-                blockTitle: 'label_payment_information',
-                children: [
-                    {
-                        name: 'paymentMethod',
-                        code: 'paymentMethod',
-                        label: computed(() => t("label_payment_method")),
-                        type: 'Select',
-                        props: {
-                            options: [
-                                {label: 'Відправити SMS по вказаних данних', value: 'send_sms'},
-                                {label: 'Накладений платіж', value: 'cash_on_delivery'},
-                            ],
-                            optionLabel: 'label',
-                            placeholder: computed(() => t("placeholder_select_payment_method")),
-                            class: 'w-full md:w-56',
-                            required: false
-                        }
-                    },
-                    {
-                        name: 'promoCode',
-                        code: 'promoCode',
-                        label: computed(() => t("label_promo_code")),
-                        type: 'InputText',
-                        props: {
-                            type: 'text',
-                            placeholder: computed(() => t("placeholder_enter_promo_code")),
-                            required: true
-                        },
-                    },
-                ]
-            },
-
             {
                 type: 'InputText',
                 props: {

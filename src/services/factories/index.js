@@ -34,6 +34,7 @@ import DeliveryAndPaymentProduct from "@/views/StaticInformation/DeliveryAndPaym
 import {
     aboutUsStaticInfoBlock
 } from "@/services/factories/detailsPage/static-information/about-us/static-info-block.js";
+import {createUserById, getCurrentUser, getUserById} from "@/services/api/user-service.api.js";
 
 
 const blocks = {
@@ -59,6 +60,7 @@ const blocks = {
             },
             source: DETAILS_PAGES.USERS,
             pageName: UserDetailsWrapper,
+            fetchData: ({ id }) => getUserById(id),
         }
     },
     [PAGES.ORDERS]: {

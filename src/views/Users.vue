@@ -131,6 +131,7 @@ const dataTableConfig = ref({
   class: "custom-table",
   columns: [
     {field: 'username', header: computed(() => t('table_header_username')), class: 'multiline-truncate'},
+    {field: 'telegramUsername', header: computed(() => t('table_header_telegram'))},
     {field: 'firstName', header: computed(() => t('table_header_first_name')), style: 'width: 15%',},
     {field: 'lastName', header: computed(() => t('table_header_last_name')), style: 'width: 15%'},
     {field: 'email', header: computed(() => t('table_header_email')), class: 'multiline-truncate'},
@@ -138,16 +139,11 @@ const dataTableConfig = ref({
     {field: 'roles', header: computed(() => t('table_header_roles')),},
     {field: 'last_interaction', header: computed(() => t('table_header_last_interaction'))},
     {field: 'createdAt', header: computed(() => t('table_header_created_at'))},
-    {field: 'updatedAt', header: computed(() => t('table_header_updated_at'))},
-    {field: 'street', header: computed(() => t('table_header_street')), class: 'multiline-truncate'},
-    {field: 'city', header: computed(() => t('table_header_city')), class: 'multiline-truncate'},
-    {field: 'postalCode', header: computed(() => t('table_header_postal_code')), class: 'multiline-truncate'},
-    {field: 'country', header: computed(() => t('table_header_country')), class: 'multiline-truncate'},
     {
       field: 'actions',
       header: '',
       slotName: 'actions',
-      style: 'width: 10%',
+      style: 'width: 5%',
     },
   ]
 });

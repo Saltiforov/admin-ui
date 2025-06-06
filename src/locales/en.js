@@ -138,6 +138,7 @@ export const en = {
     "button_new_orders": "Add new order",
     "table_header_name": "Name",
     "table_header_code": "Code",
+    "table_header_telegram": "Telegram",
     "table_header_icon": "Icon",
     "table_header_description": "Description",
     "table_header_image": "Image",

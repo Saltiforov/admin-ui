@@ -7,13 +7,13 @@
         :context-id="detailsPageData.orderNumber"
         ref="fieldsBlockRef"
     />
-      <RelatedEntitiesTableBlock
-          :config="relatedConfig"
-          :data="detailsPageData"
-          :total-records="totalRecords"
-          ref="relatedEntitiesBlockRef"
-          @handle-delete="deleteRelatedEntitiesItem"
-      />
+    <RelatedEntitiesTableBlock
+        :config="relatedConfig"
+        :data="detailsPageData"
+        :total-records="totalRecords"
+        ref="relatedEntitiesBlockRef"
+        @handle-delete="deleteRelatedEntitiesItem"
+    />
     <FooterActionBlock
         :config="blockList.footerActions"
         :data="detailsPageData"
@@ -75,9 +75,9 @@ const selectId = 'relatedEntitiesSelect'
 
 const selectedUser = ref({})
 
-watch(() => rawOrderData.value, (newValue, oldValue) => {
-  selectedUser.value = newValue.user;
-})
+// watch(() => rawOrderData.value, (newValue, oldValue) => {
+//   selectedUser.value = newValue.user;
+// })
 
 const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
@@ -93,20 +93,21 @@ const getStatusLabel = (status) => {
   return statusMap[status] || "Unknown";
 };
 
-const getSelectedUserAddress = computed(() => selectedUser.value.address)
+const getSelectedUserAddress = computed(() => selectedUser.value?.address || {})
 
 const shippingInfo = computed(() => {
-  if (selectedUser.value.username) {
+  if (selectedUser.value?.username) {
+    // return getSelectedUserAddress.value;
     return rawOrderData.value?.shippingAddress;
   }
-  return getSelectedUserAddress.value;
+  return rawOrderData.value?.shippingAddress;
 });
 
 const userSelectOptions = computed(() => {
-  if (!selectedUser.value.username) {
+  if (!selectedUser.value?.username) {
     return {
-      label: rawOrderData.value?.user.username,
-      code: rawOrderData.value?.user._id
+      label: rawOrderData.value?.user?.username,
+      code: rawOrderData.value?.user?._id
     };
   }
   return {
@@ -118,8 +119,8 @@ const userSelectOptions = computed(() => {
 const paymentMethodOptions = computed(() => {
   const method = rawOrderData.value?.paymentMethod
   return {
-    label: method === 'false' ?  paymentMethodLabels['cash_on_delivery'] : paymentMethodLabels['send_sms'],
-    value: method === 'false' ?  'cash_on_delivery' : 'send_sms'
+    label: method === 'false' ? paymentMethodLabels['cash_on_delivery'] : paymentMethodLabels['send_sms'],
+    value: method === 'false' ? 'cash_on_delivery' : 'send_sms'
   }
 })
 
@@ -129,31 +130,29 @@ const paymentMethodLabels = {
 }
 
 const orderUserFirstName = computed(() => {
-  if (!selectedUser.value.username) return rawOrderData.value?.user.firstName
+  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo.firstName
   return selectedUser.value.firstName
 })
 
 const orderUserLastName = computed(() => {
-  if (!selectedUser.value.username) return rawOrderData.value?.user.lastName
+  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.lastName
   return selectedUser.value.lastName
 })
 
 const orderUserEmail = computed(() => {
-  if (!selectedUser.value.username) return rawOrderData.value?.user.email
+  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.email
   return selectedUser.value.email
 })
 
 const orderUserPhone = computed(() => {
-  if (!selectedUser.value.username) return rawOrderData.value?.user.phone
+  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.phone
   return selectedUser.value.phone
 })
 
 const orderUserTelegramUsername = computed(() => {
-  if (!selectedUser.value.username) return rawOrderData.value?.user.telegramUsername
-  return selectedUser.value.telegramUsername
+  if (!selectedUser.value?.username) return rawOrderData.value?.user?.telegramUsername ? rawOrderData.value?.user?.telegramUsername : rawOrderData.value?.customerInfo.telegramUsername
+  return selectedUser.value.telegramUsername ? selectedUser.value?.telegramUsername : ''
 })
-
-
 
 
 const detailsPageData = computed(() => {
@@ -187,7 +186,7 @@ const detailsPageData = computed(() => {
 
 watch(() => detailsPageData.value, (value) => {
 
-  if (selectedUser.value.address) return
+  if (selectedUser.value?.address) return
 
   relatedConfig.value = value.products?.map(item => {
     return {
@@ -217,7 +216,7 @@ const deleteRelatedEntitiesItem = (item) => {
 }
 
 onMounted(async () => {
-  eventBus.on("handle-popup-data", async ({ products }) => {
+  eventBus.on("handle-popup-data", async ({products}) => {
     if (!products || !Array.isArray(products)) return;
 
     const existingProducts = relatedConfig.value || [];

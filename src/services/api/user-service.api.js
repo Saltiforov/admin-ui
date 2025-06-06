@@ -17,12 +17,12 @@ export async function getUserList(query = {}) {
         console.log(error);
     }
 }
-export async function createUsers(users) {
+export async function createUser(user) {
     const api = app.config.globalProperties.$api;
 
     try {
 
-        const response = await api.post(`${router.users}`, users);
+        const response = await api.post(`${router.users}`, user);
 
         return response;
 
@@ -47,12 +47,29 @@ export async function getCurrentUser() {
     }
 }
 
-export async function createUserById(userId) {
+export async function getUserById(userId) {
     const api = app.config.globalProperties.$api;
 
     try {
 
-        const response = await api.post(`${router.users}/${userId}`);
+        const response = await api.get(`${router.users}/${userId}`);
+
+        return response.data;
+
+    } catch (error) {
+        console.error('Error in createUser:', error);
+        throw error;
+    }
+}
+
+
+
+export async function createUserById(userId, payload) {
+    const api = app.config.globalProperties.$api;
+
+    try {
+
+        const response = await api.post(`${router.users}/${userId}`, payload);
 
         return response;
 

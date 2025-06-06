@@ -16,13 +16,11 @@
         :size="config.size"
         :show-gridlines="config.showGridlines"
     >
-
       <template v-for="col in config.columns" :key="col.field">
         <Column
             :field="col.field"
             :header="col.header"
             :style="col.style"
-
             :sortable="col.sortable"
         >
           <template v-if="col.headerSlotName" v-slot:header>
@@ -32,25 +30,25 @@
           <template v-slot:body="slotProps">
             <div class="fixed-row" :class="col.class">
               <Skeleton v-if="loading" width="80%" height="16px" />
-              <slot v-else-if="col.slotName" :name="col.slotName" :data="slotProps.data"></slot>
-              <span v-else>{{ slotProps.data[col.field] }}</span>
+              <slot
+                  v-else-if="col.slotName"
+                  :name="col.slotName"
+                  :data="slotProps.data"
+              ></slot>
+              <span v-else>{{ getDisplayValue(slotProps.data[col.field]) }}</span>
             </div>
           </template>
-
         </Column>
       </template>
     </DataTable>
   </div>
 </template>
 
-
 <script setup>
+import { computed, defineProps, watch } from 'vue'
+import { useQueryUpdater } from '@/composables/useQueryUpdater.js'
 
-import {computed, defineProps, watch} from 'vue';
-import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
-
-const { updateQuery } = useQueryUpdater();
-
+const { updateQuery } = useQueryUpdater()
 
 const props = defineProps({
   config: {
@@ -65,27 +63,29 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-});
+})
+
+function getDisplayValue(value) {
+  return value === 0 || !!value ? value : '---'
+}
 
 const placeholderRows = computed(() => {
-
   return Array.from({ length: props.config.rows || 5 }, () =>
-      Object.fromEntries(props.config?.columns.map(col => [col.field, ""]))
-  );
-});
+      Object.fromEntries(props.config?.columns.map(col => [col.field, '']))
+  )
+})
 
 watch(
     () => [props.config.rows, props.config.skip],
     ([limit, skip]) => {
-      updateQuery({limit, skip});
+      updateQuery({ limit, skip })
     },
-    {immediate: false}
-);
-
+    { immediate: false }
+)
 </script>
 
 <style scoped>
-.fixed-ro {
+.fixed-row {
   height: 40px;
   display: flex;
   align-items: center;

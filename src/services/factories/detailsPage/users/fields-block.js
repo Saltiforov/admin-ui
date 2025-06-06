@@ -5,8 +5,8 @@ export const usersFieldsBlock = {
     fields: {
         items: [
             {
-                name: 'userName',
-                code: 'userName',
+                name: 'username',
+                code: 'username',
                 label: computed(() => t("label_name", { entity: capitalizeFirstLetter(t("entity_user_gen")) })),
                 type: 'InputText',
                 props: {
@@ -71,9 +71,6 @@ export const usersFieldsBlock = {
                     required: true,
                     feedback: true,
                 },
-                validators: [
-                    (value) => (value ? true : 'Password is required')
-                ]
             },
             {
                 name: 'roles',
@@ -103,8 +100,19 @@ export const usersFieldsBlock = {
                 }
             },
             {
-                name: 'address.street',
-                code: 'address.street',
+                name: 'telegramUsername',
+                code: 'telegramUsername',
+                label: computed(() => t('label_telegram_user')),
+                type: 'InputText',
+                props: {
+                    type: 'text',
+                    class: 'w-full'
+                },
+            },
+
+            {
+                name: 'street',
+                code: 'street',
                 label: computed(() => t("label_street")),
                 type: 'InputText',
                 props: {
@@ -114,8 +122,8 @@ export const usersFieldsBlock = {
                 }
             },
             {
-                name: 'address.city',
-                code: 'address.city',
+                name: 'city',
+                code: 'city',
                 label: computed(() => t("label_city")),
                 type: 'InputText',
                 props: {
@@ -125,8 +133,8 @@ export const usersFieldsBlock = {
                 }
             },
             {
-                name: 'address.postalCode',
-                code: 'address.postalCode',
+                name: 'postalCode',
+                code: 'postalCode',
                 label: computed(() => t("label_postal_code")),
                 type: 'InputText',
                 props: {
@@ -136,8 +144,8 @@ export const usersFieldsBlock = {
                 }
             },
             {
-                name: 'address.country',
-                code: 'address.country',
+                name: 'country',
+                code: 'country',
                 label: computed(() => t("label_country")),
                 type: 'InputText',
                 props: {
@@ -147,6 +155,6 @@ export const usersFieldsBlock = {
                 }
             }
         ],
-        header: computed(() => t("title_edit_page", { pageName: t("entity_user_gen") })),
+        header: 'title_edit_page',
     }
 }

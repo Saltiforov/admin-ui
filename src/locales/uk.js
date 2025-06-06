@@ -138,6 +138,7 @@ export const uk = {
     "button_new_orders": "Додати нове замовлення",
     "table_header_name": "Ім'я",
     "table_header_code": "Код",
+    "table_header_telegram": "Телеграм",
     "table_header_icon": "Іконка",
     "table_header_description": "Опис",
     "table_header_image": "Зображення",
