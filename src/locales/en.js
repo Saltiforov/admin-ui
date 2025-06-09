@@ -173,6 +173,7 @@ export const en = {
     "label_region": "Region",
     "about_user_activity": "User Activity",
     "placeholder_enter_telegram": "Enter Telegram username",
+    "table_header_slug": "Slug",
     "about_user_registration": "Registration",
     "about_user_last_login": "Last login",
     "about_user_status": "Status",

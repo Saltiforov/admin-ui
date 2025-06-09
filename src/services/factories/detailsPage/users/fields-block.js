@@ -100,8 +100,8 @@ export const usersFieldsBlock = {
                 }
             },
             {
-                name: 'telegramUsername',
-                code: 'telegramUsername',
+                name: 'tgUsername',
+                code: 'tgUsername',
                 label: computed(() => t('label_telegram_user')),
                 type: 'InputText',
                 props: {

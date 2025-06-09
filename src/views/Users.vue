@@ -136,8 +136,6 @@ const dataTableConfig = ref({
     {field: 'lastName', header: computed(() => t('table_header_last_name')), style: 'width: 15%'},
     {field: 'email', header: computed(() => t('table_header_email')), class: 'multiline-truncate'},
     {field: 'phone', header: computed(() => t('table_header_phone')), class: 'multiline-truncate'},
-    {field: 'roles', header: computed(() => t('table_header_roles')),},
-    {field: 'last_interaction', header: computed(() => t('table_header_last_interaction'))},
     {field: 'createdAt', header: computed(() => t('table_header_created_at'))},
     {
       field: 'actions',
@@ -175,7 +173,6 @@ const configActionsBar = computed(() => {
             component: 'InputIcon',
             props: {
               class: 'pi pi-search',
-
             },
           },
           {
@@ -186,20 +183,6 @@ const configActionsBar = computed(() => {
             },
           },
         ],
-      },
-      {
-        component: 'AsyncTreeSelect',
-        disablePropsBinding: true,
-        name: 'filters',
-        props: {
-          restOptionsUrl: 'api/admin/filters-configuration',
-          placeholder: t('placeholder_filters_select'),
-          selectionMode: 'multiple',
-          class: 'w-full product-input md:w-56',
-          required: false,
-          showClear: true,
-          fullWidth: true,
-        }
       },
     ],
 

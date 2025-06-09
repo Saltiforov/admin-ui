@@ -16,7 +16,6 @@ export function useQueryUpdater() {
             })
         );
 
-        // Убираем пустые, null и undefined значения
         const cleanedQuery = Object.fromEntries(
             Object.entries(serializedQuery).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
         );

@@ -20,6 +20,7 @@ export const uk = {
     "placeholder_select_roles": "Виберіть ролі",
     "placeholder_enter_phone": "Введіть номер телефону",
     "placeholder_enter_telegram": "Введіть ім’я користувача Telegram",
+    "table_header_slug": "Слаг",
     "placeholder_enter_total_amount": "Введіть загальну суму",
     "placeholder_enter_tax": "Введіть податок",
     "placeholder_select_status": "Виберіть статус {entity}",

@@ -33,13 +33,6 @@
         </template>
       </Column>
 
-      <Column field="code" :header="t('table_header_code')" style="width: 15%">
-        <template #body="{ node }">
-          <Skeleton v-if="loading" width="50%" height="1rem"/>
-          <span v-else>{{ getNodeFieldValue(node, 'code') }}</span>
-        </template>
-      </Column>
-
 
       <Column field="icon" :header="t('table_header_icon')" style="width: 15%">
         <template #body="{ node }">
@@ -54,14 +47,18 @@
         </template>
       </Column>
 
-      <Column field="description" :header="t('table_header_description')" style="width: 33%">
+      <Column field="slug" :header="t('table_header_slug')" style="width: 33%">
         <template #body="{ node }">
-          <Skeleton v-if="loading" width="90%" height="1rem"/>
-          <span class="multiline-truncate" v-else>{{ getNodeFieldValue(node, 'description') }}</span>
+          <Skeleton v-if="loading" width="80%" height="1rem"/>
+          <div class="flex" v-else>
+            <div class="multiline-truncate">{{ capitalizeNodeSlug(node, 'uk') || '' }}</div>
+            /
+            <div class="multiline-truncate">{{ capitalizeNodeSlug(node, 'en') || '' }}</div>
+          </div>
         </template>
       </Column>
 
-      <Column style="width: 33%">
+      <Column style="width:5%">
         <template #body="{ node, level }">
           <div>
             <Button
@@ -462,7 +459,7 @@ const createChildNode = async (node, parent) => {
 
   const activeFilter = deepSearchByCode(nodes.value, parent?.key)
 
-  const { child } = await createNewFilterChildNode(saveData)
+  const {child} = await createNewFilterChildNode(saveData)
 
   const newKey = parent ? nodeBuilder.treeNodesPathGenerator(parent) : nodes.value.length.toString();
 
@@ -490,6 +487,10 @@ function mapFilters(inputArray) {
         name: {
           uk: item.name.uk,
           en: item.name.en,
+        },
+        slug: {
+          uk: item.slug.uk,
+          en: item.slug.en,
         },
         icon: item.icon,
       },
@@ -521,6 +522,17 @@ const capitalizeNodeName = (node, lang = 'uk') => {
       '';
 
   return name ? name.charAt(0).toUpperCase() + name.slice(1) : '';
+};
+
+const capitalizeNodeSlug = (node, lang = 'uk') => {
+  if (!node) return '';
+
+  const slug =
+      node?.slug?.[lang] ||
+      node?.data?.slug?.[lang] ||
+      '';
+
+  return slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : '';
 };
 
 const route = useRoute()
