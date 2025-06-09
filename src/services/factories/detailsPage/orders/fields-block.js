@@ -1,9 +1,5 @@
 import {computed, h} from "vue";
-import UserSelect from "@/components/UI/UserSelect/UserSelect.vue";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
-import InputNumber from "primevue/inputnumber";
-import {capitalizeFirstLetter} from "@/utils/index.js";
+import SelectInput from "@/components/UI/SelectInput/SelectInput.vue";
 
 export const ordersFieldsBlock = {
     fields: {
@@ -19,18 +15,19 @@ export const ordersFieldsBlock = {
                 blockTitle: 'label_user_information',
                 children: [
                     {
-                        name: 'userSelect',
-                        code: 'userSelect',
-                        label: computed(() => t("label_select_user")),
-                        type: UserSelect,
-                        disablePropsBinding: true,
+                        name: 'region',
+                        code: 'region',
+                        label: computed(() => t('label_region')),
+                        type: SelectInput,
                         props: {
-                            restOptionsUrl: 'api/admin/users',
-                            selectionMode: 'multiple',
-                            class: 'w-full product-input md:w-56',
-                            required: false,
-                            showClear: true,
-                            fullWidth: false,
+                            options: [
+                                { label: "🇺🇦 UA", value: "ua" },
+                                { label: "🇪🇺 EU", value: "eu" },
+                            ],
+                            placeholder: "Выберите регион",
+                            filter: false,
+                            multiple: false,
+                            clearable: false,
                         }
                     },
                     {
@@ -40,8 +37,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             side: 'right',
-                            placeholder: '',
-                            disabled: true
+                            placeholder: computed(() => t("placeholder_enter_first_name")),
                         }
                     },
                     {
@@ -51,8 +47,8 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             side: 'right',
-                            placeholder: '',
-                            disabled: true
+                            placeholder: computed(() => t("placeholder_enter_last_name")),
+
                         }
                     },
                     {
@@ -63,7 +59,6 @@ export const ordersFieldsBlock = {
                         props: {
                             type: 'text',
                             required: true,
-                            disabled: true
                         },
                     },
                     {
@@ -74,9 +69,8 @@ export const ordersFieldsBlock = {
                         props: {
                             side: 'left',
                             type: 'tel',
-                            placeholder: '',
+                            placeholder: computed(() => t("placeholder_enter_phone")),
                             required: true,
-                            disabled: true,
                             onKeydown: (e) => {
                                 const allowedKeys = [
                                     'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab',
@@ -101,7 +95,7 @@ export const ordersFieldsBlock = {
                         type: 'InputText',
                         props: {
                             type: 'text',
-                            disabled: true,
+                            placeholder: computed(() => t("placeholder_enter_telegram")),
                             class: 'w-full'
                         },
                     },
@@ -221,8 +215,6 @@ export const ordersFieldsBlock = {
                         props: {
                             inputId: 'discount',
                             useGrouping: false,
-                            min: 0,
-                            max: 100,
                             placeholder: computed(() => t("placeholder_enter_discount")),
                             required: false
                         }

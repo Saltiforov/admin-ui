@@ -86,3 +86,13 @@
   line-height: 20px; /* Высота строки */
   text-align: left; /* Выравнивание по левому краю */
 }
+
+.multiline-truncate-related {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* Обрезает текст после 2 строк */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 20px; /* Высота строки */
+  text-align: left; /* Выравнивание по левому краю */
+}

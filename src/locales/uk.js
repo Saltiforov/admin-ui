@@ -19,6 +19,7 @@ export const uk = {
     "placeholder_enter_password": "Введіть пароль",
     "placeholder_select_roles": "Виберіть ролі",
     "placeholder_enter_phone": "Введіть номер телефону",
+    "placeholder_enter_telegram": "Введіть ім’я користувача Telegram",
     "placeholder_enter_total_amount": "Введіть загальну суму",
     "placeholder_enter_tax": "Введіть податок",
     "placeholder_select_status": "Виберіть статус {entity}",
@@ -50,7 +51,7 @@ export const uk = {
     "vendor": "Виробник",
     "placeholder_enter_delivery_service_branch_number": "Введіть службу доставки та номер відділення",
     "placeholder_enter_promo_code": "Введіть промокод",
-
+    "label_region": "Регіон",
     "static_shipping_and_payment" : "Доставка та оплата",
     "static_about_us" : "Про нас",
     "static_new_arrivals" : "Нові надходження",

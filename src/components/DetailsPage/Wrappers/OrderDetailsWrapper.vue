@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <FieldsBlock
-        :config="blockList.fields"
+        :config="updatedBlocklistFields"
         :data="detailsPageData"
         :errors="fieldsErrors"
         :context-id="detailsPageData.orderNumber"
@@ -75,9 +75,47 @@ const selectId = 'relatedEntitiesSelect'
 
 const selectedUser = ref({})
 
-// watch(() => rawOrderData.value, (newValue, oldValue) => {
-//   selectedUser.value = newValue.user;
-// })
+watch(() => rawOrderData?.value?.region, (newValue) => {
+  selectedRegion.value = newValue;
+})
+
+const selectedRegion = ref('ua')
+
+const updatedBlocklistFields = computed(() => {
+  const blockList = props.blockList?.fields?.items
+  if (!blockList) return {}
+
+  const updatedBlocks = blockList.map(block => {
+    const clonedBlock = { ...block }
+
+    if (block.blockTitle === "label_shipping_information") {
+      if (selectedRegion.value === 'ua') {
+        clonedBlock.children = block.children.filter(
+            field => field.code === 'country' || field.code === 'city'
+        )
+      } else if (selectedRegion.value === 'eu') {
+        clonedBlock.children = [...block.children]
+      }
+    }
+
+    if (block.blockTitle === "label_user_information") {
+      if (selectedRegion.value === 'eu') {
+        clonedBlock.children = block.children
+      } else {
+        clonedBlock.children = block.children.filter(
+            field => field.code !== 'email'
+        )
+      }
+    }
+
+    return clonedBlock
+  })
+
+  return {
+    items: updatedBlocks
+  }
+})
+
 
 const totalRecords = computed(() => dataStore.getTotalCount(selectId))
 
@@ -93,7 +131,6 @@ const getStatusLabel = (status) => {
   return statusMap[status] || "Unknown";
 };
 
-const getSelectedUserAddress = computed(() => selectedUser.value?.address || {})
 
 const shippingInfo = computed(() => {
   if (selectedUser.value?.username) {
@@ -103,84 +140,31 @@ const shippingInfo = computed(() => {
   return rawOrderData.value?.shippingAddress;
 });
 
-const userSelectOptions = computed(() => {
-  if (!selectedUser.value?.username) {
-    return {
-      label: rawOrderData.value?.user?.username,
-      code: rawOrderData.value?.user?._id
-    };
-  }
-  return {
-    label: selectedUser.value.username,
-    code: selectedUser.value._id
-  };
-});
-
-const paymentMethodOptions = computed(() => {
-  const method = rawOrderData.value?.paymentMethod
-  return {
-    label: method === 'false' ? paymentMethodLabels['cash_on_delivery'] : paymentMethodLabels['send_sms'],
-    value: method === 'false' ? 'cash_on_delivery' : 'send_sms'
-  }
-})
-
-const paymentMethodLabels = {
-  'send_sms': 'Відправити SMS по вказаних данних',
-  'cash_on_delivery': 'Накладений платіж'
-}
-
-const orderUserFirstName = computed(() => {
-  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo.firstName
-  return selectedUser.value.firstName
-})
-
-const orderUserLastName = computed(() => {
-  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.lastName
-  return selectedUser.value.lastName
-})
-
-const orderUserEmail = computed(() => {
-  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.email
-  return selectedUser.value.email
-})
-
-const orderUserPhone = computed(() => {
-  if (!selectedUser.value?.username) return rawOrderData.value?.customerInfo?.phone
-  return selectedUser.value.phone
-})
-
-const orderUserTelegramUsername = computed(() => {
-  if (!selectedUser.value?.username) return rawOrderData.value?.user?.telegramUsername ? rawOrderData.value?.user?.telegramUsername : rawOrderData.value?.customerInfo.telegramUsername
-  return selectedUser.value.telegramUsername ? selectedUser.value?.telegramUsername : ''
-})
-
-
 const detailsPageData = computed(() => {
   const data = rawOrderData.value;
   if (!data || Object.keys(data).length === 0) {
     return {...selectedUser.value, ...selectedUser.value.address} || undefined;
   }
 
-  const {orderStatus, description, ...rest} = data;
+  const {orderStatus, description, customerInfo, ...rest} = data;
 
   return {
     ...rest,
     ...shippingInfo.value,
-    paymentMethod: paymentMethodOptions.value,
+    ...customerInfo,
     ...(orderStatus && {
       orderStatus: {
         label: getStatusLabel(orderStatus),
         value: orderStatus
       },
       orderComment: description,
-      userSelect: userSelectOptions.value,
-      firstName: orderUserFirstName.value,
-      lastName: orderUserLastName.value,
-      phone: orderUserPhone.value,
-      telegramUsername: orderUserTelegramUsername.value,
-      email: orderUserEmail,
+      region: selectedRegion.value,
+      ...(selectedRegion.value === 'ua' && {
+        country: 'Ukraine'
+      }),
     })
   };
+
 });
 
 
@@ -233,16 +217,15 @@ onMounted(async () => {
     ];
   });
 
-  eventBus.on("orderUserSelected", async (user) => {
-    selectedUser.value = user;
+  eventBus.on("select-input-value", async (value) => {
+    selectedRegion.value = value
   })
 
 });
 
 onUnmounted(() => {
-  eventBus.off("handle-popup-data", (data) => {
-    console.log("RelatedEntitiesBlock OrderDetailsWrapper", data);
-  });
+  eventBus.off("handle-popup-data");
+  eventBus.off("select-input-value");
 })
 
 const orderId = computed(() => route.params.id)
@@ -262,30 +245,29 @@ function prepareDataForSubmit(inputData) {
       };
     }),
     shippingAddress: {
-      street: inputData.street,
       city: inputData.city,
-      postalCode: inputData.postalCode,
-      country: inputData.country,
+      ...(selectedRegion.value === 'eu' && {
+        street: inputData.street,
+        postalCode: inputData.postalCode,
+        country: inputData.country,
+      }),
     },
     customerInfo: {
       phone: inputData.phone,
       telegramUsername: inputData.telegramUsername,
-      firstName: selectedUser.value.firstName,
-      lastName: selectedUser.value.lastName,
+      firstName: inputData.firstName,
+      lastName: inputData.lastName,
+      email: inputData.email,
     },
     pricing: inputData.pricing,
     discount: inputData.discount,
     currency: inputData.currency,
     region: inputData.region,
-    user: selectedUser.value,
+    user: inputData.user,
     deliveryInfo: inputData.deliveryInfo,
-    promoCode: inputData.promoCode,
-    sms: inputData.sms,
     cashOnDelivery: inputData.cashOnDelivery,
     description: inputData.orderComment,
-    paymentMethod: inputData.paymentMethod?.value,
     orderStatus: inputData.orderStatus?.value || 'pending',
-    orderNumber: inputData.orderNumber,
   };
 }
 

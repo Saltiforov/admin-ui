@@ -100,8 +100,6 @@ const collectDataFromComponents = () => {
     images: uploadFilesRef.value.getData()
   };
 
-  console.log({ ...fieldsBlockRef.value.getData() })
-
   handleProduct()
 };
 
@@ -136,6 +134,7 @@ const action = computed(() => {
   return !isEditMode.value
       ? (data) => createNewProduct(data)
       : (data) => {
+        console.log("data", data)
         updateProductById(productId.value, mergeImages(data, uploadedImages.value))
       }
 })

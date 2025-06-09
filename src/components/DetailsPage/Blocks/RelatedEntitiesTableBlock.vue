@@ -13,6 +13,7 @@
       <CustomDataTable
           :config="config"
           :total-records="totalRecords"
+          :fixed-row="false"
       >
         <template #quantity="{ data }">
           <InputNumber v-model="data.quantity" inputId="minmax-buttons" mode="decimal" showButtons :min="1" :max="100"
@@ -169,12 +170,15 @@ defineExpose({
 }
 
 .order-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
   margin-top: 12px;
   padding: 0.5rem 1.5rem;
 }
 
+
 .order-total-highlight h2 {
-  margin-bottom: 1rem;
   font-size: 1.5rem;
   color: #111827;
 }

@@ -50,7 +50,8 @@ export const ru = {
   "vendor": "Производитель",
   "placeholder_enter_delivery_service_branch_number": "Введите службу доставки и номер отделения",
   "placeholder_enter_promo_code": "Введите промокод",
-
+  "label_region": "Регион",
+  "placeholder_enter_telegram": "Введите имя пользователя Telegram",
   "static_shipping_and_payment" : "Доставка и оплата",
   "static_about_us" : "О нас",
   "static_new_arrivals" : "Новые поступления",

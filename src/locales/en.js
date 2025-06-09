@@ -170,8 +170,9 @@ export const en = {
     "menu_popup_operation_add": "Add",
     "create_filter_popup_title": "Add Filter",
     "edit_filter_popup_title": "Edit Filter",
-
+    "label_region": "Region",
     "about_user_activity": "User Activity",
+    "placeholder_enter_telegram": "Enter Telegram username",
     "about_user_registration": "Registration",
     "about_user_last_login": "Last login",
     "about_user_status": "Status",

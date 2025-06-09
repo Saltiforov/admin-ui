@@ -3,6 +3,7 @@
     <DataTable
         v-model:rows="config.rows"
         v-model:first="config.skip"
+        :pt="config.pt"
         :loading="loading"
         :lazy="config.lazy"
         :value="loading ? placeholderRows : config.value"
@@ -28,7 +29,7 @@
           </template>
 
           <template v-slot:body="slotProps">
-            <div class="fixed-row" :class="col.class">
+            <div :class="[fixedRow && 'fixed-row', col.class]">
               <Skeleton v-if="loading" width="80%" height="16px" />
               <slot
                   v-else-if="col.slotName"
@@ -62,6 +63,10 @@ const props = defineProps({
   totalRecords: {
     type: Number,
     required: true,
+  },
+  fixedRow: {
+    type: Boolean,
+    default: true,
   },
 })
 
