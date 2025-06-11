@@ -6,7 +6,16 @@
         :config="updatedDataTableConfig"
         :total-records="totalRecords"
         :loading="isLoading"
+        :fixed-row="false"
     >
+      <template #name="{ data }">
+        <span
+            @click="goToProduct(data.slug)"
+            class="product-name-link"
+        >
+          {{ data.name }}
+        </span>
+      </template>
       <template #image="{ data }">
         <div class="image-wrapper">
           <img :src="data.images.length ?  fullImageUrls(data.images)[0] : defaultProductImage" alt="Product image"
@@ -19,9 +28,18 @@
           <div v-if="data.price?.uah">UAH: {{ data.price.uah }}</div>
         </div>
       </template>
-      <template #availability="{ data }">
-        <i v-if="data.availability" class="pi pi-check" style="color: #575669FF"></i>
-        <span v-else>---</span>
+      <template #reviews="{ data }">
+        <template v-if="data.reviews?.averageRating">
+          <img
+              src="@/assets/icons/review-icon.svg"
+              alt="review-icon"
+              class="inline-block w-4 h-4 mr-1 align-middle"
+          />
+          <span class="align-middle">{{ data.reviews.averageRating }}</span>
+        </template>
+        <template v-else>
+          ---
+        </template>
       </template>
       <template style="width: 5%" #actions="{ data }">
         <Button
@@ -97,7 +115,9 @@ const items = ref([
   },
 ]);
 
-
+const goToProduct = (slug) => {
+  window.open(`${import.meta.env.VITE_FRONTEND_BASE_URL}/product/${slug}`, "_blank");
+};
 
 const totalRecords = ref(0);
 
@@ -231,6 +251,18 @@ const {confirmDelete} = useConfirmDelete(updatedConfirmOptions)
 
 .action-button {
   margin: 0 10px;
+}
+
+.product-name-link {
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.product-name-link:hover {
+  text-decoration: underline;
 }
 
 .price-display {

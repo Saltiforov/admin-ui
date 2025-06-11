@@ -226,18 +226,20 @@ export const generatePageData = (slug, isAccordionFields, pageTitle, blockSectio
     if (isAccordionFields) {
         return {
             slug,
+            title: pageTitle,
             accordion: true,
             content: blockSections.map(section => ({
                 title: section.title,
                 blocks: section.blocks.map(block => ({
-                    blockTitle: block.blockTitle,
-                    blockContent: block.blockContent,
+                    title: block.blockTitle,
+                    content: block.blockContent,
                 })),
             })),
         };
     } else {
         return {
             slug,
+            title: pageTitle,
             accordion: false,
             content: blockSections.flatMap(section =>
                 section.blocks.map(block => ({

@@ -180,6 +180,7 @@ export const en = {
     "about_user_orders": "Status",
     "about_user_role": "Roles",
     "about_user_subscriptionLevel": "Subscription Level",
+    "table_header_reviews": "Rating",
 
     "confirm_delete_message": "Are you sure you want to delete {name}?",
     "confirm_delete_title": "Delete Confirmation",

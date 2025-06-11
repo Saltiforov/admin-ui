@@ -4,7 +4,7 @@ export const aboutUsStaticInfoBlock = {
         blockSections: [
             {
                 title: "Часті запитання (FAQ)",
-                blocks: [{blockTitle: "авіаві", blockContent: "авіавіаві"}],
+                blocks: [{title: "авіаві", content: "авіавіаві"}],
             },
         ],
     }

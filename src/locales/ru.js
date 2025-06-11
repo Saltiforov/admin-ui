@@ -28,6 +28,7 @@ export const ru = {
 
   "placeholder_search": "Поиск",
 
+  "table_header_reviews": "Рейтинг",
 
   "placeholder_enter_street_address": "Введите адрес улицы",
   "placeholder_enter_city": "Введите город",

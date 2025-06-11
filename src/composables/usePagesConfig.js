@@ -1,17 +1,15 @@
-import {ref, computed, onMounted} from 'vue';
-import {getPageConfig} from "@/services/factories/index.js";
-import {PAGES_TYPE} from "@/constants/pages.enum.js";
+import { ref, computed } from 'vue';
+import { getPageConfig } from "@/services/factories/index.js";
+import { PAGES_TYPE } from "@/constants/pages.enum.js";
 
 export function usePagesConfig(pageType, options = {}, isDataRequired) {
-    const needToLoadData = computed(() => !!options.id)
-
+    // ✅ Проверяем наличие либо id, либо slug
+    const needToLoadData = computed(() => Boolean(options?.id || options?.slug));
 
     const data = ref({});
     const loading = ref(needToLoadData.value);
 
-
     const config = getPageConfig(pageType, PAGES_TYPE.DETAILS_PAGE);
-
 
     async function useFetch() {
         const pagesFetchLoop = {};
@@ -27,8 +25,8 @@ export function usePagesConfig(pageType, options = {}, isDataRequired) {
 
             const promises = fetchEntries.map(([key, fetchDataFn]) =>
                 fetchDataFn(options)
-                    .then(result => ({key, result}))
-                    .catch(error => ({key, error}))
+                    .then(result => ({ key, result }))
+                    .catch(error => ({ key, error }))
             );
 
             const results = await Promise.allSettled(promises);
@@ -40,7 +38,6 @@ export function usePagesConfig(pageType, options = {}, isDataRequired) {
                     console.error(`Error fetching data for key ${r.reason.key}:`, r.reason.error);
                     data.value[r.reason.key] = null;
                 }
-
             });
         }
 
@@ -49,24 +46,24 @@ export function usePagesConfig(pageType, options = {}, isDataRequired) {
 
     const startLoading = () => {
         loading.value = true;
-    }
+    };
 
     const stopLoading = () => {
         loading.value = false;
-    }
+    };
 
+    // 🧠 Стартуем загрузку только при наличии id или slug
     if (needToLoadData.value) {
         useFetch().catch(console.error);
     }
-
 
     return {
         data,
         blockList: computed(() => config?.blockList || {}),
         pageName: computed(() => config?.pageName || ''),
         isLoading: computed(() => loading.value),
-        stopLoading: stopLoading,
-        startLoading: startLoading,
-        useFetch: useFetch,
+        stopLoading,
+        startLoading,
+        useFetch,
     };
 }

@@ -131,7 +131,7 @@ const dataTableConfig = ref({
   class: "custom-table",
   columns: [
     {field: 'username', header: computed(() => t('table_header_username')), class: 'multiline-truncate'},
-    {field: 'telegramUsername', header: computed(() => t('table_header_telegram'))},
+    {field: 'tgUsername', header: computed(() => t('table_header_telegram'))},
     {field: 'firstName', header: computed(() => t('table_header_first_name')), style: 'width: 15%',},
     {field: 'lastName', header: computed(() => t('table_header_last_name')), style: 'width: 15%'},
     {field: 'email', header: computed(() => t('table_header_email')), class: 'multiline-truncate'},

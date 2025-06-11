@@ -8,20 +8,20 @@ export const dataProductsTableConfig = ref({
     class: "custom-table",
     size: 'null',
     columns: [
-        {field: "name", header: computed(() => t("table_header_name")), class: "multiline-truncate"},
+        {field: "name", header: computed(() => t("table_header_name")), style: "width: 10%", class: "multiline-truncate", slotName: "name",},
         {
             field: "image",
             header: computed(() => t("table_header_image")),
             slotName: "image",
-            style: "width: 15%",
+            style: "width: 10%",
         },
         {field: "price", header: computed(() => t("table_header_price")),  slotName: "price", style: "width: 10%",},
-        {field: "description", header: computed(() => t("table_header_description")), class: "multiline-truncate"},
-        {field: "category", header: computed(() => t("table_header_category"))},
-        {field: "availability", header: computed(() => t("table_header_availability")), slotName: "availability"},
+        { field: "description", header: computed(() => t("table_header_description")), class: "multiline-truncate" },
+        { field: "slug", header: computed(() => t("table_header_slug")), class: "multiline-truncate" },
+        { field: "reviews", header: computed(() => t("table_header_reviews")), class: "multiline-truncate", slotName: "reviews", },
         {
             field: "actions",
-            header: computed(() => ""), // Пустой заголовок, но оставлен computed для единообразия
+            header: computed(() => ""),
             slotName: "actions",
             style: "width: 10%",
         },

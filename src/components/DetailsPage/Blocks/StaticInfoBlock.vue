@@ -13,7 +13,7 @@
       </div>
       <div>
         <p class="form__title mb-1">{{ t("static_page_title") }}:</p>
-        <InputText class="page-title w-full" v-model="pageTitle" />
+        <InputText class="page-title w-full" v-model="pageTitle"/>
       </div>
       <div class="block-pair-action">
         <Button
@@ -35,7 +35,7 @@
         <div :style="{ justifyContent: isAccordionFields ? 'space-between' : 'flex-end' }" class="block-section-header">
           <div v-if="isAccordionFields" class="input-wrapper">
             <p class="form__title mb-1">{{ t('static_accordion_name') }}:</p>
-            <InputText class="block-pair__input" v-model="section.title" />
+            <InputText class="block-pair__input" v-model="section.title"/>
           </div>
 
           <div class="button-wrapper" v-if="sectionIdx !== 0">
@@ -64,12 +64,12 @@
 
           <div>
             <p class="form__title mb-1">{{ t('static_accordion_heading') }}:</p>
-            <InputText class="block-pair__input" v-model="block.blockTitle" />
+            <InputText class="block-pair__input" v-model="block.title"/>
           </div>
 
           <div>
             <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
-            <Editor v-model="block.blockContent" />
+            <Editor v-model="block.content"/>
           </div>
         </div>
 
@@ -87,11 +87,11 @@
 <script setup>
 import Select from "primevue/select";
 import {computed, onMounted, ref, watch} from "vue";
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 import Button from "primevue/button";
-import { generatePageData } from "@/utils/index.js";
+import {generatePageData} from "@/utils/index.js";
 
-const { t } = useI18n();
+const {t} = useI18n();
 
 const props = defineProps({
   data: {
@@ -113,21 +113,21 @@ const selectedDisplayType = ref({});
 const isAccordionFields = computed(() => selectedDisplayType?.value["value"] === "accordion");
 
 const options = [
-  { label: t("without_accordion"), value: "plain" },
-  { label: t("accordion"), value: "accordion" },
+  {label: t("without_accordion"), value: "plain"},
+  {label: t("accordion"), value: "accordion"},
 ];
 
 const addNewSection = () => {
   localConfig.value.blockSections.push({
     title: "",
-    blocks: [{ blockTitle: "", blockContent: "" }],
+    blocks: [{title: "", content: ""}],
   });
 };
 
 const addBlockToSection = (sectionIdx) => {
   localConfig.value.blockSections[sectionIdx].blocks.push({
-    blockTitle: "",
-    blockContent: "",
+    title: "",
+    content: "",
   });
 };
 
@@ -138,6 +138,8 @@ const removeBlock = (sectionIdx, blockIdx) => {
 const removeSection = (sectionIdx) => {
   localConfig.value.blockSections.splice(sectionIdx, 1);
 };
+
+console.log("")
 
 const getData = () => {
   const result = generatePageData(
@@ -153,33 +155,48 @@ defineExpose({
   getData,
 });
 
-onMounted(() => {
-  if (props.data && typeof props.data === 'object') {
+function applyConfigFromData(data) {
+  if (data && typeof data === 'object') {
     localConfig.value = {
-      blockSections: Array.isArray(props.data.content)
-          ? props.data.content.map(section => ({
+      blockSections: Array.isArray(data.content)
+          ? data.content.map(section => ({
             title: section.title || "",
             blocks: Array.isArray(section.blocks)
                 ? section.blocks.map(block => ({
-                  blockTitle: block.blockTitle || "",
-                  blockContent: block.blockContent || "",
+                  title: block.title || "",
+                  content: block.content || "",
                 }))
                 : [],
           }))
           : [],
     };
 
-    pageTitle.value = props.data.slug || "";
-    selectedDisplayType.value = props.data.accordion
+    pageTitle.value = data.title || "";
+
+    selectedDisplayType.value = data.accordion
         ? options.find(opt => opt.value === "accordion")
         : options.find(opt => opt.value === "plain");
   } else {
-    localConfig.value = {...props.config}
+    localConfig.value = {...props.config};
   }
+}
+
+onMounted(() => {
+  applyConfigFromData(props.data);
 });
+
+watch(
+    () => props.data,
+    (newData) => {
+      applyConfigFromData(newData);
+    },
+    {immediate: false, deep: true}
+);
+
 </script>
 
 <style scoped>
+
 .static-info-block {
   max-width: 1200px;
   padding: 0 15px;
@@ -191,36 +208,20 @@ onMounted(() => {
   grid-template-columns: 1fr 1fr auto;
   gap: 1.5rem;
   margin-bottom: 3rem;
+  padding: 20px;
+  border: 1px solid #dcdcdc;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
-.block-pair__input {
-  margin-bottom: 12px;
-  width: 100%;
-}
-
-.block-pair {
+.block-section {
   position: relative;
-}
-
-.block-pair-action {
-  margin: 26px 12px;
-  flex-shrink: 0;
-  flex-grow: 0;
-  flex-basis: auto;
-}
-
-.close-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #6b7280;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.4s;
-}
-
-.close-button:hover {
-  color: #ef4444;
+  border: 1px solid #cfcfcf;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .block-section-header {
@@ -228,6 +229,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  margin-bottom: 16px;
 }
 
 .input-wrapper {
@@ -238,4 +240,61 @@ onMounted(() => {
   flex-shrink: 0;
   white-space: nowrap;
 }
+
+.block-pair {
+  position: relative;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  border: 1px dashed #c5c5c5;
+  margin-bottom: 24px;
+}
+
+.block-pair__input {
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  user-select: none;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #e63946;
+}
+
+.form__title {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+  color: #222222;
+}
+
+.block-pair {
+  position: relative;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  border: 1px dashed #c5c5c5;
+  margin-bottom: 32px;
+}
+
+.block-pair-action {
+  margin: 26px 12px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: auto;
+}
+
+.mt-2 {
+  margin-top: 16px;
+}
 </style>
+

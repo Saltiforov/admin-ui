@@ -30,6 +30,8 @@ export const uk = {
 
     "placeholder_search": "Пошук",
 
+    "table_header_reviews": "Рейтинг",
+
 
     "placeholder_enter_street_address": "Введіть адресу вулиці",
     "placeholder_enter_city": "Введіть місто",
