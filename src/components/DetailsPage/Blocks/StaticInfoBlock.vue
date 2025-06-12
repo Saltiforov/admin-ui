@@ -11,18 +11,14 @@
             placeholder="Select a Display Type"
         />
       </div>
+
       <div>
         <p class="form__title mb-1">{{ t("static_page_title") }}:</p>
         <InputText class="page-title w-full" v-model="pageTitle"/>
       </div>
+
       <div class="block-pair-action">
-        <Button
-            type="button"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"
-            label="Добавить секцию"
-            @click="addNewSection"
-        />
+        <Button label="Добавить секцию" type="button" @click="addNewSection"/>
       </div>
     </div>
 
@@ -32,13 +28,16 @@
           :key="sectionIdx"
           class="block-section mb-10 border relative"
       >
-        <div :style="{ justifyContent: isAccordionFields ? 'space-between' : 'flex-end' }" class="block-section-header">
+        <div
+            class="block-section-header"
+            :style="{ justifyContent: isAccordionFields ? 'space-between' : 'flex-end' }"
+        >
           <div v-if="isAccordionFields" class="input-wrapper">
             <p class="form__title mb-1">{{ t('static_accordion_name') }}:</p>
             <InputText class="block-pair__input" v-model="section.title"/>
           </div>
 
-          <div class="button-wrapper" v-if="sectionIdx !== 0">
+          <div v-if="sectionIdx !== 0" class="button-wrapper">
             <Button
                 icon="pi pi-trash"
                 class="p-button-danger p-button-sm"
@@ -51,32 +50,63 @@
         <div
             v-for="(block, blockIdx) in section.blocks"
             :key="blockIdx"
-            class="block-pair relative mb-6"
+            class="block-pair relative"
         >
           <div
               v-if="blockIdx !== 0"
-              @click="removeBlock(sectionIdx, blockIdx)"
               class="close-button"
+              @click="removeBlock(sectionIdx, blockIdx)"
               aria-label="Удалить блок"
           >
             <i class="pi pi-times-circle"></i>
           </div>
 
-          <div>
+          <div v-if="isAccordionFields">
             <p class="form__title mb-1">{{ t('static_accordion_heading') }}:</p>
             <InputText class="block-pair__input" v-model="block.title"/>
           </div>
 
-          <div>
+          <div v-if="!isAccordionFields" class="editor-upload-wrapper flex gap-4 items-start">
+            <!-- Редактор -->
+            <div class="flex-1">
+              <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
+              <Editor v-model="block.content"/>
+            </div>
+
+            <div class="image-content-wrapper w-[200px]">
+              <div v-if="block.imagePreview" class="image-preview-wrapper relative">
+                <img
+                    :src="block.imagePreview"
+                    alt="preview"
+                    class="preview-img rounded"
+                />
+                <div class="remove-image" @click="removeImage(block)">
+                  <i class="pi pi-times"></i>
+                </div>
+              </div>
+
+              <FileUpload
+                  mode="basic"
+                  name="file"
+                  accept="image/*"
+                  :maxFileSize="1000000"
+                  chooseLabel="Загрузить"
+                  @select="onImageSelect($event, block)"
+                  customUpload
+              />
+            </div>
+          </div>
+
+          <div v-else>
             <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
             <Editor v-model="block.content"/>
           </div>
         </div>
 
         <Button
-            type="button"
             label="Добавить блок в секцию"
             class="mt-2"
+            type="button"
             @click="addBlockToSection(sectionIdx)"
         />
       </div>
@@ -85,122 +115,154 @@
 </template>
 
 <script setup>
-import Select from "primevue/select";
-import {computed, onMounted, ref, watch} from "vue";
+import {ref, computed, watch, onMounted} from "vue";
 import {useI18n} from "vue-i18n";
+import Select from "primevue/select";
 import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Editor from "primevue/editor";
+import FileUpload from "primevue/fileupload";
+
 import {generatePageData} from "@/utils/index.js";
 
 const {t} = useI18n();
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-  config: {
-    type: Object,
-    required: true,
-  },
+  data: {type: Object, required: true},
+  config: {type: Object, required: true}
 });
 
 const localConfig = ref({});
-
 const pageTitle = ref("");
-
 const selectedDisplayType = ref({});
-
-const isAccordionFields = computed(() => selectedDisplayType?.value["value"] === "accordion");
+const isAccordionFields = computed(() => selectedDisplayType.value?.value === "accordion");
 
 const options = [
   {label: t("without_accordion"), value: "plain"},
-  {label: t("accordion"), value: "accordion"},
+  {label: t("accordion"), value: "accordion"}
 ];
 
 const addNewSection = () => {
   localConfig.value.blockSections.push({
     title: "",
-    blocks: [{title: "", content: ""}],
+    blocks: [{title: "", content: "", imagePreview: ""}]
   });
 };
 
-const addBlockToSection = (sectionIdx) => {
-  localConfig.value.blockSections[sectionIdx].blocks.push({
+const addBlockToSection = idx => {
+  localConfig.value.blockSections[idx].blocks.push({
     title: "",
     content: "",
+    imagePreview: ""
   });
 };
 
-const removeBlock = (sectionIdx, blockIdx) => {
-  localConfig.value.blockSections[sectionIdx].blocks.splice(blockIdx, 1);
+const removeBlock = (sIdx, bIdx) => {
+  localConfig.value.blockSections[sIdx].blocks.splice(bIdx, 1);
 };
 
-const removeSection = (sectionIdx) => {
-  localConfig.value.blockSections.splice(sectionIdx, 1);
+const removeSection = idx => {
+  localConfig.value.blockSections.splice(idx, 1);
 };
 
-console.log("")
+function onImageSelect(event, block) {
+  const file = event.files?.[0];
+  if (!file) return;
 
-const getData = () => {
-  const result = generatePageData(
+  const reader = new FileReader();
+  reader.onload = () => {
+    block.imagePreview = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage(block) {
+  block.imagePreview = "";
+}
+
+function applyConfigFromData(data) {
+  if (data && typeof data === "object") {
+    if (data.accordion) {
+      localConfig.value = {
+        blockSections: Array.isArray(data.content)
+            ? data.content.map(section => ({
+              title: section.title || "",
+              blocks: Array.isArray(section.blocks)
+                  ? section.blocks.map(block => ({
+                    title: block.title || "",
+                    content: block.content || "",
+                  }))
+                  : []
+            }))
+            : []
+      };
+    } else {
+      localConfig.value = {
+        blockSections: [
+          {
+            title: "",
+            blocks: Array.isArray(data.content)
+                ? data.content.map(block => ({
+                  title: "",
+                  content: block.content || "",
+                  image: block.image || "",
+                  imagePosition: block.imagePosition || "left",
+                  split: block.split || false,
+                }))
+                : []
+          }
+        ]
+      };
+    }
+
+    pageTitle.value = data.title || "";
+    selectedDisplayType.value = data.accordion
+        ? options.find(o => o.value === "accordion")
+        : options.find(o => o.value === "plain");
+  } else {
+    localConfig.value = { ...props.config };
+  }
+}
+
+
+onMounted(() => applyConfigFromData(props.data));
+watch(
+    () => props.data,
+    d => applyConfigFromData(d),
+    {deep: true}
+);
+
+/* ─── Экспорт данных наружу ───────────────────────────────────────── */
+function getData() {
+  return generatePageData(
       "shipping-and-payment",
       isAccordionFields.value,
       pageTitle.value,
       localConfig.value.blockSections
   );
-  return result;
-};
-
-defineExpose({
-  getData,
-});
-
-function applyConfigFromData(data) {
-  if (data && typeof data === 'object') {
-    localConfig.value = {
-      blockSections: Array.isArray(data.content)
-          ? data.content.map(section => ({
-            title: section.title || "",
-            blocks: Array.isArray(section.blocks)
-                ? section.blocks.map(block => ({
-                  title: block.title || "",
-                  content: block.content || "",
-                }))
-                : [],
-          }))
-          : [],
-    };
-
-    pageTitle.value = data.title || "";
-
-    selectedDisplayType.value = data.accordion
-        ? options.find(opt => opt.value === "accordion")
-        : options.find(opt => opt.value === "plain");
-  } else {
-    localConfig.value = {...props.config};
-  }
 }
 
-onMounted(() => {
-  applyConfigFromData(props.data);
-});
-
-watch(
-    () => props.data,
-    (newData) => {
-      applyConfigFromData(newData);
-    },
-    {immediate: false, deep: true}
-);
-
+defineExpose({getData});
 </script>
 
 <style scoped>
-
+/* — базовые стили (сокращены) — */
 .static-info-block {
   max-width: 1200px;
-  padding: 0 15px;
   margin: 0 auto 24px;
+  padding: 0 15px;
+}
+
+.image-content-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.image-preview-wrapper {
+  margin-bottom: 8px;
 }
 
 .display-type {
@@ -208,93 +270,72 @@ watch(
   grid-template-columns: 1fr 1fr auto;
   gap: 1.5rem;
   margin-bottom: 3rem;
-  padding: 20px;
-  border: 1px solid #dcdcdc;
-  background-color: #f9f9f9;
-  border-radius: 8px;
 }
 
 .block-section {
-  position: relative;
+  background: #fff;
   border: 1px solid #cfcfcf;
-  background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 40px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .block-section-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   margin-bottom: 16px;
 }
 
-.input-wrapper {
-  flex: 1;
-}
-
-.button-wrapper {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
 .block-pair {
-  position: relative;
-  padding: 16px;
-  border-radius: 6px;
-  background-color: #fdfdfd;
+  background: #fdfdfd;
   border: 1px dashed #c5c5c5;
+  border-radius: 6px;
+  padding: 16px;
   margin-bottom: 24px;
-}
-
-.block-pair__input {
-  margin-bottom: 12px;
-  width: 100%;
+  position: relative;
 }
 
 .close-button {
   position: absolute;
   top: 8px;
   right: 8px;
-  color: #6b7280;
   cursor: pointer;
-  user-select: none;
-  font-size: 18px;
-  transition: color 0.3s ease;
+  color: #6b7280;
 }
 
-.close-button:hover {
-  color: #e63946;
-}
-
-.form__title {
-  font-weight: 700;
-  font-size: 1.15rem;
-  margin-bottom: 0.75rem;
-  color: #222222;
-}
-
-.block-pair {
+.image-preview-wrapper {
   position: relative;
-  padding: 16px;
+  max-width: 200px;
+  max-height: 150px;
+  overflow: hidden;
   border-radius: 6px;
-  background-color: #fdfdfd;
-  border: 1px dashed #c5c5c5;
-  margin-bottom: 32px;
 }
 
-.block-pair-action {
-  margin: 26px 12px;
-  flex-shrink: 0;
-  flex-grow: 0;
-  flex-basis: auto;
+.preview-img {
+  max-width: 100%;
+  max-height: 150px;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
-.mt-2 {
-  margin-top: 16px;
+.remove-image {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.remove-image:hover {
+  background: rgba(255, 0, 0, 0.8);
 }
 </style>
-

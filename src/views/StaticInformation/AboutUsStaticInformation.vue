@@ -2,7 +2,7 @@
   <div class="page-container">
     <StaticInfoBlock
         :config="blockList.staticItems"
-        :data="detailsPageData"
+        :data="mockData"
         ref="staticInfoBlock"
     />
     <FooterActionBlock
@@ -22,6 +22,53 @@ import {useRoute, useRouter} from "vue-router";
 import FieldsBlock from "@/components/DetailsPage/Blocks/FieldsBlock.vue";
 import {createStaticPage, updateExistPageBySlug} from "@/services/api/static-information.js";
 import StaticInfoBlock from "@/components/DetailsPage/Blocks/StaticInfoBlock.vue";
+
+// const mockData = {
+//   title: "Пример заголовка страницы",
+//   accordion: false, // или false, чтобы выбрать displayType
+//   content: [
+//     {
+//       title: "Секция 1",
+//       blocks: [
+//         {
+//           title: "Блок 1.1",
+//           content: "<p>Это содержимое первого блока первой секции.</p>"
+//         },
+//         {
+//           title: "Блок 1.2",
+//           content: "<p>Еще один блок с текстом и <strong>форматированием</strong>.</p>"
+//         }
+//       ]
+//     },
+//     {
+//       title: "Секция 2",
+//       blocks: [
+//         {
+//           title: "Блок 2.1",
+//           content: "<p>Контент второго раздела.</p>"
+//         }
+//       ]
+//     }
+//   ]
+// };
+const mockData = {
+  slug: 'about-us',
+  accordion: false,
+  content: [
+    {
+      split: false,
+      image: 'fdsfds',
+      imagePosition: "left",
+      content: '<h1>Про SP BALKAN</h1>...'
+    },
+    {
+      split: true,
+      image: 'fdsfds',
+      imagePosition: "right",
+      content: "<h1>Чому обирають нас?</h1>..."
+    }
+  ]
+};
 
 const props = defineProps({
   blockList: {
