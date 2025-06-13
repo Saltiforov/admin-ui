@@ -14,11 +14,11 @@
 
       <div>
         <p class="form__title mb-1">{{ t("static_page_title") }}:</p>
-        <InputText class="page-title w-full" v-model="pageTitle"/>
+        <InputText class="page-title w-full" v-model="pageTitle" />
       </div>
 
       <div class="block-pair-action">
-        <Button label="Добавить секцию" type="button" @click="addNewSection"/>
+        <Button label="Добавить секцию" type="button" @click="addNewSection" />
       </div>
     </div>
 
@@ -34,7 +34,7 @@
         >
           <div v-if="isAccordionFields" class="input-wrapper">
             <p class="form__title mb-1">{{ t('static_accordion_name') }}:</p>
-            <InputText class="block-pair__input" v-model="section.title"/>
+            <InputText class="block-pair__input" v-model="section.title" />
           </div>
 
           <div v-if="sectionIdx !== 0" class="button-wrapper">
@@ -63,43 +63,69 @@
 
           <div v-if="isAccordionFields">
             <p class="form__title mb-1">{{ t('static_accordion_heading') }}:</p>
-            <InputText class="block-pair__input" v-model="block.title"/>
-          </div>
-
-          <div v-if="!isAccordionFields" class="editor-upload-wrapper flex gap-4 items-start">
-            <!-- Редактор -->
-            <div class="flex-1">
-              <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
-              <Editor v-model="block.content"/>
-            </div>
-
-            <div class="image-content-wrapper w-[200px]">
-              <div v-if="block.imagePreview" class="image-preview-wrapper relative">
-                <img
-                    :src="block.imagePreview"
-                    alt="preview"
-                    class="preview-img rounded"
-                />
-                <div class="remove-image" @click="removeImage(block)">
-                  <i class="pi pi-times"></i>
-                </div>
-              </div>
-
-              <FileUpload
-                  mode="basic"
-                  name="file"
-                  accept="image/*"
-                  :maxFileSize="1000000"
-                  chooseLabel="Загрузить"
-                  @select="onImageSelect($event, block)"
-                  customUpload
-              />
-            </div>
+            <InputText class="block-pair__input" v-model="block.title" />
+            <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
+            <Editor v-model="block.content" />
           </div>
 
           <div v-else>
-            <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
-            <Editor v-model="block.content"/>
+            <div class="flex items-center justify-between mb-2 px-5">
+              <div class="switch-options-box flex items-center justify-between gap-2  px-3 py-2 rounded bg-gray-100">
+                <span class="text-black">Картинка слева</span>
+                <ToggleSwitch
+                    v-model="block.imagePosition"
+                    :trueValue="'right'"
+                    :falseValue="'left'"
+                />
+                <span class="text-black">Картинка справа</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <Checkbox
+                    v-model="block.split"
+                    :binary="true"
+                    inputId="splitCheckbox"
+                />
+                <label for="splitCheckbox" class="text-black">Отображать пункты списка в две колонки</label>
+              </div>
+            </div>
+
+
+            <div
+                :class="[
+                  'editor-upload-wrapper flex gap-4 items-start w-full',
+                  block.imagePosition === 'right' ? 'flex-row' : 'flex-row-reverse'
+                ]"
+            >
+              <div class="flex-1">
+                <p class="form__title mb-1">{{ t('static_accordion_text') }}:</p>
+                <Editor v-model="block.content" />
+              </div>
+
+              <div class="image-content-wrapper w-[300px] flex flex-col justify-between min-h-[300px]">
+                <div v-if="block.imagePreview" class="image-preview-wrapper relative w-full h-[300px]">
+                  <img
+                      :src="block.imagePreview"
+                      alt="preview"
+                      class="preview-img rounded object-cover w-full h-full"
+                  />
+                  <div class="remove-image absolute top-2 right-2 cursor-pointer bg-white bg-opacity-75 p-1 rounded-full shadow">
+                    <i class="pi pi-times" @click="removeImage(block)" />
+                  </div>
+                </div>
+
+                <FileUpload
+                    mode="basic"
+                    name="file"
+                    accept="image/*"
+                    :maxFileSize="1000000"
+                    chooseLabel="Загрузить"
+                    @select="event => onImageSelect(event, block)"
+                    customUpload
+                    class="mt-auto"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -115,21 +141,23 @@
 </template>
 
 <script setup>
-import {ref, computed, watch, onMounted} from "vue";
-import {useI18n} from "vue-i18n";
+import { ref, computed, watch, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import Select from "primevue/select";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Editor from "primevue/editor";
 import FileUpload from "primevue/fileupload";
+import ToggleSwitch from "primevue/inputswitch";
+import Checkbox from "primevue/checkbox";
 
-import {generatePageData} from "@/utils/index.js";
+import { generatePageData } from "@/utils/index.js";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
-  data: {type: Object, required: true},
-  config: {type: Object, required: true}
+  data: { type: Object, required: true },
+  config: { type: Object, required: true },
 });
 
 const localConfig = ref({});
@@ -138,22 +166,24 @@ const selectedDisplayType = ref({});
 const isAccordionFields = computed(() => selectedDisplayType.value?.value === "accordion");
 
 const options = [
-  {label: t("without_accordion"), value: "plain"},
-  {label: t("accordion"), value: "accordion"}
+  { label: t("without_accordion"), value: "plain" },
+  { label: t("accordion"), value: "accordion" },
 ];
 
 const addNewSection = () => {
   localConfig.value.blockSections.push({
     title: "",
-    blocks: [{title: "", content: "", imagePreview: ""}]
+    blocks: [{ title: "", content: "", imagePreview: "", imagePosition: "left", split: false }],
   });
 };
 
-const addBlockToSection = idx => {
+const addBlockToSection = (idx) => {
   localConfig.value.blockSections[idx].blocks.push({
     title: "",
     content: "",
-    imagePreview: ""
+    imagePreview: "",
+    imagePosition: "left",
+    split: false,
   });
 };
 
@@ -161,7 +191,7 @@ const removeBlock = (sIdx, bIdx) => {
   localConfig.value.blockSections[sIdx].blocks.splice(bIdx, 1);
 };
 
-const removeSection = idx => {
+const removeSection = (idx) => {
   localConfig.value.blockSections.splice(idx, 1);
 };
 
@@ -185,16 +215,16 @@ function applyConfigFromData(data) {
     if (data.accordion) {
       localConfig.value = {
         blockSections: Array.isArray(data.content)
-            ? data.content.map(section => ({
+            ? data.content.map((section) => ({
               title: section.title || "",
               blocks: Array.isArray(section.blocks)
-                  ? section.blocks.map(block => ({
+                  ? section.blocks.map((block) => ({
                     title: block.title || "",
                     content: block.content || "",
                   }))
-                  : []
+                  : [],
             }))
-            : []
+            : [],
       };
     } else {
       localConfig.value = {
@@ -202,51 +232,67 @@ function applyConfigFromData(data) {
           {
             title: "",
             blocks: Array.isArray(data.content)
-                ? data.content.map(block => ({
+                ? data.content.map((block) => ({
                   title: "",
                   content: block.content || "",
-                  image: block.image || "",
+                  imagePreview: block.image || "",
                   imagePosition: block.imagePosition || "left",
                   split: block.split || false,
                 }))
-                : []
-          }
-        ]
+                : [],
+          },
+        ],
       };
     }
 
     pageTitle.value = data.title || "";
     selectedDisplayType.value = data.accordion
-        ? options.find(o => o.value === "accordion")
-        : options.find(o => o.value === "plain");
+        ? options.find((o) => o.value === "accordion")
+        : options.find((o) => o.value === "plain");
   } else {
     localConfig.value = { ...props.config };
   }
 }
 
-
 onMounted(() => applyConfigFromData(props.data));
 watch(
     () => props.data,
-    d => applyConfigFromData(d),
-    {deep: true}
+    (d) => applyConfigFromData(d),
+    { deep: true }
 );
 
-/* ─── Экспорт данных наружу ───────────────────────────────────────── */
 function getData() {
-  return generatePageData(
-      "shipping-and-payment",
-      isAccordionFields.value,
-      pageTitle.value,
-      localConfig.value.blockSections
-  );
+  const accordion = isAccordionFields.value;
+
+  const content = accordion
+      ? localConfig.value.blockSections.map(section => ({
+        title: section.title || '',
+        blocks: section.blocks.map(block => ({
+          title: block.title || '',
+          content: block.content || '',
+        })),
+      }))
+      : localConfig.value.blockSections.flatMap(section =>
+          section.blocks.map(block => ({
+            content: block.content || '',
+            image: block.imagePreview || '',
+            imagePosition: block.imagePosition || 'left',
+            split: !!block.split,
+          }))
+      );
+
+  return {
+    slug: 'about-us', // или другой актуальный
+    title: pageTitle.value,
+    accordion,
+    content,
+  };
 }
 
-defineExpose({getData});
+defineExpose({ getData });
 </script>
 
 <style scoped>
-/* — базовые стили (сокращены) — */
 .static-info-block {
   max-width: 1200px;
   margin: 0 auto 24px;
@@ -255,14 +301,20 @@ defineExpose({getData});
 
 .image-content-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+  height: 100%;
 }
 
 .image-preview-wrapper {
   margin-bottom: 8px;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
 .display-type {
@@ -303,20 +355,20 @@ defineExpose({getData});
   color: #6b7280;
 }
 
-.image-preview-wrapper {
-  position: relative;
-  max-width: 200px;
-  max-height: 150px;
-  overflow: hidden;
+.preview-img {
+  width: 100%;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+  object-position: top; /* 👈 важно */
   border-radius: 6px;
 }
 
-.preview-img {
-  max-width: 100%;
-  max-height: 150px;
-  display: block;
-  object-fit: contain;
-  border-radius: 6px;
+
+.text-black {
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .remove-image {
@@ -337,5 +389,11 @@ defineExpose({getData});
 
 .remove-image:hover {
   background: rgba(255, 0, 0, 0.8);
+}
+
+.switch-options-box {
+  width: fit-content;
+  background-color: #f0f0f0;
+  border-radius: 8px;
 }
 </style>

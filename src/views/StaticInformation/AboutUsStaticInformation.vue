@@ -57,13 +57,13 @@ const mockData = {
   content: [
     {
       split: false,
-      image: 'fdsfds',
-      imagePosition: "left",
+      image: 'https://i.pinimg.com/736x/3b/90/63/3b90635c2b2fed5642e59cf153620d70.jpg',
+      imagePosition: "right",
       content: '<h1>Про SP BALKAN</h1>...'
     },
     {
       split: true,
-      image: 'fdsfds',
+      image: 'https://i.pinimg.com/736x/30/1e/ae/301eae5e3759685145ea7c84ab1bfd3f.jpg',
       imagePosition: "right",
       content: "<h1>Чому обирають нас?</h1>..."
     }
@@ -153,31 +153,24 @@ const staticInfoBlock = ref(null);
 const allData = ref({});
 
 const collectDataFromComponents = async (e) => {
-  allData.value = {
-    ...staticInfoBlock.value.getData(),
-  };
+  // Получаем данные из компонента (уже с правильной структурой!)
+  allData.value = staticInfoBlock.value.getData();
 
   console.log("allData", allData.value);
 
+  const payload = {
+    slug: pageSlug.value, // slug актуальный (тот же или новый)
+    title: allData.value.title || '',
+    accordion: allData.value.accordion,
+    locale: 'uk',
+    content: allData.value.content,
+  };
+
   if (!detailsPageData.value) {
-    await createStaticPage({
-      slug: pageSlug.value,
-      title: allData.value.title,
-      accordion: allData.value.accordion,
-      locale: 'uk',
-      content: allData.value.content,
-    })
+    await createStaticPage(payload);
   } else {
-    await updateExistPageBySlug(pageSlug.value, {
-      slug: pageSlug.value,
-      title: allData.value.title,
-      accordion: allData.value.accordion,
-      locale: 'uk',
-      content: allData.value.content,
-    })
+    await updateExistPageBySlug(pageSlug.value, payload);
   }
-
-
 };
 
 
