@@ -35,7 +35,7 @@
               alt="review-icon"
               class="inline-block w-4 h-4 mr-1 align-middle"
           />
-          <span class="align-middle">{{ data.reviews.averageRating }}</span>
+          <span class="align-middle">{{ truncateToDecimal(data.reviews?.averageRating, 1)  }}</span>
         </template>
         <template v-else>
           ---
@@ -69,7 +69,7 @@ import Button from "primevue/button";
 import AsyncTreeSelect from "@/components/UI/AsyncTreeSelect.vue";
 import {timeoutService} from "@/services/timeoutService/timeoutService.js";
 import {useRoute} from "vue-router";
-import {createQueryString, fullImageUrls} from "@/utils/index.js";
+import {createQueryString, fullImageUrls, truncateToDecimal} from "@/utils/index.js";
 import {useQueryUpdater} from "@/composables/useQueryUpdater.js";
 import createDebouncedService from "@/services/debounceService/debounceService.js";
 import CustomDataTable from "@/components/DataTable/CustomDataTable.vue";

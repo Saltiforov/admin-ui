@@ -84,62 +84,75 @@
         </div>
       </div>
     </div>
-    <div v-if="chipsedSelectedOptions.length > maxSelectedLabels" class="p-multiselect-panel-chips">
-      <div v-if="display === 'chip'" class="selected-chips">
+    <div v-if="display === 'chip'" class="p-multiselect-panel-chips">
+      <div  class="selected-chips">
         <div class="chips-wrapper">
-            <span class="chip-item mb-1 mr-1" v-if="selectedOptions.length" v-for="selected in chipsedSelectedOptions">
-          {{ selected.label }}
-        </span>
+          <Chip v-if="selectedOptions.length"
+                v-for="selected in selectedOptions"
+                class="chip-item"
+                :label="selected.label"
+                removable
+                @remove="removeChip(selected.code)"
+          />
+
           <span v-else>Values not selected...</span>
         </div>
       </div>
-      <div @click="showMoreSelectedOptions" class="flex p-1 pointer justify-end">
-        Show more
-      </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { useDataStore } from "@/stores/dataStore.js";
+import {ref, computed, onMounted, onUnmounted, watch} from 'vue';
+import {useDataStore} from "@/stores/dataStore.js";
 import createDebouncedService from '@/services/debounceService/debounceService.js'
+import eventBus from "../../../eventBus.js";
 
-const { debounceService } = createDebouncedService();
+const {debounceService} = createDebouncedService();
 
 const props = defineProps({
-  selectId: { type: String, required: true },
-  options: { type: Array, required: true },
-  filter: { type: Boolean, default: true },
-  filterPlaceholder: { type: String, default: "Search..." },
-  maxSelectedLabels: { type: Number, default: 5 },
-  placeholder: { type: String, default: "Select a value" },
-  optionLabel: { type: String, default: "label" },
-  itemsPerPage: { type: Number, default: 10 },
-  skip: { type: Number, default: 0 },
-  display: { type: String, default: "chip" },
-  restOptionsUrl: { type: String, required: true },
-  selectClass: { type: String, default: "w-full" },
-  style: { type: String, default: "" },
-  modelValue: { type: Array, default: () => [] },
-  useEditMode: { type: Boolean, default: true },
-  chips: { type: Boolean, default: true },
-  multiple: { type: Boolean, default: true }
+  selectId: {type: String, required: true},
+  options: {type: Array, required: true},
+  filter: {type: Boolean, default: true},
+  filterPlaceholder: {type: String, default: "Search..."},
+  maxSelectedLabels: {type: Number, default: 5},
+  placeholder: {type: String, default: "Select a value"},
+  optionLabel: {type: String, default: "label"},
+  itemsPerPage: {type: Number, default: 10},
+  skip: {type: Number, default: 0},
+  display: {type: String, default: "chip"},
+  restOptionsUrl: {type: String, required: true},
+  selectClass: {type: String, default: "w-full"},
+  style: {type: String, default: ""},
+  modelValue: {type: Array, default: () => []},
+  useEditMode: {type: Boolean, default: true},
+  chips: {type: Boolean, default: true},
+  multiple: {type: Boolean, default: true}
 });
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'remove-selected'])
+
+const dataStore = useDataStore()
+
+const optionsCache = computed(() => dataStore.getSelectedData(props.selectId) || [])
 
 const searchQuery = ref('')
-const selectedOptions = ref([])
+const selectedOptions = ref(optionsCache.value)
 const loading = ref(false)
 const isOpen = ref(false)
 const isShowMore = ref(false)
 const multiselectRef = ref(null)
 
-const dataStore = useDataStore()
 
 const useEditMode = computed(() => props.useEditMode)
+
+const isOptionsSelected = computed(() => !!selectedOptions.value)
+
+const removeChip = (code) => {
+  dataStore.removeSelectedData(props.selectId, code)
+  eventBus.emit("remove-selected", code)
+  console.log("removeChip", code)
+}
 
 const params = computed(() => ({
   skip: props.skip + (dataStore.getCurrentPage(props.selectId) - 1) * props.itemsPerPage,
@@ -148,13 +161,12 @@ const params = computed(() => ({
 }))
 
 const options = computed(() => {
-  return dataStore.getOptions(props.selectId).map(option => ({
+  return dataStore.getOptions(props.selectId).value.map(option => ({
     label: option.name || option.username,
     code: option._id
   }))
 })
 
-const optionsCache = computed(() => dataStore.getSelectedData(props.selectId) || [])
 
 const hasMoreData = computed(() =>
     options.value.length < dataStore.getTotalCount(props.selectId)
@@ -279,15 +291,15 @@ watch(() => props.modelValue, (newValue) => {
   } else {
     selectedOptions.value = newValue ? [newValue] : []
   }
-}, { immediate: true })
+}, {immediate: true})
 </script>
-
 
 
 <style scoped>
 .selected {
   background: #c7c7c7;
 }
+
 .p-multiselect {
   position: relative;
   display: flex;
@@ -352,12 +364,7 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .chip-item {
-  padding: 5px;
-  background: rgb(235, 235, 235);
-  color: #676767;
-  border-radius: 25px;
-  display: inline-block;
-  font-weight: 400;
+  margin: 5px;
 }
 
 .p-multiselect-search-wrapper {
@@ -417,12 +424,7 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .chips-wrapper {
-  padding: 10px;
-}
-
-.selected-chips {
-  overflow: scroll;
-  overflow-x: hidden;
+  padding: 10px 5px;
 }
 
 .loading-spinner {

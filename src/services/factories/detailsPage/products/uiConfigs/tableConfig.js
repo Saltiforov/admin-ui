@@ -18,7 +18,7 @@ export const dataProductsTableConfig = ref({
         {field: "price", header: computed(() => t("table_header_price")),  slotName: "price", style: "width: 10%",},
         { field: "description", header: computed(() => t("table_header_description")), class: "multiline-truncate" },
         { field: "slug", header: computed(() => t("table_header_slug")), class: "multiline-truncate" },
-        { field: "reviews", header: computed(() => t("table_header_reviews")), class: "multiline-truncate", slotName: "reviews", },
+        { field: "reviews", header: computed(() => t("table_header_reviews")), class: "flex", slotName: "reviews", },
         {
             field: "actions",
             header: computed(() => ""),

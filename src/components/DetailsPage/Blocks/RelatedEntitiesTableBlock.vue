@@ -89,6 +89,10 @@ const props = defineProps({
   totalRecords: {
     type: Number,
     default: 0,
+  },
+  defaultValuePopup: {
+    type: [Number, String, Object, Array, Boolean],
+    default: false,
   }
 });
 
@@ -97,6 +101,8 @@ const {t} = useI18n();
 const buttonLabel = computed(() => t('button_text_new_entity'))
 
 const isUpdateMode = computed(() => !!route.params.id)
+
+const defaultValueForPopup = computed(() => props.defaultValuePopup || null)
 
 const route = useRoute()
 
@@ -118,6 +124,7 @@ const updatedRelatedEntitiesTablePopup = computed(() => ({
   ...relatedEntitiesTablePopup,
   fields: relatedEntitiesTablePopup.fields.map(field => ({
     ...field,
+    defaultValue: defaultValueForPopup.value,
     props: {
       ...field.props,
       useEditMode: isUpdateMode.value

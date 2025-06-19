@@ -12,6 +12,7 @@
         :data="detailsPageData"
         :total-records="totalRecords"
         ref="relatedEntitiesBlockRef"
+        :default-value-popup="selectedPopupData"
         @handle-delete="deleteRelatedEntitiesItem"
     />
     <FooterActionBlock
@@ -69,9 +70,14 @@ const router = useRouter()
 
 const route = useRoute()
 
+const selectId = 'relatedEntitiesSelect'
+
 const rawOrderData = computed(() => props.data?.[DETAILS_PAGES.ORDERS]);
 
-const selectId = 'relatedEntitiesSelect'
+const selectedPopupData = computed({
+  get: () => dataStore.getSelectedData(selectId).value,
+  set: (val) => dataStore.setSelectedData(selectId, val),
+})
 
 const selectedUser = ref({})
 
@@ -200,13 +206,22 @@ const deleteRelatedEntitiesItem = (item) => {
 }
 
 onMounted(async () => {
+
+  eventBus.on('remove-selected', (id) => {
+    selectedPopupData.value = selectedPopupData.value.filter(item => item.code !== id)
+  })
+
   eventBus.on("handle-popup-data", async ({products}) => {
+
+    console.log(products)
+
     if (!products || !Array.isArray(products)) return;
 
     const existingProducts = relatedConfig.value || [];
-    const existingCodes = existingProducts.map(p => p.code);
 
-    const newProducts = products.filter(item => !existingCodes.includes(item.code));
+    const existingIds = existingProducts.map(p => p._id);
+
+    const newProducts = products.filter(item => !existingIds.includes(item.code));
 
     relatedConfig.value = [
       ...existingProducts,

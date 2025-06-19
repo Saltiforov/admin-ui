@@ -1,72 +1,107 @@
-import { defineStore } from 'pinia';
-import app from '@/main'; // Импорт глобального API
+import { defineStore } from 'pinia'
+import { ref, reactive, computed } from 'vue'
+import app from '@/main' // Глобальный доступ к API
 
-export const useDataStore = defineStore('dataStore', {
-    state: () => ({
-        data: {}, // Данные хранятся под ключами
-        loading: {}, // Состояние загрузки для каждого запроса
-        totalCount: {}, // Общее количество записей по ключу
-        currentPage: {}, // Текущая страница по ключу
-        selectedData: {}, // Выбранные данные по ключу
-    }),
+export const useDataStore = defineStore('dataStore', () => {
+    const data = reactive({})
+    const loading = reactive({})
+    const totalCount = reactive({})
+    const currentPage = reactive({})
+    const selectedData = reactive({})
 
-    actions: {
-        async fetchData(selectId, route, params = {}) {
-            if (!this.data[selectId]) {
-                this.data[selectId] = [];
-                this.totalCount[selectId] = 0;
-                this.currentPage[selectId] = 1;
+    async function fetchData(selectId, route, params = {}) {
+        if (!data[selectId]) {
+            data[selectId] = []
+            totalCount[selectId] = 0
+            currentPage[selectId] = 1
+        }
+
+        loading[selectId] = true
+
+        try {
+            const api = app.config.globalProperties.$api
+            const response = await api.get(route, params)
+
+            if (response.status === 200 || response.status === 201) {
+                const list = response.data.list || response.data
+                totalCount[selectId] = response.data.count
+                data[selectId] =
+                    currentPage[selectId] === 1
+                        ? list
+                        : [...data[selectId], ...list]
             }
 
-            this.loading[selectId] = true;
-            try {
-                const api = app.config.globalProperties.$api;
-                const response = await api.get(route, params);
-
-                if (response.status === 200 || response.status === 201) {
-                    this.totalCount[selectId] = response.data.count;
-                    this.data[selectId] = this.currentPage[selectId] === 1
-                        ? response.data.list || response.data
-                        : [...this.data[selectId], ...response.data.list];
-                }
-
-                if (this.data[selectId].length < this.totalCount[selectId]) {
-                    this.currentPage[selectId]++;
-                }
-
-            } catch (error) {
-                console.error(`Ошибка загрузки данных для ${selectId}:`, error);
-            } finally {
-                this.loading[selectId] = false;
+            if (data[selectId].length < totalCount[selectId]) {
+                currentPage[selectId]++
             }
-        },
+        } catch (error) {
+            console.error(`Ошибка загрузки данных для ${selectId}:`, error)
+        } finally {
+            loading[selectId] = false
+        }
+    }
 
-        loadMoreData(selectId, route, params = {}) {
-            if (this.data[selectId]?.length < this.totalCount[selectId] && !this.loading[selectId]) {
-                this.fetchData(selectId, route, params);
-            }
-        },
+    function loadMoreData(selectId, route, params = {}) {
+        if (
+            data[selectId]?.length < totalCount[selectId] &&
+            !loading[selectId]
+        ) {
+            fetchData(selectId, route, params)
+        }
+    }
 
-        getDataById(selectId, id) {
-            return this.data[selectId]?.find(item => item._id === id);
-        },
+    function getDataById(selectId, id) {
+        return data[selectId]?.find((item) => item._id === id)
+    }
 
-        setSelectedData(selectId, data) {
-            this.selectedData[selectId] = data;
-        },
+    function setSelectedData(selectId, item) {
+        selectedData[selectId] = item
+    }
 
-        clearData(selectId) {
-            this.data[selectId] = [];
-            this.totalCount[selectId] = 0;
-            this.currentPage[selectId] = 1;
-        },
-    },
+    function removeSelectedData(selectId, id) {
+        if (Array.isArray(selectedData[selectId])) {
+            selectedData[selectId] = selectedData[selectId].filter(
+                (selected) => selected.code !== id
+            )
+        }
+    }
 
-    getters: {
-        getOptions: (state) => (selectId) => state.data[selectId] || [],
-        isLoading: (state) => (selectId) => state.loading[selectId] || false,
-        getCurrentPage: (state) => (selectId) => state.currentPage[selectId] || 1,
-        getTotalCount: (state) => (selectId) => state.totalCount[selectId] || 0,
-        getSelectedData: (state) => (selectId) => state.selectedData[selectId] || [],
-    },
-});
+    function clearData(selectId) {
+        data[selectId] = []
+        totalCount[selectId] = 0
+        currentPage[selectId] = 1
+    }
+
+    const getOptions = (selectId) => computed(() => data[selectId] || [])
+    const isLoading = (selectId) => computed(() => loading[selectId] || false)
+    const getCurrentPage = (selectId) =>
+        computed(() => currentPage[selectId] || 1)
+    const getTotalCount = (selectId) =>
+        computed(() => totalCount[selectId] || 0)
+    const getSelectedData = (selectId) =>
+        computed(() => selectedData[selectId] || [])
+
+    return {
+        // state
+        data,
+        loading,
+        totalCount,
+        currentPage,
+        selectedData,
+
+        // actions
+        fetchData,
+        loadMoreData,
+        getDataById,
+        setSelectedData,
+        removeSelectedData,
+        clearData,
+
+        // getters
+        getOptions,
+        isLoading,
+        getCurrentPage,
+        getTotalCount,
+        getSelectedData,
+    }
+})

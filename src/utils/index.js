@@ -222,6 +222,11 @@ export function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+export function truncateToDecimal(value, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.floor(value * factor) / factor;
+}
+
 export const generatePageData = (slug, isAccordionFields, pageTitle, blockSections) => {
     if (isAccordionFields) {
         return {

@@ -64,6 +64,7 @@ eventBus.on('show-popup', (config) => {
 
   // Инициализируем значения формы
   config.fields.forEach((field) => {
+    console.log('field', field);
     formValues[field.code] = field.defaultValue || '';
     errors[field.code] = null;
   });
